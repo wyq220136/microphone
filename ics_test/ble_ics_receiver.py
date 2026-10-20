@@ -42,6 +42,7 @@ class Capture:
         self.packets = 0
         self.lost_packets = 0
         self.last_packet_time = time.monotonic()
+        self.disconnects = 0
 
     def on_notification(self, _sender: object, data: bytearray) -> None:
         if len(data) < HEADER.size:
@@ -89,6 +90,11 @@ class Capture:
             self.packet_payload_size = payload_bytes
         if sequence > self.expected_sequence:
             missing = sequence - self.expected_sequence
+            print(
+                f"Packet gap: expected {self.expected_sequence}, received {sequence} "
+                f"({missing} missing)",
+                file=sys.stderr,
+            )
             self.audio.extend(b"\x00" * (missing * self.packet_payload_size))
             self.lost_packets += missing
         self.audio.extend(data[HEADER.size:])
@@ -131,6 +137,15 @@ class Capture:
         self.packets = 0
         self.lost_packets = 0
 
+    def mark_disconnected(self) -> None:
+        """Close the current segment without inventing samples for the gap."""
+        self.disconnects += 1
+        if self.segment_active or self.audio:
+            self.save_pending_segment()
+        else:
+            self.expected_sequence = None
+            self.packet_payload_size = None
+
     @property
     def seconds(self) -> float:
         if not self.sample_rate or not self.channels:
@@ -169,23 +184,66 @@ async def find_device(name: str, address: Optional[str]):
 
 
 async def receive(args: argparse.Namespace, capture: Capture) -> None:
-    device = await find_device(args.name, args.address)
-    print(f"Connecting to {getattr(device, 'name', None) or getattr(device, 'address', device)}...")
-    async with BleakClient(device) as client:
-        await client.start_notify(AUDIO_UUID, capture.on_notification)
-        print("Connected. Recording; press Ctrl+C to stop.")
-        started = time.monotonic()
+    started = time.monotonic()
+    reconnect_count = 0
+    while True:
+        if args.max_seconds > 0:
+            remaining = args.max_seconds - (time.monotonic() - started)
+            if remaining <= 0:
+                break
+
+        connected = False
+        disconnected = asyncio.Event()
+
+        def on_disconnect(_client: BleakClient) -> None:
+            disconnected.set()
+
         try:
-            while True:
-                await asyncio.sleep(0.1)
-                if args.max_seconds > 0 and time.monotonic() - started >= args.max_seconds:
-                    break
+            device = await find_device(args.name, args.address)
+            label = getattr(device, "name", None) or getattr(device, "address", device)
+            print(f"Connecting to {label}...")
+            async with BleakClient(device, disconnected_callback=on_disconnect) as client:
+                await client.start_notify(AUDIO_UUID, capture.on_notification)
+                connected = True
+                print("Connected. Recording; waiting for START packet.")
+                while not disconnected.is_set():
+                    sleep_for = 0.1
+                    if args.max_seconds > 0:
+                        sleep_for = min(
+                            sleep_for,
+                            max(0.0, args.max_seconds - (time.monotonic() - started)),
+                        )
+                    if sleep_for == 0:
+                        break
+                    await asyncio.sleep(sleep_for)
+                if not disconnected.is_set():
+                    try:
+                        await client.stop_notify(AUDIO_UUID)
+                    except Exception:
+                        pass
+        except asyncio.CancelledError:
+            raise
+        except Exception as exc:
+            print(f"BLE connection error: {exc}", file=sys.stderr)
         finally:
-            try:
-                await client.stop_notify(AUDIO_UUID)
-            except Exception:
-                pass
-            capture.save_pending_segment()
+            if connected:
+                if args.max_seconds > 0 and time.monotonic() - started >= args.max_seconds:
+                    capture.save_pending_segment()
+                else:
+                    capture.mark_disconnected()
+
+        if args.max_seconds > 0 and time.monotonic() - started >= args.max_seconds:
+            break
+        reconnect_count += 1
+        print(
+            f"BLE disconnected; reconnect attempt {reconnect_count} in 1 second",
+            file=sys.stderr,
+        )
+        await asyncio.sleep(1.0)
+
+    if capture.segment_active or capture.audio:
+        capture.save_pending_segment()
+    print(f"BLE reconnects: {reconnect_count}, disconnects: {capture.disconnects}")
 
 
 def parse_args() -> argparse.Namespace:

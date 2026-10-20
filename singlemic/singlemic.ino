@@ -29,11 +29,12 @@
  
  static constexpr int USER_KEY_2 = 13;
  
- // Keep the microphone clock at 8 kHz, but decimate the BLE stream to 4 kHz.
- // This halves the BLE payload rate without changing the I2S pin/clock setup.
- static constexpr uint32_t I2S_CAPTURE_SAMPLE_RATE = 8000;
- static constexpr uint32_t AUDIO_SAMPLE_RATE = 4000;
+ // Keep the microphone clock at 24 kHz and decimate the BLE stream to 12 kHz.
+ // This keeps the I2S capture rate high while halving the BLE payload rate.
+ static constexpr uint32_t I2S_CAPTURE_SAMPLE_RATE = 24000;
  static constexpr size_t BLE_DECIMATION_FACTOR = 2;
+ static constexpr uint32_t AUDIO_SAMPLE_RATE =
+     I2S_CAPTURE_SAMPLE_RATE / BLE_DECIMATION_FACTOR;
  static constexpr uint8_t AUDIO_CHANNELS = 1;
  static constexpr uint8_t AUDIO_BITS_PER_SAMPLE = 16;
  // Reduce the I2S-to-PCM gain before the 16-bit clamp.  The previous value
@@ -42,8 +43,8 @@
  // First-order DC blocker: y[n] = x[n] - x[n-1] + R*y[n-1], R=255/256.
  static constexpr int AUDIO_DC_BLOCK_SHIFT = 8;
  // Five-tap binomial FIR low-pass before 2:1 decimation.  The coefficients
- // [1, 4, 6, 4, 1] / 16 give a zero at the 8-kHz input Nyquist frequency and
- // about 12 dB attenuation at the 4-kHz output Nyquist frequency.
+ // [1, 4, 6, 4, 1] / 16 give a zero at the 12-kHz input Nyquist frequency and
+ // about 12 dB attenuation at the 6-kHz output Nyquist frequency.
  static constexpr int AUDIO_ANTI_ALIAS_TAPS = 5;
  
  static constexpr char BLE_DEVICE_NAME[] = "ESP32S3-ICS";
@@ -52,16 +53,14 @@
  static constexpr char BLE_AUDIO_UUID[] =
      "6e400003-b5a3-f393-e0a9-e50e24dcca9e";
  
- // ATT MTU 247 leaves 244 bytes for a notification. 14 bytes are header,
- // leaving 230 bytes = 115 mono 16-bit samples.
- static constexpr size_t PACKET_FRAMES = 115;
- static constexpr size_t I2S_FRAMES_PER_PACKET =
-     PACKET_FRAMES * BLE_DECIMATION_FACTOR;
+ // The packet buffer supports ATT MTU 247; each connection may use fewer
+ // frames per notification when the central negotiates a smaller MTU.
+ static constexpr size_t MAX_PACKET_FRAMES = 115;
  static constexpr size_t HEADER_BYTES = 14;
- static constexpr size_t PAYLOAD_BYTES =
-     PACKET_FRAMES * AUDIO_CHANNELS * (AUDIO_BITS_PER_SAMPLE / 8);
- static constexpr size_t PACKET_BYTES = HEADER_BYTES + PAYLOAD_BYTES;
- static_assert(PACKET_BYTES <= 244, "BLE packet does not fit MTU 247");
+ static constexpr size_t MAX_PAYLOAD_BYTES =
+     MAX_PACKET_FRAMES * AUDIO_CHANNELS * (AUDIO_BITS_PER_SAMPLE / 8);
+ static constexpr size_t MAX_PACKET_BYTES = HEADER_BYTES + MAX_PAYLOAD_BYTES;
+ static_assert(MAX_PACKET_BYTES <= 244, "BLE packet does not fit MTU 247");
  
  static constexpr uint8_t PACKET_DATA = 1;
  static constexpr uint8_t PACKET_START = 2;
@@ -69,15 +68,30 @@
  static constexpr uint8_t MAGIC0 = 0xA5;
  static constexpr uint8_t MAGIC1 = 0x5A;
  static constexpr uint32_t KEY_DEBOUNCE_MS = 35;
+ // BLE connection parameters use 1.25 ms units. 7.5 ms gives the controller
+ // enough events to carry the 12 kHz mono stream without adding a fixed delay
+ // between notifications.
+ static constexpr uint16_t BLE_CONNECTION_INTERVAL_MIN = 6;
+ static constexpr uint16_t BLE_CONNECTION_INTERVAL_MAX = 6;
+ static constexpr uint16_t BLE_CONNECTION_LATENCY = 0;
+ static constexpr uint16_t BLE_CONNECTION_TIMEOUT = 200;
+ static constexpr size_t BLE_PACKET_QUEUE_DEPTH = 16;
+ static constexpr uint32_t BLE_NOTIFY_TIMEOUT_MS = 100;
  
  static NimBLECharacteristic *audioCharacteristic = nullptr;
+ static NimBLEServer *bleServer = nullptr;
  static volatile bool bleConnected = false;
+ static volatile bool lastNotifySucceeded = false;
+ static volatile size_t packetFrames = 0;
+ static constexpr uint16_t INVALID_CONN_HANDLE = 0xffff;
+ static uint16_t bleConnHandle = INVALID_CONN_HANDLE;
  static volatile uint32_t notifyOk = 0;
  static volatile uint32_t notifyFailures = 0;
  static volatile uint32_t notifyTimeouts = 0;
  static uint32_t sequenceNumber = 0;
  static uint32_t packetsSent = 0;
  static uint32_t packetsDropped = 0;
+ static uint32_t queueOverflows = 0;
  static uint32_t lastStatsMs = 0;
  static QueueHandle_t blePacketQueue = nullptr;
  static TaskHandle_t bleSenderTaskHandle = nullptr;
@@ -85,7 +99,7 @@
  
  struct BlePacket {
    uint16_t length;
-   uint8_t bytes[PACKET_BYTES];
+   uint8_t bytes[MAX_PACKET_BYTES];
  };
  
  struct KeyState {
@@ -101,6 +115,8 @@
  static int32_t dcPreviousOutput = 0;
  static int32_t antiAliasHistory[AUDIO_ANTI_ALIAS_TAPS] = {0, 0, 0, 0, 0};
  static size_t antiAliasHistoryPosition = 0;
+
+ static size_t framesForMtu(uint16_t mtu);
  
  static void putLe16(uint8_t *dst, uint16_t value) {
    dst[0] = static_cast<uint8_t>(value & 0xffu);
@@ -151,6 +167,8 @@
   public:
    void onConnect(NimBLEServer *server, NimBLEConnInfo &info) override {
      bleConnected = true;
+     bleConnHandle = info.getConnHandle();
+     packetFrames = framesForMtu(info.getMTU());
      sequenceNumber = 0;
      dcPreviousInput = 0;
      dcPreviousOutput = 0;
@@ -159,26 +177,70 @@
      if (blePacketQueue != nullptr) {
        xQueueReset(blePacketQueue);
      }
-     // 12.5 ms interval is a reasonable starting point for 16 kB/s PCM.
-     server->updateConnParams(info.getConnHandle(), 10, 10, 0, 200);
-     Serial.println("BLE client connected");
+     server->updateConnParams(info.getConnHandle(),
+                              BLE_CONNECTION_INTERVAL_MIN,
+                              BLE_CONNECTION_INTERVAL_MAX,
+                              BLE_CONNECTION_LATENCY,
+                              BLE_CONNECTION_TIMEOUT);
+     Serial.printf("BLE client connected: MTU=%u, interval=%.2f ms; requested 7.50 ms\n",
+                   info.getMTU(), info.getConnInterval() * 1.25f);
+   }
+
+   void onConnParamsUpdate(NimBLEConnInfo &info) override {
+     Serial.printf("BLE params updated: interval=%.2f ms latency=%u timeout=%u ms\n",
+                   info.getConnInterval() * 1.25f, info.getConnLatency(),
+                   info.getConnTimeout() * 10);
    }
  
    void onDisconnect(NimBLEServer *, NimBLEConnInfo &, int reason) override {
      bleConnected = false;
+     bleConnHandle = INVALID_CONN_HANDLE;
+     packetFrames = MAX_PACKET_FRAMES;
      recording = false;
      Serial.printf("BLE client disconnected, reason=%d\n", reason);
      NimBLEDevice::getAdvertising()->start();
    }
  };
+
+ static size_t framesForMtu(uint16_t mtu) {
+   const size_t mtuPayload = mtu > 3 ? mtu - 3 : 0;
+   const size_t usablePayload = mtuPayload > HEADER_BYTES
+                                    ? mtuPayload - HEADER_BYTES
+                                    : 0;
+   size_t frames = usablePayload /
+                   (AUDIO_CHANNELS * (AUDIO_BITS_PER_SAMPLE / 8));
+   if (frames > MAX_PACKET_FRAMES) {
+     frames = MAX_PACKET_FRAMES;
+   }
+   return frames;
+ }
+
+ static void refreshNegotiatedMtu() {
+   if (!bleConnected || bleServer == nullptr ||
+       bleConnHandle == INVALID_CONN_HANDLE) {
+     return;
+   }
+   const uint16_t mtu = bleServer->getPeerMTU(bleConnHandle);
+   const size_t frames = framesForMtu(mtu);
+   if (frames != packetFrames) {
+     packetFrames = frames;
+     Serial.printf("BLE negotiated MTU=%u, frames/packet=%u\n", mtu,
+                   static_cast<unsigned>(frames));
+     if (frames == 0) {
+       Serial.println("BLE MTU too small for the audio header and one sample");
+     }
+   }
+ }
  
  class CharacteristicCallbacks final : public NimBLECharacteristicCallbacks {
   public:
    // NimBLE-Arduino 2.x reports the asynchronous notification result here.
    void onStatus(NimBLECharacteristic *, int code) override {
      if (code == 0) {
+       lastNotifySucceeded = true;
        ++notifyOk;
      } else {
+       lastNotifySucceeded = false;
        ++notifyFailures;
      }
      if (bleSenderTaskHandle != nullptr) {
@@ -200,18 +262,26 @@
  
      // Clear a stale completion notification before submitting this packet.
      ulTaskNotifyTake(pdTRUE, 0);
+     lastNotifySucceeded = false;
      audioCharacteristic->setValue(packet.bytes, packet.length);
-     audioCharacteristic->notify();
+     if (!audioCharacteristic->notify()) {
+       ++notifyFailures;
+       ++packetsDropped;
+       continue;
+     }
  
-     // Serialize notifications. This prevents the NimBLE host/controller
-     // queue from accumulating packets faster than the central can consume.
-     if (ulTaskNotifyTake(pdTRUE, pdMS_TO_TICKS(100)) == 0) {
+     // Serialize notifications at the controller completion boundary. The
+     // queue absorbs short scheduling gaps; no artificial guard delay is used.
+     if (ulTaskNotifyTake(pdTRUE, pdMS_TO_TICKS(BLE_NOTIFY_TIMEOUT_MS)) == 0) {
        ++notifyTimeouts;
        ++packetsDropped;
        continue;
      }
+     if (!lastNotifySucceeded) {
+       ++packetsDropped;
+       continue;
+     }
      ++packetsSent;
-     vTaskDelay(pdMS_TO_TICKS(2));
    }
  }
  
@@ -219,11 +289,11 @@
    NimBLEDevice::init(BLE_DEVICE_NAME);
    NimBLEDevice::setMTU(247);
  
-   NimBLEServer *server = NimBLEDevice::createServer();
-   if (server == nullptr) return false;
-   server->setCallbacks(new ServerCallbacks());
+   bleServer = NimBLEDevice::createServer();
+   if (bleServer == nullptr) return false;
+   bleServer->setCallbacks(new ServerCallbacks());
  
-   NimBLEService *service = server->createService(BLE_SERVICE_UUID);
+   NimBLEService *service = bleServer->createService(BLE_SERVICE_UUID);
    if (service == nullptr) return false;
    audioCharacteristic = service->createCharacteristic(
        BLE_AUDIO_UUID, NIMBLE_PROPERTY::NOTIFY);
@@ -235,7 +305,7 @@
    advertising->addServiceUUID(BLE_SERVICE_UUID);
    advertising->setName(BLE_DEVICE_NAME);
    advertising->start();
-   blePacketQueue = xQueueCreate(4, sizeof(BlePacket));
+   blePacketQueue = xQueueCreate(BLE_PACKET_QUEUE_DEPTH, sizeof(BlePacket));
    if (blePacketQueue == nullptr) return false;
    const BaseType_t taskResult = xTaskCreatePinnedToCore(
        bleSenderTask, "BLE audio sender", 4096, nullptr, 2,
@@ -359,7 +429,7 @@
  
  static bool readFrames(int32_t *rawSamples) {
    size_t received = 0;
-   const size_t wanted = I2S_FRAMES_PER_PACKET * sizeof(int32_t);
+   const size_t wanted = packetFrames * BLE_DECIMATION_FACTOR * sizeof(int32_t);
    while (received < wanted) {
      size_t chunk = 0;
      const esp_err_t err = i2s_read(I2S_PORT,
@@ -375,21 +445,24 @@
    return true;
  }
  
- static void buildAudioPacket(const int32_t *rawSamples, BlePacket &packet) {
-   packet.length = PACKET_BYTES;
+ static void buildAudioPacket(const int32_t *rawSamples, BlePacket &packet,
+                              size_t frames) {
+   const size_t payloadBytes =
+       frames * AUDIO_CHANNELS * (AUDIO_BITS_PER_SAMPLE / 8);
+   packet.length = HEADER_BYTES + payloadBytes;
    packet.bytes[0] = MAGIC0;
    packet.bytes[1] = MAGIC1;
    packet.bytes[2] = PACKET_DATA;
    packet.bytes[3] = AUDIO_CHANNELS;
    putLe16(packet.bytes + 4, static_cast<uint16_t>(AUDIO_SAMPLE_RATE));
-   putLe16(packet.bytes + 6, static_cast<uint16_t>(PACKET_FRAMES));
+   putLe16(packet.bytes + 6, static_cast<uint16_t>(frames));
    putLe32(packet.bytes + 8, sequenceNumber++);
-   putLe16(packet.bytes + 12, static_cast<uint16_t>(PAYLOAD_BYTES));
+   putLe16(packet.bytes + 12, static_cast<uint16_t>(payloadBytes));
  
-   // Process every 8-kHz sample through the DC blocker and anti-alias filter,
-   // then retain one filtered sample per two input samples for the 4-kHz BLE
+   // Process every 24-kHz sample through the DC blocker and anti-alias filter,
+   // then retain one filtered sample per two input samples for the 12-kHz BLE
    // stream.  The filter state is kept across packets.
-   for (size_t i = 0; i < PACKET_FRAMES; ++i) {
+   for (size_t i = 0; i < frames; ++i) {
      const size_t inputIndex = i * BLE_DECIMATION_FACTOR;
      (void)antiAliasFilter(rawToPcm16(rawSamples[inputIndex]));
      const int16_t sample =
@@ -422,6 +495,11 @@
  
  void loop() {
    const uint32_t now = millis();
+   refreshNegotiatedMtu();
+   if (packetFrames == 0) {
+     delay(1);
+     return;
+   }
    if (pressed(key2, now)) {
      if (recording) {
        stopRecording();
@@ -430,7 +508,7 @@
      }
    }
  
-   static int32_t rawSamples[I2S_FRAMES_PER_PACKET];
+   static int32_t rawSamples[MAX_PACKET_FRAMES * BLE_DECIMATION_FACTOR];
    if (!readFrames(rawSamples)) {
      ++packetsDropped;
      delay(5);
@@ -439,19 +517,21 @@
  
    if (recording && bleConnected && blePacketQueue != nullptr) {
      BlePacket packet;
-     buildAudioPacket(rawSamples, packet);
+     buildAudioPacket(rawSamples, packet, packetFrames);
      if (xQueueSend(blePacketQueue, &packet, 0) != pdTRUE) {
        ++packetsDropped;
+       ++queueOverflows;
      }
    }
  
    if (now - lastStatsMs >= 1000) {
      lastStatsMs = now;
-     Serial.printf("BLE=%s recording=%s sent=%lu dropped=%lu notify_ok=%lu notify_fail=%lu timeout=%lu\n",
+     Serial.printf("BLE=%s recording=%s sent=%lu dropped=%lu queue_full=%lu notify_ok=%lu notify_fail=%lu timeout=%lu\n",
                    bleConnected ? "connected" : "waiting",
                    recording ? "yes" : "no",
                    static_cast<unsigned long>(packetsSent),
                    static_cast<unsigned long>(packetsDropped),
+                   static_cast<unsigned long>(queueOverflows),
                    static_cast<unsigned long>(notifyOk),
                    static_cast<unsigned long>(notifyFailures),
                    static_cast<unsigned long>(notifyTimeouts));
