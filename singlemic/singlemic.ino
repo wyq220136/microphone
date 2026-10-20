@@ -20,6 +20,7 @@
  #include <Arduino.h>
  #include <NimBLEDevice.h>
  #include <driver/i2s.h>
+ #include <esp_system.h>
  
  // --------------------------- User configuration ---------------------------
  static constexpr int I2S_BCLK_PIN = 4;
@@ -29,11 +30,10 @@
  
  static constexpr int USER_KEY_2 = 13;
  
- // Keep the microphone clock at 8 kHz, but decimate the BLE stream to 4 kHz.
- // This halves the BLE payload rate without changing the I2S pin/clock setup.
- static constexpr uint32_t I2S_CAPTURE_SAMPLE_RATE = 8000;
- static constexpr uint32_t AUDIO_SAMPLE_RATE = 4000;
+ // Preserve the current 24-kHz capture and packet-header configuration.
  static constexpr size_t BLE_DECIMATION_FACTOR = 2;
+ static constexpr uint32_t I2S_CAPTURE_SAMPLE_RATE = 24000;
+ static constexpr uint32_t AUDIO_SAMPLE_RATE = 24000;
  static constexpr uint8_t AUDIO_CHANNELS = 1;
  static constexpr uint8_t AUDIO_BITS_PER_SAMPLE = 16;
  // Reduce the I2S-to-PCM gain before the 16-bit clamp.  The previous value
@@ -43,7 +43,7 @@
  static constexpr int AUDIO_DC_BLOCK_SHIFT = 8;
  // Five-tap binomial FIR low-pass before 2:1 decimation.  The coefficients
  // [1, 4, 6, 4, 1] / 16 give a zero at the 8-kHz input Nyquist frequency and
- // about 12 dB attenuation at the 4-kHz output Nyquist frequency.
+ // The filter runs before the configured 2:1 decimation.
  static constexpr int AUDIO_ANTI_ALIAS_TAPS = 5;
  
  static constexpr char BLE_DEVICE_NAME[] = "ESP32S3-ICS";
@@ -68,34 +68,38 @@
  static constexpr uint8_t PACKET_END = 3;
  static constexpr uint8_t MAGIC0 = 0xA5;
  static constexpr uint8_t MAGIC1 = 0x5A;
- static constexpr uint32_t KEY_DEBOUNCE_MS = 35;
+ static constexpr uint32_t KEY_DEBOUNCE_MS = 25;
+ static constexpr uint32_t CONTROL_QUEUE_TIMEOUT_MS = 250;
+ static constexpr uint32_t NOTIFY_COMPLETION_TIMEOUT_MS = 250;
+ static constexpr uint16_t CONNECTION_SUPERVISION_TIMEOUT = 600;
  
  static NimBLECharacteristic *audioCharacteristic = nullptr;
  static volatile bool bleConnected = false;
  static volatile uint32_t notifyOk = 0;
  static volatile uint32_t notifyFailures = 0;
+ static volatile uint32_t notifyStatusEvents = 0;
+ static volatile int32_t lastNotifyCode = 0;
+ static volatile uint32_t notifyCalls = 0;
  static volatile uint32_t notifyTimeouts = 0;
+ static volatile uint32_t buttonIsrEdges = 0;
+ static volatile uint32_t buttonNotificationsCleared = 0;
+ static volatile uint32_t buttonActions = 0;
  static uint32_t sequenceNumber = 0;
  static uint32_t packetsSent = 0;
  static uint32_t packetsDropped = 0;
  static uint32_t lastStatsMs = 0;
  static QueueHandle_t blePacketQueue = nullptr;
  static TaskHandle_t bleSenderTaskHandle = nullptr;
- static bool recording = false;
+ static TaskHandle_t keyTaskHandle = nullptr;
+ static SemaphoreHandle_t audioStateMutex = nullptr;
+ static volatile bool recording = false;
+ static volatile bool pipelineResetRequested = false;
+ static volatile bool lastNotifySucceeded = false;
  
  struct BlePacket {
    uint16_t length;
    uint8_t bytes[PACKET_BYTES];
  };
- 
- struct KeyState {
-   int pin;
-   bool stableHigh;
-   bool rawHigh;
-   uint32_t changedAt;
- };
- 
- static KeyState key2 = {USER_KEY_2, true, true, 0};
  
  static int32_t dcPreviousInput = 0;
  static int32_t dcPreviousOutput = 0;
@@ -105,13 +109,35 @@
  static void putLe16(uint8_t *dst, uint16_t value) {
    dst[0] = static_cast<uint8_t>(value & 0xffu);
    dst[1] = static_cast<uint8_t>((value >> 8) & 0xffu);
- }
- 
+  }
+
  static void putLe32(uint8_t *dst, uint32_t value) {
    dst[0] = static_cast<uint8_t>(value & 0xffu);
    dst[1] = static_cast<uint8_t>((value >> 8) & 0xffu);
    dst[2] = static_cast<uint8_t>((value >> 16) & 0xffu);
    dst[3] = static_cast<uint8_t>((value >> 24) & 0xffu);
+ }
+
+ static const char *resetReasonName(esp_reset_reason_t reason) {
+   switch (reason) {
+     case ESP_RST_POWERON: return "power-on";
+     case ESP_RST_EXT: return "external";
+     case ESP_RST_SW: return "software";
+     case ESP_RST_PANIC: return "panic/hardfault";
+     case ESP_RST_INT_WDT: return "interrupt-watchdog";
+     case ESP_RST_TASK_WDT: return "task-watchdog";
+     case ESP_RST_WDT: return "other-watchdog";
+     case ESP_RST_DEEPSLEEP: return "deep-sleep";
+     case ESP_RST_BROWNOUT: return "brownout";
+     case ESP_RST_SDIO: return "sdio";
+     default: return "unknown";
+   }
+ }
+
+ static void printResetReason() {
+   const esp_reset_reason_t reason = esp_reset_reason();
+   Serial.printf("Boot reset reason: %d (%s)\n", static_cast<int>(reason),
+                 resetReasonName(reason));
  }
  
  static int16_t rawToPcm16(int32_t raw) {
@@ -151,22 +177,22 @@
   public:
    void onConnect(NimBLEServer *server, NimBLEConnInfo &info) override {
      bleConnected = true;
-     sequenceNumber = 0;
-     dcPreviousInput = 0;
-     dcPreviousOutput = 0;
-     for (int32_t &sample : antiAliasHistory) sample = 0;
-     antiAliasHistoryPosition = 0;
-     if (blePacketQueue != nullptr) {
-       xQueueReset(blePacketQueue);
-     }
-     // 12.5 ms interval is a reasonable starting point for 16 kB/s PCM.
-     server->updateConnParams(info.getConnHandle(), 10, 10, 0, 200);
+     recording = false;
+     pipelineResetRequested = true;
+     // Do not take audioStateMutex here: this callback runs in the NimBLE
+     // host task, and blocking it can prevent connection events from being
+     // serviced. Queue reset is deferred to loop() under audioStateMutex so
+     // it cannot race with the audio producer's xQueueSend().
+     // Allow the central some room to choose a compatible interval.
+     server->updateConnParams(info.getConnHandle(), 6, 12, 0,
+                              CONNECTION_SUPERVISION_TIMEOUT);
      Serial.println("BLE client connected");
    }
  
    void onDisconnect(NimBLEServer *, NimBLEConnInfo &, int reason) override {
      bleConnected = false;
      recording = false;
+     pipelineResetRequested = true;
      Serial.printf("BLE client disconnected, reason=%d\n", reason);
      NimBLEDevice::getAdvertising()->start();
    }
@@ -176,10 +202,14 @@
   public:
    // NimBLE-Arduino 2.x reports the asynchronous notification result here.
    void onStatus(NimBLECharacteristic *, int code) override {
+     ++notifyStatusEvents;
+     lastNotifyCode = code;
      if (code == 0) {
        ++notifyOk;
+       lastNotifySucceeded = true;
      } else {
        ++notifyFailures;
+       lastNotifySucceeded = false;
      }
      if (bleSenderTaskHandle != nullptr) {
        xTaskNotifyGive(bleSenderTaskHandle);
@@ -198,15 +228,20 @@
        continue;
      }
  
-     // Clear a stale completion notification before submitting this packet.
+     // Keep one notification in flight. This is the backpressure boundary
+     // between the producer queue and the NimBLE controller.
      ulTaskNotifyTake(pdTRUE, 0);
+     lastNotifySucceeded = false;
      audioCharacteristic->setValue(packet.bytes, packet.length);
+     ++notifyCalls;
      audioCharacteristic->notify();
- 
-     // Serialize notifications. This prevents the NimBLE host/controller
-     // queue from accumulating packets faster than the central can consume.
-     if (ulTaskNotifyTake(pdTRUE, pdMS_TO_TICKS(100)) == 0) {
+     if (ulTaskNotifyTake(pdTRUE,
+                          pdMS_TO_TICKS(NOTIFY_COMPLETION_TIMEOUT_MS)) == 0) {
        ++notifyTimeouts;
+       ++packetsDropped;
+       continue;
+     }
+     if (!lastNotifySucceeded) {
        ++packetsDropped;
        continue;
      }
@@ -235,7 +270,7 @@
    advertising->addServiceUUID(BLE_SERVICE_UUID);
    advertising->setName(BLE_DEVICE_NAME);
    advertising->start();
-   blePacketQueue = xQueueCreate(4, sizeof(BlePacket));
+   blePacketQueue = xQueueCreate(8, sizeof(BlePacket));
    if (blePacketQueue == nullptr) return false;
    const BaseType_t taskResult = xTaskCreatePinnedToCore(
        bleSenderTask, "BLE audio sender", 4096, nullptr, 2,
@@ -263,7 +298,8 @@
    // Give the sender task time to drain one in-flight audio packet. This is
    // especially important for END, which must reach the host to trigger WAV
    // saving even when the audio queue is briefly full.
-   return xQueueSend(blePacketQueue, &packet, pdMS_TO_TICKS(100)) == pdTRUE;
+   return xQueueSend(blePacketQueue, &packet,
+                     pdMS_TO_TICKS(CONTROL_QUEUE_TIMEOUT_MS)) == pdTRUE;
  }
  
  static void resetAudioPipeline() {
@@ -278,12 +314,23 @@
  }
  
  static void startRecording() {
-   if (recording || !bleConnected) {
+   xSemaphoreTake(audioStateMutex, portMAX_DELAY);
+   if (recording) {
+     xSemaphoreGive(audioStateMutex);
+     return;
+   }
+   if (!bleConnected) {
+     xSemaphoreGive(audioStateMutex);
+     Serial.println("Recording not started: BLE client is not connected");
      return;
    }
    resetAudioPipeline();
+   pipelineResetRequested = false;
+   xSemaphoreGive(audioStateMutex);
    if (enqueueControlPacket(PACKET_START)) {
+     xSemaphoreTake(audioStateMutex, portMAX_DELAY);
      recording = true;
+     xSemaphoreGive(audioStateMutex);
      Serial.println("Recording started");
    } else {
      Serial.println("Recording start packet dropped");
@@ -291,31 +338,62 @@
  }
  
  static void stopRecording() {
+   xSemaphoreTake(audioStateMutex, portMAX_DELAY);
    if (!recording) {
+     xSemaphoreGive(audioStateMutex);
      return;
    }
-   // START, audio, and END share one FIFO, so END follows all audio already
-   // queued when the key is pressed.
+   // Stop producing audio before queueing END. END follows audio already in
+   // the FIFO, while this task never holds the mutex during the bounded send.
+   recording = false;
+   xSemaphoreGive(audioStateMutex);
    if (enqueueControlPacket(PACKET_END)) {
-     recording = false;
      Serial.println("Recording stopped");
    } else {
      Serial.println("Recording stop packet dropped");
    }
  }
  
- static bool pressed(KeyState &key, uint32_t now) {
-   const bool high = digitalRead(key.pin) == HIGH;
-   if (high != key.rawHigh) {
-     key.rawHigh = high;
-     key.changedAt = now;
+ static void IRAM_ATTR keyChangeIsr() {
+   ++buttonIsrEdges;
+   BaseType_t higherPriorityTaskWoken = pdFALSE;
+   if (keyTaskHandle != nullptr) {
+     vTaskNotifyGiveFromISR(keyTaskHandle, &higherPriorityTaskWoken);
    }
-   if (now - key.changedAt < KEY_DEBOUNCE_MS || high == key.stableHigh) {
-     return false;
+   if (higherPriorityTaskWoken != pdFALSE) {
+     portYIELD_FROM_ISR();
    }
-   const bool wasHigh = key.stableHigh;
-   key.stableHigh = high;
-   return wasHigh && !high;
+ }
+
+ static void keyTask(void *) {
+   bool stableHigh = digitalRead(USER_KEY_2) == HIGH;
+   while (true) {
+     uint32_t cleared = ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
+     if (cleared == 0) continue;
+     // Every bounce edge restarts the quiet interval; act only after the
+     // electrical level has remained unchanged for the full debounce period.
+     while (true) {
+       const uint32_t extra =
+           ulTaskNotifyTake(pdTRUE, pdMS_TO_TICKS(KEY_DEBOUNCE_MS));
+       if (extra == 0) break;
+       cleared += extra;
+     }
+     buttonNotificationsCleared += cleared;
+
+     const bool high = digitalRead(USER_KEY_2) == HIGH;
+     if (high == stableHigh) {
+       continue;
+     }
+     stableHigh = high;
+     if (!high) {
+       ++buttonActions;
+       if (recording) {
+         stopRecording();
+       } else {
+         startRecording();
+       }
+     }
+   }
  }
  
  static bool setupI2s() {
@@ -386,9 +464,10 @@
    putLe32(packet.bytes + 8, sequenceNumber++);
    putLe16(packet.bytes + 12, static_cast<uint16_t>(PAYLOAD_BYTES));
  
-   // Process every 8-kHz sample through the DC blocker and anti-alias filter,
-   // then retain one filtered sample per two input samples for the 4-kHz BLE
-   // stream.  The filter state is kept across packets.
+    // Process every captured sample through the DC blocker and anti-alias
+    // filter, then retain one filtered sample per two input samples. The
+    // packet header uses AUDIO_SAMPLE_RATE; keep that value aligned with the
+    // intended wire format when changing the decimation factor.
    for (size_t i = 0; i < PACKET_FRAMES; ++i) {
      const size_t inputIndex = i * BLE_DECIMATION_FACTOR;
      (void)antiAliasFilter(rawToPcm16(rawSamples[inputIndex]));
@@ -406,37 +485,49 @@
    Serial.begin(115200);
    delay(300);
    Serial.println("ICS-43434 BLE microphone streamer");
+   printResetReason();
    pinMode(USER_KEY_2, INPUT_PULLUP);
-   const uint32_t now = millis();
-   key2.stableHigh = key2.rawHigh = digitalRead(USER_KEY_2) == HIGH;
-   key2.changedAt = now;
    Serial.printf("PCM: I2S %lu Hz -> BLE/WAV %lu Hz mono 16-bit, raw shift=%d\n",
                  static_cast<unsigned long>(I2S_CAPTURE_SAMPLE_RATE),
                  static_cast<unsigned long>(AUDIO_SAMPLE_RATE), AUDIO_RAW_SHIFT);
  
+   audioStateMutex = xSemaphoreCreateMutex();
+   if (audioStateMutex == nullptr) {
+     Serial.println("Fatal initialization error: audio state mutex allocation failed");
+     while (true) delay(1000);
+   }
+
    if (!setupI2s() || !setupBle()) {
      Serial.println("Fatal initialization error; halting");
      while (true) delay(1000);
    }
+
+   const BaseType_t keyTaskResult = xTaskCreatePinnedToCore(
+       keyTask, "button handler", 2048, nullptr, 3, &keyTaskHandle, 1);
+   if (keyTaskResult != pdPASS) {
+     Serial.println("Fatal initialization error: button task creation failed");
+     while (true) delay(1000);
+   }
+   attachInterrupt(digitalPinToInterrupt(USER_KEY_2), keyChangeIsr, CHANGE);
+   Serial.printf("Button ready: GPIO%d, falling-edge action, %lu ms debounce\n",
+                 USER_KEY_2, static_cast<unsigned long>(KEY_DEBOUNCE_MS));
  }
  
  void loop() {
-   const uint32_t now = millis();
-   if (pressed(key2, now)) {
-     if (recording) {
-       stopRecording();
-     } else {
-       startRecording();
-     }
-   }
- 
    static int32_t rawSamples[I2S_FRAMES_PER_PACKET];
+   if (pipelineResetRequested) {
+     xSemaphoreTake(audioStateMutex, portMAX_DELAY);
+     resetAudioPipeline();
+     pipelineResetRequested = false;
+     xSemaphoreGive(audioStateMutex);
+   }
    if (!readFrames(rawSamples)) {
      ++packetsDropped;
      delay(5);
      return;
    }
  
+   xSemaphoreTake(audioStateMutex, portMAX_DELAY);
    if (recording && bleConnected && blePacketQueue != nullptr) {
      BlePacket packet;
      buildAudioPacket(rawSamples, packet);
@@ -444,17 +535,38 @@
        ++packetsDropped;
      }
    }
+   xSemaphoreGive(audioStateMutex);
  
+   const uint32_t now = millis();
    if (now - lastStatsMs >= 1000) {
      lastStatsMs = now;
-     Serial.printf("BLE=%s recording=%s sent=%lu dropped=%lu notify_ok=%lu notify_fail=%lu timeout=%lu\n",
+      const unsigned keyStack = keyTaskHandle == nullptr
+                                    ? 0
+                                    : static_cast<unsigned>(
+                                          uxTaskGetStackHighWaterMark(keyTaskHandle));
+      const unsigned senderStack = bleSenderTaskHandle == nullptr
+                                       ? 0
+                                       : static_cast<unsigned>(
+                                             uxTaskGetStackHighWaterMark(
+                                                 bleSenderTaskHandle));
+      Serial.printf("BLE=%s recording=%s sent=%lu dropped=%lu notify_calls=%lu "
+                    "notify_status=%lu notify_ok=%lu notify_fail=%lu "
+                    "notify_timeout=%lu last_code=%ld "
+                    "button_isr=%lu button_clear=%lu button_action=%lu "
+                    "key_stack=%u sender_stack=%u\n",
                    bleConnected ? "connected" : "waiting",
                    recording ? "yes" : "no",
                    static_cast<unsigned long>(packetsSent),
                    static_cast<unsigned long>(packetsDropped),
+                    static_cast<unsigned long>(notifyCalls),
+                    static_cast<unsigned long>(notifyStatusEvents),
                    static_cast<unsigned long>(notifyOk),
                    static_cast<unsigned long>(notifyFailures),
-                   static_cast<unsigned long>(notifyTimeouts));
+                    static_cast<unsigned long>(notifyTimeouts),
+                    static_cast<long>(lastNotifyCode),
+                    static_cast<unsigned long>(buttonIsrEdges),
+                    static_cast<unsigned long>(buttonNotificationsCleared),
+                    static_cast<unsigned long>(buttonActions), keyStack,
+                    senderStack);
    }
  }
- 
