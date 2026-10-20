@@ -17,6 +17,11 @@
  * The audio payload is signed little-endian 16-bit mono PCM.
  */
 
+ // Arduino's sketch preprocessor emits function prototypes before the
+ // declarations below. Keep reference parameter types visible to it.
+ struct KeyState;
+ struct BlePacket;
+
  #include <Arduino.h>
  #include <NimBLEDevice.h>
  #include <driver/i2s.h>
