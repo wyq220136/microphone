@@ -75,8 +75,10 @@
  static constexpr uint16_t BLE_CONNECTION_INTERVAL_MAX = 6;
  static constexpr uint16_t BLE_CONNECTION_LATENCY = 0;
  static constexpr uint16_t BLE_CONNECTION_TIMEOUT = 200;
- static constexpr size_t BLE_PACKET_QUEUE_DEPTH = 16;
+ static constexpr size_t BLE_PACKET_QUEUE_DEPTH = 64;
  static constexpr uint32_t BLE_NOTIFY_TIMEOUT_MS = 100;
+ static constexpr uint32_t BLE_NOTIFY_RETRY_DELAY_MS = 10;
+ static constexpr uint8_t BLE_NOTIFY_MAX_ATTEMPTS = 3;
  
  static NimBLECharacteristic *audioCharacteristic = nullptr;
  static NimBLEServer *bleServer = nullptr;
@@ -88,14 +90,47 @@
  static volatile uint32_t notifyOk = 0;
  static volatile uint32_t notifyFailures = 0;
  static volatile uint32_t notifyTimeouts = 0;
+ static volatile uint32_t notifyRetries = 0;
  static uint32_t sequenceNumber = 0;
- static uint32_t packetsSent = 0;
- static uint32_t packetsDropped = 0;
- static uint32_t queueOverflows = 0;
+ static volatile uint32_t packetsSent = 0;
+ static volatile uint32_t packetsDropped = 0;
+ static volatile uint32_t queueOverflows = 0;
+ static volatile uint32_t queueHighWater = 0;
+ static volatile uint16_t negotiatedMtu = 0;
+ static volatile uint16_t negotiatedInterval = 0;
  static uint32_t lastStatsMs = 0;
  static QueueHandle_t blePacketQueue = nullptr;
  static TaskHandle_t bleSenderTaskHandle = nullptr;
  static bool recording = false;
+
+ enum class BleSenderState : uint8_t {
+   DISCONNECTED,
+   WAITING_PACKET,
+   WAITING_RESULT,
+   RETRY_WAIT,
+   DROPPED,
+ };
+
+ static volatile BleSenderState senderState = BleSenderState::DISCONNECTED;
+
+ static const char *senderStateName(BleSenderState state) {
+   switch (state) {
+     case BleSenderState::DISCONNECTED: return "disconnected";
+     case BleSenderState::WAITING_PACKET: return "waiting_packet";
+     case BleSenderState::WAITING_RESULT: return "waiting_result";
+     case BleSenderState::RETRY_WAIT: return "retry_wait";
+     case BleSenderState::DROPPED: return "dropped";
+   }
+   return "unknown";
+ }
+
+ static void updateQueueHighWater() {
+   if (blePacketQueue == nullptr) return;
+   const UBaseType_t depth = uxQueueMessagesWaiting(blePacketQueue);
+   if (depth > queueHighWater) {
+     queueHighWater = depth;
+   }
+ }
  
  struct BlePacket {
    uint16_t length;
@@ -168,7 +203,9 @@
    void onConnect(NimBLEServer *server, NimBLEConnInfo &info) override {
      bleConnected = true;
      bleConnHandle = info.getConnHandle();
-     packetFrames = framesForMtu(info.getMTU());
+     negotiatedMtu = info.getMTU();
+     negotiatedInterval = info.getConnInterval();
+     packetFrames = framesForMtu(negotiatedMtu);
      sequenceNumber = 0;
      dcPreviousInput = 0;
      dcPreviousOutput = 0;
@@ -177,16 +214,31 @@
      if (blePacketQueue != nullptr) {
        xQueueReset(blePacketQueue);
      }
+     queueHighWater = 0;
      server->updateConnParams(info.getConnHandle(),
                               BLE_CONNECTION_INTERVAL_MIN,
                               BLE_CONNECTION_INTERVAL_MAX,
                               BLE_CONNECTION_LATENCY,
                               BLE_CONNECTION_TIMEOUT);
-     Serial.printf("BLE client connected: MTU=%u, interval=%.2f ms; requested 7.50 ms\n",
-                   info.getMTU(), info.getConnInterval() * 1.25f);
+     Serial.printf("BLE client connected: MTU=%u, frames/packet=%u, interval=%.2f ms; requested 7.50 ms\n",
+                   negotiatedMtu, static_cast<unsigned>(packetFrames),
+                   negotiatedInterval * 1.25f);
+   }
+
+   void onMTUChange(uint16_t mtu, NimBLEConnInfo &info) override {
+     negotiatedMtu = mtu;
+     negotiatedInterval = info.getConnInterval();
+     packetFrames = framesForMtu(mtu);
+     Serial.printf("BLE MTU changed: MTU=%u, frames/packet=%u, interval=%.2f ms\n",
+                   mtu, static_cast<unsigned>(packetFrames),
+                   negotiatedInterval * 1.25f);
+     if (packetFrames == 0) {
+       Serial.println("BLE MTU too small for the audio header and one sample");
+     }
    }
 
    void onConnParamsUpdate(NimBLEConnInfo &info) override {
+     negotiatedInterval = info.getConnInterval();
      Serial.printf("BLE params updated: interval=%.2f ms latency=%u timeout=%u ms\n",
                    info.getConnInterval() * 1.25f, info.getConnLatency(),
                    info.getConnTimeout() * 10);
@@ -195,8 +247,14 @@
    void onDisconnect(NimBLEServer *, NimBLEConnInfo &, int reason) override {
      bleConnected = false;
      bleConnHandle = INVALID_CONN_HANDLE;
-     packetFrames = MAX_PACKET_FRAMES;
+     packetFrames = 0;
      recording = false;
+     if (blePacketQueue != nullptr) {
+       xQueueReset(blePacketQueue);
+     }
+     if (bleSenderTaskHandle != nullptr) {
+       xTaskNotifyGive(bleSenderTaskHandle);
+     }
      Serial.printf("BLE client disconnected, reason=%d\n", reason);
      NimBLEDevice::getAdvertising()->start();
    }
@@ -222,10 +280,12 @@
    }
    const uint16_t mtu = bleServer->getPeerMTU(bleConnHandle);
    const size_t frames = framesForMtu(mtu);
-   if (frames != packetFrames) {
+   if (mtu != negotiatedMtu || frames != packetFrames) {
+     negotiatedMtu = mtu;
      packetFrames = frames;
-     Serial.printf("BLE negotiated MTU=%u, frames/packet=%u\n", mtu,
-                   static_cast<unsigned>(frames));
+     Serial.printf("BLE negotiated MTU=%u, frames/packet=%u, interval=%.2f ms\n",
+                   mtu, static_cast<unsigned>(frames),
+                   negotiatedInterval * 1.25f);
      if (frames == 0) {
        Serial.println("BLE MTU too small for the audio header and one sample");
      }
@@ -252,36 +312,58 @@
  static void bleSenderTask(void *) {
    BlePacket packet;
    while (true) {
-     if (xQueueReceive(blePacketQueue, &packet, portMAX_DELAY) != pdTRUE) {
+     senderState = bleConnected ? BleSenderState::WAITING_PACKET
+                                : BleSenderState::DISCONNECTED;
+     if (xQueueReceive(blePacketQueue, &packet, pdMS_TO_TICKS(100)) != pdTRUE) {
        continue;
      }
+     updateQueueHighWater();
      if (!bleConnected || audioCharacteristic == nullptr) {
+       senderState = BleSenderState::DROPPED;
        ++packetsDropped;
        continue;
      }
  
-     // Clear a stale completion notification before submitting this packet.
-     ulTaskNotifyTake(pdTRUE, 0);
-     lastNotifySucceeded = false;
-     audioCharacteristic->setValue(packet.bytes, packet.length);
-     if (!audioCharacteristic->notify()) {
-       ++notifyFailures;
-       ++packetsDropped;
-       continue;
+     bool delivered = false;
+     for (uint8_t attempt = 0; attempt < BLE_NOTIFY_MAX_ATTEMPTS; ++attempt) {
+       if (!bleConnected || audioCharacteristic == nullptr) {
+         break;
+       }
+
+       if (attempt != 0) {
+         senderState = BleSenderState::RETRY_WAIT;
+         vTaskDelay(pdMS_TO_TICKS(BLE_NOTIFY_RETRY_DELAY_MS));
+         if (!bleConnected) break;
+         ++notifyRetries;
+       }
+
+       // Clear a stale completion notification before submitting this packet.
+       ulTaskNotifyTake(pdTRUE, 0);
+       lastNotifySucceeded = false;
+       senderState = BleSenderState::WAITING_RESULT;
+       audioCharacteristic->setValue(packet.bytes, packet.length);
+       if (!audioCharacteristic->notify()) {
+         ++notifyFailures;
+         continue;
+       }
+
+       // Keep one notification in flight so retries cannot reorder packets.
+       if (ulTaskNotifyTake(pdTRUE, pdMS_TO_TICKS(BLE_NOTIFY_TIMEOUT_MS)) == 0) {
+         ++notifyTimeouts;
+         continue;
+       }
+       if (lastNotifySucceeded) {
+         delivered = true;
+         break;
+       }
      }
- 
-     // Serialize notifications at the controller completion boundary. The
-     // queue absorbs short scheduling gaps; no artificial guard delay is used.
-     if (ulTaskNotifyTake(pdTRUE, pdMS_TO_TICKS(BLE_NOTIFY_TIMEOUT_MS)) == 0) {
-       ++notifyTimeouts;
+
+     if (delivered) {
+       ++packetsSent;
+     } else {
+       senderState = BleSenderState::DROPPED;
        ++packetsDropped;
-       continue;
      }
-     if (!lastNotifySucceeded) {
-       ++packetsDropped;
-       continue;
-     }
-     ++packetsSent;
    }
  }
  
@@ -333,7 +415,10 @@
    // Give the sender task time to drain one in-flight audio packet. This is
    // especially important for END, which must reach the host to trigger WAV
    // saving even when the audio queue is briefly full.
-   return xQueueSend(blePacketQueue, &packet, pdMS_TO_TICKS(100)) == pdTRUE;
+   const bool queued =
+       xQueueSend(blePacketQueue, &packet, pdMS_TO_TICKS(100)) == pdTRUE;
+   if (queued) updateQueueHighWater();
+   return queued;
  }
  
  static void resetAudioPipeline() {
@@ -496,6 +581,32 @@
  void loop() {
    const uint32_t now = millis();
    refreshNegotiatedMtu();
+
+   if (now - lastStatsMs >= 1000) {
+     lastStatsMs = now;
+     const UBaseType_t queueDepth = blePacketQueue == nullptr
+                                        ? 0
+                                        : uxQueueMessagesWaiting(blePacketQueue);
+     if (queueDepth > queueHighWater) queueHighWater = queueDepth;
+     Serial.printf(
+         "BLE=%s recording=%s state=%s mtu=%u frames=%u interval=%.2fms "
+         "queue=%u high=%u/%u sent=%lu dropped=%lu queue_full=%lu retries=%lu "
+         "notify_ok=%lu notify_fail=%lu timeout=%lu\n",
+         bleConnected ? "connected" : "waiting", recording ? "yes" : "no",
+         senderStateName(senderState), negotiatedMtu,
+         static_cast<unsigned>(packetFrames), negotiatedInterval * 1.25f,
+         static_cast<unsigned>(queueDepth),
+         static_cast<unsigned>(queueHighWater),
+         static_cast<unsigned>(BLE_PACKET_QUEUE_DEPTH),
+         static_cast<unsigned long>(packetsSent),
+         static_cast<unsigned long>(packetsDropped),
+         static_cast<unsigned long>(queueOverflows),
+         static_cast<unsigned long>(notifyRetries),
+         static_cast<unsigned long>(notifyOk),
+         static_cast<unsigned long>(notifyFailures),
+         static_cast<unsigned long>(notifyTimeouts));
+   }
+
    if (packetFrames == 0) {
      delay(1);
      return;
@@ -521,20 +632,9 @@
      if (xQueueSend(blePacketQueue, &packet, 0) != pdTRUE) {
        ++packetsDropped;
        ++queueOverflows;
+     } else {
+       updateQueueHighWater();
      }
-   }
- 
-   if (now - lastStatsMs >= 1000) {
-     lastStatsMs = now;
-     Serial.printf("BLE=%s recording=%s sent=%lu dropped=%lu queue_full=%lu notify_ok=%lu notify_fail=%lu timeout=%lu\n",
-                   bleConnected ? "connected" : "waiting",
-                   recording ? "yes" : "no",
-                   static_cast<unsigned long>(packetsSent),
-                   static_cast<unsigned long>(packetsDropped),
-                   static_cast<unsigned long>(queueOverflows),
-                   static_cast<unsigned long>(notifyOk),
-                   static_cast<unsigned long>(notifyFailures),
-                   static_cast<unsigned long>(notifyTimeouts));
    }
  }
  
