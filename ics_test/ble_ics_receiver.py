@@ -153,7 +153,7 @@ class Capture:
         )
 
 
-async def find_device(name: str, address: Optional[str]):
+async def find_device(name: str, address: Optional[str], scan_timeout: float):
     if address:
         return address
 
@@ -162,24 +162,35 @@ async def find_device(name: str, address: Optional[str]):
         services = [uuid.lower() for uuid in (advertisement_data.service_uuids or [])]
         return advertised_name.lower() == name.strip().lower() or SERVICE_UUID.lower() in services
 
-    device = await BleakScanner.find_device_by_filter(matches, timeout=10.0)
+    device = await BleakScanner.find_device_by_filter(matches, timeout=scan_timeout)
     if device is None:
         raise RuntimeError(f"Could not find {name!r}; use --address or check advertising")
     return device
 
 
 async def receive(args: argparse.Namespace, capture: Capture) -> None:
-    device = await find_device(args.name, args.address)
+    device = await find_device(args.name, args.address, args.scan_timeout)
     print(f"Connecting to {getattr(device, 'name', None) or getattr(device, 'address', device)}...")
-    async with BleakClient(device) as client:
+    disconnected = asyncio.Event()
+
+    def on_disconnect(_client: BleakClient) -> None:
+        disconnected.set()
+
+    async with BleakClient(
+        device, timeout=args.connect_timeout, disconnected_callback=on_disconnect
+    ) as client:
         await client.start_notify(AUDIO_UUID, capture.on_notification)
         print("Connected. Recording; press Ctrl+C to stop.")
-        started = time.monotonic()
         try:
-            while True:
-                await asyncio.sleep(0.1)
-                if args.max_seconds > 0 and time.monotonic() - started >= args.max_seconds:
-                    break
+            if args.max_seconds > 0:
+                try:
+                    await asyncio.wait_for(disconnected.wait(), timeout=args.max_seconds)
+                except asyncio.TimeoutError:
+                    return
+            else:
+                await disconnected.wait()
+            print("BLE connection lost while receiving audio", file=sys.stderr)
+            raise ConnectionError("BLE peripheral disconnected")
         finally:
             try:
                 await client.stop_notify(AUDIO_UUID)
@@ -193,6 +204,10 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("-o", "--output", type=Path, default=Path("ics_capture.wav"))
     parser.add_argument("--name", default="ESP32S3-ICS")
     parser.add_argument("--address", help="BLE address/identifier; skips scanning")
+    parser.add_argument("--scan-timeout", type=float, default=30.0,
+                        help="BLE scan timeout in seconds")
+    parser.add_argument("--connect-timeout", type=float, default=30.0,
+                        help="BLE connection/setup timeout in seconds")
     parser.add_argument("--max-seconds", type=float, default=0.0,
                         help="stop after N seconds; 0 means Ctrl+C")
     return parser.parse_args()

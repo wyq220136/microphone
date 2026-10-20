@@ -14,7 +14,8 @@
  * BLE packets use the same 14-byte little-endian header as the other local
  * microphone receiver:
  *   A5 5A | type | channels | sample_rate | frames | sequence | payload_bytes
- * The audio payload is signed little-endian 16-bit mono PCM.
+ * The audio payload is signed little-endian 16-bit interleaved stereo PCM
+ * (left sample, right sample for each frame).
  */
 
 // Arduino's sketch preprocessor generates function prototypes before the
@@ -57,7 +58,7 @@ static constexpr int USER_KEY_2 = 13;
 static constexpr uint32_t I2S_CAPTURE_SAMPLE_RATE = 8000;
 static constexpr uint32_t AUDIO_SAMPLE_RATE = 4000;
 static constexpr size_t BLE_DECIMATION_FACTOR = 2;
-static constexpr uint8_t AUDIO_CHANNELS = 1;
+static constexpr uint8_t AUDIO_CHANNELS = 2;
 static constexpr uint8_t AUDIO_BITS_PER_SAMPLE = 16;
 // Reduce the I2S-to-PCM gain before the 16-bit clamp.  The previous value
 // produced substantial clipping on louder speech.
@@ -77,9 +78,9 @@ static constexpr char BLE_SERVICE_UUID[] =
 static constexpr char BLE_AUDIO_UUID[] =
     "6e400003-b5a3-f393-e0a9-e50e24dcca9e";
 
-// ATT MTU 247 leaves 244 bytes for a notification. 14 bytes are header,
-// leaving 230 bytes = 115 mono 16-bit samples.
-static constexpr size_t PACKET_FRAMES = 115;
+// ATT MTU 247 leaves 244 bytes for a notification. With a 14-byte header,
+// 57 stereo frames use 228 payload bytes and fit in one notification.
+static constexpr size_t PACKET_FRAMES = 57;
 static constexpr size_t I2S_FRAMES_PER_PACKET =
     PACKET_FRAMES * BLE_DECIMATION_FACTOR;
 static constexpr size_t HEADER_BYTES = 14;
@@ -132,7 +133,8 @@ static void putLe32(uint8_t *dst, uint32_t value) {
   dst[3] = static_cast<uint8_t>((value >> 24) & 0xffu);
 }
 
-static void buildAudioPacket(const float *samples, BlePacket &packet);
+static void buildAudioPacket(const float *leftSamples, const float *rightSamples,
+                             BlePacket &packet);
 static void flushDspTail();
 
 class ServerCallbacks final : public NimBLEServerCallbacks {
@@ -379,7 +381,8 @@ static int16_t clampPcm16(float value) {
   return static_cast<int16_t>(value);
 }
 
-static void buildAudioPacket(const float *samples, BlePacket &packet) {
+static void buildAudioPacket(const float *leftSamples, const float *rightSamples,
+                             BlePacket &packet) {
   packet.length = PACKET_BYTES;
   packet.bytes[0] = MAGIC0;
   packet.bytes[1] = MAGIC1;
@@ -391,29 +394,24 @@ static void buildAudioPacket(const float *samples, BlePacket &packet) {
   putLe16(packet.bytes + 12, static_cast<uint16_t>(PAYLOAD_BYTES));
 
   for (size_t i = 0; i < PACKET_FRAMES; ++i) {
-    const int16_t sample = clampPcm16(samples[i]);
-    const uint16_t wireSample = static_cast<uint16_t>(sample);
-    packet.bytes[HEADER_BYTES + 2 * i] =
-        static_cast<uint8_t>(wireSample & 0xffu);
-    packet.bytes[HEADER_BYTES + 2 * i + 1] =
-        static_cast<uint8_t>((wireSample >> 8) & 0xffu);
+    const uint16_t left = static_cast<uint16_t>(clampPcm16(leftSamples[i]));
+    const uint16_t right = static_cast<uint16_t>(clampPcm16(rightSamples[i]));
+    const size_t offset = HEADER_BYTES + 4 * i;
+    packet.bytes[offset] = static_cast<uint8_t>(left & 0xffu);
+    packet.bytes[offset + 1] = static_cast<uint8_t>((left >> 8) & 0xffu);
+    packet.bytes[offset + 2] = static_cast<uint8_t>(right & 0xffu);
+    packet.bytes[offset + 3] = static_cast<uint8_t>((right >> 8) & 0xffu);
   }
 }
 
 static bool processAudioBlock(const int32_t *rawLeft, const int32_t *rawRight,
-                             float *finalSamples) {
-  static float filteredLeft[PACKET_FRAMES];
-  static float filteredRight[PACKET_FRAMES];
-
+                              float *filteredLeft, float *filteredRight) {
   for (size_t i = 0; i < PACKET_FRAMES; ++i) {
     const size_t inputIndex = i * BLE_DECIMATION_FACTOR;
     (void)leftFilter.process(rawLeft[inputIndex]);
     (void)rightFilter.process(rawRight[inputIndex]);
     filteredLeft[i] = leftFilter.process(rawLeft[inputIndex + 1]);
     filteredRight[i] = rightFilter.process(rawRight[inputIndex + 1]);
-    // Lightweight two-microphone fusion.  It has no frequency-domain state,
-    // so it fits in the ordinary ESP32 internal DRAM budget.
-    finalSamples[i] = 0.5f * (filteredLeft[i] + filteredRight[i]);
   }
   return true;
 }
@@ -421,19 +419,21 @@ static bool processAudioBlock(const int32_t *rawLeft, const int32_t *rawRight,
 static void flushDspTail() {
   static int32_t zeroLeft[I2S_FRAMES_PER_PACKET] = {};
   static int32_t zeroRight[I2S_FRAMES_PER_PACKET] = {};
-  static float tail[PACKET_FRAMES];
+  static float tailLeft[PACKET_FRAMES];
+  static float tailRight[PACKET_FRAMES];
   // Two blocks cover the short FIR/DC-filter state at the configured rate.
   for (int block = 0; block < 2; ++block) {
-    if (!processAudioBlock(zeroLeft, zeroRight, tail)) ++dspFailures;
+    if (!processAudioBlock(zeroLeft, zeroRight, tailLeft, tailRight))
+      ++dspFailures;
     BlePacket packet;
-    buildAudioPacket(tail, packet);
+    buildAudioPacket(tailLeft, tailRight, packet);
     if (xQueueSend(blePacketQueue, &packet, pdMS_TO_TICKS(100)) != pdTRUE)
       ++packetsDropped;
   }
 }
 
 static bool setupDsp() {
-  Serial.println("DSP ready: lightweight dual-microphone averaging");
+  Serial.println("DSP ready: independent left/right microphone channels");
   return true;
 }
 
@@ -445,7 +445,7 @@ void setup() {
   const uint32_t now = millis();
   key2.stableHigh = key2.rawHigh = digitalRead(USER_KEY_2) == HIGH;
   key2.changedAt = now;
-  Serial.printf("PCM: I2S %lu Hz -> BLE/WAV %lu Hz mono 16-bit, raw shift=%d\n",
+  Serial.printf("PCM: I2S %lu Hz -> BLE/WAV %lu Hz stereo 16-bit, raw shift=%d\n",
                 static_cast<unsigned long>(I2S_CAPTURE_SAMPLE_RATE),
                 static_cast<unsigned long>(AUDIO_SAMPLE_RATE), AUDIO_RAW_SHIFT);
 
@@ -472,7 +472,8 @@ void loop() {
 
   static int32_t rawLeft[I2S_FRAMES_PER_PACKET];
   static int32_t rawRight[I2S_FRAMES_PER_PACKET];
-  static float finalSamples[PACKET_FRAMES];
+  static float filteredLeft[PACKET_FRAMES];
+  static float filteredRight[PACKET_FRAMES];
 
   if (!readFrames(LEFT_MIC_I2S.port, rawLeft) ||
       !readFrames(RIGHT_MIC_I2S.port, rawRight)) {
@@ -482,13 +483,14 @@ void loop() {
   }
 
   const uint32_t dspStartUs = micros();
-  if (!processAudioBlock(rawLeft, rawRight, finalSamples)) ++dspFailures;
+  if (!processAudioBlock(rawLeft, rawRight, filteredLeft, filteredRight))
+    ++dspFailures;
   if (micros() - dspStartUs >
       (1000000UL * PACKET_FRAMES / AUDIO_SAMPLE_RATE)) ++dspOverruns;
 
   if (recording && bleConnected && blePacketQueue != nullptr) {
     BlePacket packet;
-    buildAudioPacket(finalSamples, packet);
+    buildAudioPacket(filteredLeft, filteredRight, packet);
     if (xQueueSend(blePacketQueue, &packet, 0) != pdTRUE) {
       ++packetsDropped;
     }
