@@ -84,7 +84,7 @@ ATT MTU 247 时，单次通知最多承载 244 字节；扣除 14 字节头部�
 ## 依赖和注意事项
 
 - Arduino-ESP32（使用本工程所需的 I2S 驱动接口）。
-- NimBLE-Arduino 2.x（服务器 MTU/连接参数回调及特征通知状态回调）。
+- NimBLE-Arduino 1.4.x 或 2.x。`ble_transport.cpp` 会根据库头文件自动选择对应的服务器回调和通知返回值接口。
 - FreeRTOS（随 ESP32 Arduino Core 提供），用于包队列和独立发送任务。
 - BLE UUID 与包字段必须与电脑端 `ics_test/ble_ics_receiver.py` 保持一致。
 - 修改 `AudioConfig::SAMPLE_RATE`、通道数或包格式时，也要确认接收端按数据包头部解析并正确保存 WAV。

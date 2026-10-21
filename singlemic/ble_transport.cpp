@@ -9,6 +9,7 @@ class BleServerCallbacks final : public NimBLEServerCallbacks {
  public:
   explicit BleServerCallbacks(BleTransport &transport) : transport_(transport) {}
 
+#if SINGLEMIC_NIMBLE_API_V2
   void onConnect(NimBLEServer *server, NimBLEConnInfo &info) override {
     transport_.handleConnect(server, info);
   }
@@ -21,6 +22,17 @@ class BleServerCallbacks final : public NimBLEServerCallbacks {
   void onDisconnect(NimBLEServer *, NimBLEConnInfo &info, int reason) override {
     transport_.handleDisconnect(info, reason);
   }
+#else
+  void onConnect(NimBLEServer *server, ble_gap_conn_desc *desc) override {
+    transport_.handleConnect(server, desc);
+  }
+  void onMTUChange(uint16_t mtu, ble_gap_conn_desc *desc) override {
+    transport_.handleMtuChange(mtu, desc);
+  }
+  void onDisconnect(NimBLEServer *, ble_gap_conn_desc *desc) override {
+    transport_.handleDisconnect(desc);
+  }
+#endif
 
  private:
   BleTransport &transport_;
@@ -32,9 +44,16 @@ class BleCharacteristicCallbacks final : public NimBLECharacteristicCallbacks {
   explicit BleCharacteristicCallbacks(BleTransport &transport)
       : transport_(transport) {}
 
+#if SINGLEMIC_NIMBLE_API_V2
   void onStatus(NimBLECharacteristic *, int code) override {
     transport_.handleNotifyStatus(code);
   }
+#else
+  void onStatus(NimBLECharacteristic *,
+                NimBLECharacteristicCallbacks::Status, int code) override {
+    transport_.handleNotifyStatus(code);
+  }
+#endif
 
  private:
   BleTransport &transport_;
@@ -75,6 +94,7 @@ bool BleTransport::begin() {
 }
 
 // 连接建立后读取初始 MTU/连接间隔，重置会话队列并请求期望参数。
+#if SINGLEMIC_NIMBLE_API_V2
 void BleTransport::handleConnect(NimBLEServer *server, NimBLEConnInfo &info) {
   connected_ = true;
   connectionHandle_ = info.getConnHandle();
@@ -128,6 +148,47 @@ void BleTransport::handleConnectionParams(NimBLEConnInfo &info) {
                 info.getConnInterval() * 1.25f, info.getConnLatency(),
                 info.getConnTimeout() * 10);
 }
+#else
+void BleTransport::handleConnect(NimBLEServer *server,
+                                 ble_gap_conn_desc *desc) {
+  if (desc == nullptr) return;
+  connected_ = true;
+  connectionHandle_ = desc->conn_handle;
+  negotiatedMtu_ = server->getPeerMTU(connectionHandle_);
+  negotiatedInterval_ = desc->conn_itvl;
+  packetFrames_ = AudioProtocol::framesForMtu(negotiatedMtu_);
+  sequenceNumber_ = 0;
+  if (packetQueue_ != nullptr) xQueueReset(packetQueue_);
+  queueHighWater_ = 0;
+  server->updateConnParams(connectionHandle_,
+                           BLEConfig::CONNECTION_INTERVAL_MIN,
+                           BLEConfig::CONNECTION_INTERVAL_MAX,
+                           BLEConfig::CONNECTION_LATENCY,
+                           BLEConfig::CONNECTION_TIMEOUT);
+  Serial.printf("BLE client connected: MTU=%u, frames/packet=%u, interval=%.2f ms\n",
+                negotiatedMtu_, static_cast<unsigned>(packetFrames_),
+                negotiatedInterval_ * 1.25f);
+}
+
+void BleTransport::handleDisconnect(ble_gap_conn_desc *) {
+  connected_ = false;
+  streamActive_ = false;
+  connectionHandle_ = INVALID_CONN_HANDLE;
+  packetFrames_ = 0;
+  if (packetQueue_ != nullptr) xQueueReset(packetQueue_);
+  if (senderTaskHandle_ != nullptr) xTaskNotifyGive(senderTaskHandle_);
+  Serial.println("BLE client disconnected");
+  NimBLEDevice::getAdvertising()->start();
+}
+
+void BleTransport::handleMtuChange(uint16_t mtu, ble_gap_conn_desc *desc) {
+  negotiatedMtu_ = mtu;
+  if (desc != nullptr) negotiatedInterval_ = desc->conn_itvl;
+  packetFrames_ = AudioProtocol::framesForMtu(mtu);
+  Serial.printf("BLE MTU changed: MTU=%u, frames/packet=%u\n",
+                mtu, static_cast<unsigned>(packetFrames_));
+}
+#endif
 
 // NimBLE 异步报告本次通知状态；任务通知用于解除 senderTask 的等待。
 void BleTransport::handleNotifyStatus(int code) {
@@ -273,10 +334,16 @@ void BleTransport::runSenderTask() {
       lastNotifySucceeded_ = false;
       senderState_ = BleSenderState::WAITING_RESULT;
       audioCharacteristic_->setValue(packet.bytes, packet.length);
+#if SINGLEMIC_NIMBLE_API_V2
       if (!audioCharacteristic_->notify()) {
         ++notifyFailures_;
         continue;
       }
+#else
+      // NimBLE-Arduino 1.x notify() returns void; completion is reported by
+      // onStatus, so the same wait/retry path remains valid.
+      audioCharacteristic_->notify();
+#endif
       // 等待 NimBLE 的异步发送结果；超时计数后进入有限次数重试。
       if (ulTaskNotifyTake(pdTRUE,
                            pdMS_TO_TICKS(BLEConfig::NOTIFY_TIMEOUT_MS)) == 0) {

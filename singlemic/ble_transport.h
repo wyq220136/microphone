@@ -10,6 +10,15 @@
 
 #include "packet_protocol.h"
 
+// NimBLE-Arduino 2.x changed callback parameters from ble_gap_conn_desc to
+// NimBLEConnInfo and made notify() return a bool.  The header guard is the
+// only version marker exposed consistently by the library releases we use.
+#if defined(NIMBLE_CPP_DEVICE_H_)
+#define SINGLEMIC_NIMBLE_API_V2 1
+#else
+#define SINGLEMIC_NIMBLE_API_V2 0
+#endif
+
 // 发送任务状态，用于诊断当前队列消费/通知结果等待阶段。
 enum class BleSenderState : uint8_t {
   DISCONNECTED,
@@ -69,10 +78,16 @@ class BleTransport {
   // 更新队列历史最高水位。
   void updateQueueHighWater();
   // NimBLE 事件入口；回调只更新状态/统计并唤醒发送任务。
+#if SINGLEMIC_NIMBLE_API_V2
   void handleConnect(NimBLEServer *server, NimBLEConnInfo &info);
   void handleDisconnect(NimBLEConnInfo &info, int reason);
   void handleMtuChange(uint16_t mtu, NimBLEConnInfo &info);
   void handleConnectionParams(NimBLEConnInfo &info);
+#else
+  void handleConnect(NimBLEServer *server, ble_gap_conn_desc *desc);
+  void handleDisconnect(ble_gap_conn_desc *desc);
+  void handleMtuChange(uint16_t mtu, ble_gap_conn_desc *desc);
+#endif
   void handleNotifyStatus(int code);
   void refreshNegotiatedMtu();
   static void senderTask(void *context);
