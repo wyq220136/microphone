@@ -3,6 +3,8 @@
 #include <vector>
 #include <algorithm>
 
+namespace IcsDSP {
+
 namespace {
 struct C { float r, i; C(float a=0, float b=0):r(a),i(b){} C operator+(C v)const{return C(r+v.r,i+v.i);} C operator-(C v)const{return C(r-v.r,i-v.i);} C operator*(C v)const{return C(r*v.r-i*v.i,r*v.i+i*v.r);} C operator*(float v)const{return C(r*v,i*v);} C& operator+=(C v){r+=v.r;i+=v.i;return *this;} C& operator*=(float v){r*=v;i*=v;return *this;} C conj()const{return C(r,-i);} };
 
@@ -702,59 +704,4 @@ bool StreamingMVDR::process(const float *input1, const float *input2,
     return true;
 }
 
-class AnalysisFrame {
-private:
-    int step_size;   // 帧移 H
-    int frame_size;  // 帧长度 N
-    int **frames;     // 存储分帧后的数据
-    int index;        // 当前帧的索引
-
-public:
-    AnalysisFrame(int step_size, int frame_size);
-    void depart_frame(
-        const int *input,
-        int *output,
-        int frame_index
-    );
-    void add_hann(const int *frame, float *windowed_frame);
-};
-
-
-void delay_sum(int *input, int *output, int length, int delay_samples)
-{
-    for (int i = 0; i < length; i++)
-    {
-        if (i >= delay_samples)
-        {
-            output[i] = input[i] + input[i - delay_samples];
-        }
-        else
-        {
-            output[i] = input[i];
-        }
-    }
-}
-
-AnalysisFrame::AnalysisFrame(int step_size, int frame_size)
-{
-    this->step_size = step_size;
-    this->frame_size = frame_size;
-    this->index = 0;
-}
-
-void AnalysisFrame::depart_frame(const int *input, int *output, int frame_index)
-{
-    for(int i = 0; i < frame_size; i++){
-        output[i] = input[frame_index * step_size + i];
-    }
-}
-
-void AnalysisFrame::add_hann(const int *frame, float *windowed_frame)
-{
-    for (int i = 0; i < frame_size; i++) {
-        float hann =
-            0.5f * (1.0f - cosf(2.0f * PI * i / (frame_size - 1)));
-
-        windowed_frame[i] = frame[i] * hann;
-    }
-}
+}  // namespace IcsDSP

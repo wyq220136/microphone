@@ -1,53 +1,29 @@
-#ifndef __i2s_sampler_h__
-#define __i2s_sampler_h__
+#ifndef ICS_TEST_I2S_SAMPLER_H_
+#define ICS_TEST_I2S_SAMPLER_H_
 
-#include "driver/i2s.h"
+#include <stddef.h>
+#include <stdint.h>
 
-class I2SSampler
-{
-private:
-    // double buffer so we can be capturing samples while sending data
-    int16_t *m_audio_buffer1;
-    int16_t *m_audio_buffer2;
-    // current position in the audio buffer
-    int32_t m_audio_buffer_pos = 0;
-    // current audio buffer
-    int16_t *m_current_audio_buffer;
-    // buffer containing samples that have been captured already
-    int16_t *m_captured_audio_buffer;
-    // size of the audio buffers in bytes
-    int32_t m_buffer_size_in_bytes;
-    // size of the audio buffer in samples
-    int32_t m_buffer_size_in_samples;
-    // I2S reader task
-    TaskHandle_t m_reader_task_handle;
-    // writer task
-    TaskHandle_t m_writer_task_handle;
-    // i2s reader queue
-    QueueHandle_t m_i2s_queue;
-    // i2s port
-    i2s_port_t m_i2s_port;
+#include "cfg.h"
 
-protected:
-    void configureI2S();
-    void processI2SData(uint8_t *i2sData, size_t bytes_read);
-    void addSample(int16_t sample);
-    i2s_port_t getI2SPort()
-    {
-        return m_i2s_port;
-    }
-public:
-    int32_t getBufferSizeInBytes()
-    {
-        return m_buffer_size_in_bytes;
-    };
-    int16_t *getCapturedAudioBuffer()
-    {
-        return m_captured_audio_buffer;
-    }
-    void start(i2s_port_t i2sPort, i2s_pin_config_t &i2s_pins, i2s_config_t &i2s_config, int32_t buffer_size_in_samples, TaskHandle_t writer_task_handle);
+// 双麦 I2S 采集适配层。每个 I2S 端口由应用按包读取，避免旧版全局 reader
+// 任务、双缓冲和 writer 通知状态与 BLE 发送逻辑互相耦合。
+class I2SSampler {
+ public:
+  I2SSampler() = default;
+  ~I2SSampler();
 
-    friend void i2sReaderTask(void *param);
+  // 安装两个 I2S RX 驱动并配置左右麦克风的引脚。
+  bool begin();
+  // 卸载已经成功安装的端口。
+  void end();
+  // 读取一个麦克风的指定数量 32 位原始采样。
+  bool readSamples(const IcsTestConfig::MicrophoneConfig &microphone,
+                  int32_t *destination, size_t sampleCount);
+
+ private:
+  bool setupPort(const IcsTestConfig::MicrophoneConfig &microphone);
+  bool ready_[2] = {false, false};
 };
 
 #endif
