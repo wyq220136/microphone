@@ -1,79 +1,89 @@
-#include <Arduino.h>
-#include "driver/i2s.h"
-
 #include "I2SSampler.h"
 
-void I2SSampler::addSample(int16_t sample)
-{
-    // add the sample to the current audio buffer
-    m_current_audio_buffer[m_audio_buffer_pos] = sample;
-    m_audio_buffer_pos++;
-    // have we filled the buffer with data?
-    if (m_audio_buffer_pos == m_buffer_size_in_samples)
-    {
-        // swap to the other buffer
-        std::swap(m_current_audio_buffer, m_captured_audio_buffer);
-        // reset the buffer position
-        m_audio_buffer_pos = 0;
-        // tell the writer task to save the data
-        xTaskNotify(m_writer_task_handle, 1, eIncrement);
-    }
+#include <Arduino.h>
+#include <driver/i2s.h>
+
+#include "cfg.h"
+
+I2SSampler::~I2SSampler() {
+  end();
 }
 
-void I2SSampler::processI2SData(uint8_t *i2sData, size_t bytes_read)
-{
-    int32_t *samples = (int32_t *)i2sData;
-    for (int i = 0; i < bytes_read / 4; i++)
-    {
-        // you may need to vary the >> 11 to fit your volume - ideally we'd have some kind of AGC here
-        addSample(samples[i] >> 11);
-    }
+// 配置 ESP32 旧版 I2S 驱动，并将麦克风数据脚接入 RX 通道。
+bool I2SSampler::begin() {
+  if (ready_) {
+    return true;
+  }
+
+  i2s_config_t config = {};
+  // 麦克风由 ESP32 提供时钟，DMA 负责连续搬运 32 位采样槽数据。
+  config.mode = static_cast<i2s_mode_t>(I2S_MODE_MASTER | I2S_MODE_RX);
+  config.sample_rate = I2SConfig::CAPTURE_SAMPLE_RATE;
+  config.bits_per_sample = I2S_BITS_PER_SAMPLE_32BIT;
+  config.channel_format = I2S_CHANNEL_FMT_ONLY_LEFT;
+  config.communication_format = I2S_COMM_FORMAT_I2S;
+  config.intr_alloc_flags = ESP_INTR_FLAG_LEVEL1;
+  config.dma_buf_count = I2SConfig::DMA_BUF_COUNT;
+  config.dma_buf_len = I2SConfig::DMA_BUF_LENGTH;
+  config.use_apll = false;
+  config.tx_desc_auto_clear = false;
+  config.fixed_mclk = 0;
+
+  esp_err_t error = i2s_driver_install(I2SConfig::PORT, &config, 0, nullptr);
+  if (error != ESP_OK) {
+    Serial.printf("I2S driver install failed: %d\n", error);
+    return false;
+  }
+
+  i2s_pin_config_t pins = {};
+  pins.bck_io_num = I2SConfig::BCLK_PIN;
+  pins.ws_io_num = I2SConfig::WS_PIN;
+  pins.data_out_num = I2S_PIN_NO_CHANGE;
+  pins.data_in_num = I2SConfig::DATA_PIN;
+  error = i2s_set_pin(I2SConfig::PORT, &pins);
+  if (error != ESP_OK) {
+    Serial.printf("I2S pin setup failed: %d\n", error);
+    i2s_driver_uninstall(I2SConfig::PORT);
+    return false;
+  }
+
+  i2s_zero_dma_buffer(I2SConfig::PORT);
+  ready_ = true;
+  Serial.printf("I2S ready: %lu Hz, BLE output: %lu Hz, BCLK=%d WS=%d SD=%d\n",
+                static_cast<unsigned long>(I2SConfig::CAPTURE_SAMPLE_RATE),
+                static_cast<unsigned long>(AudioConfig::SAMPLE_RATE),
+                I2SConfig::BCLK_PIN, I2SConfig::WS_PIN, I2SConfig::DATA_PIN);
+  return true;
 }
 
-
-void i2sReaderTask(void *param)
-{
-    I2SSampler *sampler = (I2SSampler *)param;
-    while (true)
-    {
-        // wait for some data to arrive on the queue
-        i2s_event_t evt;
-        if (xQueueReceive(sampler->m_i2s_queue, &evt, portMAX_DELAY) == pdPASS)
-        {
-            if (evt.type == I2S_EVENT_RX_DONE)
-            {
-                size_t bytes_read = 0;
-                do
-                {
-                    // read data from the I2S peripheral
-                    uint8_t i2s_data[1024];
-                    // read from i2s
-                    i2s_read(sampler->getI2SPort(), i2s_data, 1024, &bytes_read, 10);
-                    // process the raw data
-                    sampler->processI2SData(i2s_data, bytes_read);
-                } while (bytes_read > 0);
-            }
-        }
-    }
+void I2SSampler::end() {
+  if (!ready_) {
+    return;
+  }
+  i2s_driver_uninstall(I2SConfig::PORT);
+  ready_ = false;
 }
 
-void I2SSampler::start(i2s_port_t i2s_port, i2s_pin_config_t &i2s_pins, i2s_config_t &i2s_config, int32_t buffer_size_in_bytes, TaskHandle_t writer_task_handle)
-{
-    m_i2s_port = i2s_port;
-    m_writer_task_handle = writer_task_handle;
-    m_buffer_size_in_samples = buffer_size_in_bytes / sizeof(int16_t);
-    m_buffer_size_in_bytes = buffer_size_in_bytes;
-    m_audio_buffer1 = (int16_t *)malloc(buffer_size_in_bytes);
-    m_audio_buffer2 = (int16_t *)malloc(buffer_size_in_bytes);
+// i2s_read 可能分多次返回，因此循环累积字节，直到拿满请求的样本数。
+bool I2SSampler::readSamples(int32_t *destination, size_t sampleCount) {
+  if (!ready_ || destination == nullptr || sampleCount == 0) {
+    return false;
+  }
 
-    m_current_audio_buffer = m_audio_buffer1;
-    m_captured_audio_buffer = m_audio_buffer2;
-
-    //install and start i2s driver
-    i2s_driver_install(m_i2s_port, &i2s_config, 4, &m_i2s_queue);
-    // set up the I2S pins
-    i2s_set_pin(getI2SPort(), &i2s_pins);
-    // start a task to read samples from the ADC
-    TaskHandle_t reader_task_handle;
-    xTaskCreatePinnedToCore(i2sReaderTask, "i2s Reader Task", 4096, this, 1, &reader_task_handle, 0);
+  size_t received = 0;
+  const size_t requestedBytes = sampleCount * sizeof(int32_t);
+  while (received < requestedBytes) {
+    size_t chunk = 0;
+    const esp_err_t error = i2s_read(
+        I2SConfig::PORT,
+        reinterpret_cast<uint8_t *>(destination) + received,
+        requestedBytes - received, &chunk, pdMS_TO_TICKS(100));
+    if (error != ESP_OK || chunk == 0) {
+      Serial.printf("I2S read failed: err=%d bytes=%u\n",
+                    static_cast<int>(error), static_cast<unsigned>(chunk));
+      return false;
+    }
+    received += chunk;
+  }
+  return true;
 }
