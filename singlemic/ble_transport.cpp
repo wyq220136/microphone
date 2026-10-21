@@ -48,10 +48,16 @@ class BleCharacteristicCallbacks final : public NimBLECharacteristicCallbacks {
   void onStatus(NimBLECharacteristic *, int code) override {
     transport_.handleNotifyStatus(code);
   }
+  void onSubscribe(NimBLECharacteristic *, NimBLEConnInfo &, uint16_t subValue) override {
+    transport_.handleSubscribe(subValue);
+  }
 #else
   void onStatus(NimBLECharacteristic *,
                 NimBLECharacteristicCallbacks::Status, int code) override {
     transport_.handleNotifyStatus(code);
+  }
+  void onSubscribe(NimBLECharacteristic *, ble_gap_conn_desc *, uint16_t subValue) override {
+    transport_.handleSubscribe(subValue);
   }
 #endif
 
@@ -80,7 +86,11 @@ bool BleTransport::begin() {
   NimBLEAdvertising *advertising = NimBLEDevice::getAdvertising();
   advertising->addServiceUUID(BLEConfig::SERVICE_UUID);
   advertising->setName(BLEConfig::DEVICE_NAME);
+#if SINGLEMIC_NIMBLE_API_V2
+  advertising->enableScanResponse(true);
+#else
   advertising->setScanResponse(true);
+#endif
   advertising->start();
 
   packetQueue_ = xQueueCreate(BLEConfig::PACKET_QUEUE_DEPTH,
@@ -97,6 +107,7 @@ bool BleTransport::begin() {
 #if SINGLEMIC_NIMBLE_API_V2
 void BleTransport::handleConnect(NimBLEServer *server, NimBLEConnInfo &info) {
   connected_ = true;
+  subscribed_ = false;
   connectionHandle_ = info.getConnHandle();
   negotiatedMtu_ = info.getMTU();
   negotiatedInterval_ = info.getConnInterval();
@@ -119,6 +130,7 @@ void BleTransport::handleConnect(NimBLEServer *server, NimBLEConnInfo &info) {
 // 断开时停止流状态、丢弃旧连接缓存并恢复广播等待重连。
 void BleTransport::handleDisconnect(NimBLEConnInfo &, int reason) {
   connected_ = false;
+  subscribed_ = false;
   streamActive_ = false;
   connectionHandle_ = INVALID_CONN_HANDLE;
   packetFrames_ = 0;
@@ -153,6 +165,7 @@ void BleTransport::handleConnect(NimBLEServer *server,
                                  ble_gap_conn_desc *desc) {
   if (desc == nullptr) return;
   connected_ = true;
+  subscribed_ = false;
   connectionHandle_ = desc->conn_handle;
   negotiatedMtu_ = server->getPeerMTU(connectionHandle_);
   negotiatedInterval_ = desc->conn_itvl;
@@ -172,6 +185,7 @@ void BleTransport::handleConnect(NimBLEServer *server,
 
 void BleTransport::handleDisconnect(ble_gap_conn_desc *) {
   connected_ = false;
+  subscribed_ = false;
   streamActive_ = false;
   connectionHandle_ = INVALID_CONN_HANDLE;
   packetFrames_ = 0;
@@ -202,6 +216,11 @@ void BleTransport::handleNotifyStatus(int code) {
   if (senderTaskHandle_ != nullptr) xTaskNotifyGive(senderTaskHandle_);
 }
 
+void BleTransport::handleSubscribe(uint16_t subValue) {
+  // 0 means unsubscribed; any non-zero value enables notify or indicate.
+  subscribed_ = subValue != 0;
+}
+
 // 主循环统计时同步检查 peer MTU，作为 MTU 回调的兜底更新路径。
 void BleTransport::refreshNegotiatedMtu() {
   if (!connected_ || server_ == nullptr ||
@@ -223,8 +242,7 @@ void BleTransport::refreshNegotiatedMtu() {
 
 // 仅在连接且中心端开启 CCCD 通知订阅时允许启动录音。
 bool BleTransport::subscribed() const {
-  return connected_ && audioCharacteristic_ != nullptr &&
-         audioCharacteristic_->getSubscribedCount() > 0;
+  return connected_ && subscribed_;
 }
 
 // 所有控制包走同一 FIFO，保证 START、音频数据和 END 的发送顺序。

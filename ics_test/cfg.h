@@ -26,7 +26,7 @@ constexpr int USER_KEY = 13;
 constexpr uint32_t KEY_DEBOUNCE_MS = 35;
 
 // I2S 以 8 kHz 采集，应用层每两点保留一点，得到 4 kHz PCM。
-constexpr uint32_t CAPTURE_SAMPLE_RATE = 8000;
+constexpr uint32_t CAPTURE_SAMPLE_RATE = 48000;
 constexpr size_t DECIMATION_FACTOR = 2;
 constexpr uint32_t AUDIO_SAMPLE_RATE = CAPTURE_SAMPLE_RATE / DECIMATION_FACTOR;
 constexpr uint8_t AUDIO_CHANNELS = 1;

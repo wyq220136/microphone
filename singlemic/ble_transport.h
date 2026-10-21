@@ -89,6 +89,7 @@ class BleTransport {
   void handleMtuChange(uint16_t mtu, ble_gap_conn_desc *desc);
 #endif
   void handleNotifyStatus(int code);
+  void handleSubscribe(uint16_t subValue);
   void refreshNegotiatedMtu();
   static void senderTask(void *context);
   void runSenderTask();
@@ -100,6 +101,7 @@ class BleTransport {
   TaskHandle_t senderTaskHandle_ = nullptr;
   // 连接、录音、最后一次通知结果及动态包大小等跨任务状态。
   volatile bool connected_ = false;
+  volatile bool subscribed_ = false;
   volatile bool streamActive_ = false;
   volatile bool lastNotifySucceeded_ = false;
   volatile size_t packetFrames_ = 0;

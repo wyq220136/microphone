@@ -17,10 +17,10 @@ class AudioProcessor {
                       int16_t *output, size_t outputCapacity);
 
  private:
-  // 单点处理：缩放、去直流并饱和裁剪到有符号 16 位范围。
-  int16_t processRawSample(int32_t raw);
+  // 单点处理：缩放、去直流并饱和裁剪到有符号 24 位范围。
+  int32_t processRawSample(int32_t raw);
   // 五抽头低通 FIR，用于降采样前削弱奈奎斯特频率以上的分量。
-  int16_t antiAliasFilter(int16_t input);
+  int32_t antiAliasFilter(int32_t input);
 
   // 一阶 DC 阻断器的上一输入/输出状态，需跨数据包保留。
   int32_t previousInput_ = 0;

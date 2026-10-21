@@ -11,7 +11,7 @@ constexpr int BCLK_PIN = 4;
 constexpr int WS_PIN = 16;
 constexpr int DATA_PIN = 17;
 constexpr i2s_port_t PORT = I2S_NUM_1;
-constexpr uint32_t CAPTURE_SAMPLE_RATE = 24000;
+constexpr uint32_t CAPTURE_SAMPLE_RATE = 48000;
 constexpr size_t DMA_BUF_COUNT = 8;
 constexpr size_t DMA_BUF_LENGTH = 256;
 }
@@ -30,7 +30,9 @@ constexpr uint32_t SAMPLE_RATE =
     I2SConfig::CAPTURE_SAMPLE_RATE / DECIMATION_FACTOR;
 constexpr uint8_t CHANNELS = 1;
 constexpr uint8_t BITS_PER_SAMPLE = 16;
-constexpr int RAW_SHIFT = 13;
+// I2S 槽位右移 RAW_SHIFT 后得到 24 位样本，再右移 PCM_SHIFT 输出 PCM16。
+constexpr int RAW_SHIFT = 8;
+constexpr int PCM_SHIFT = 8;
 constexpr int DC_BLOCK_SHIFT = 8;
 constexpr size_t ANTI_ALIAS_TAPS = 5;
 }
@@ -64,7 +66,7 @@ constexpr uint16_t CONNECTION_LATENCY = 0;
 // pauses without treating them as a dead link.
 constexpr uint16_t CONNECTION_TIMEOUT = 400;
 // FreeRTOS 应用层包队列深度；只吸收短暂积压，不代表长期吞吐上限。
-constexpr size_t PACKET_QUEUE_DEPTH = 64;
+constexpr size_t PACKET_QUEUE_DEPTH = 96;
 // 单次通知的异步状态等待上限，以及失败后的间隔和最多发送次数。
 constexpr uint32_t NOTIFY_TIMEOUT_MS = 100;
 constexpr uint32_t NOTIFY_RETRY_DELAY_MS = 10;

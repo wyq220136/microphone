@@ -24,7 +24,7 @@ class MicrophoneApplication {
   // 每秒输出一次 BLE 队列和发送状态，便于定位背压或链路问题。
   void printStats(uint32_t now);
   // 处理按键按下事件，并在录音开始/停止间切换。
-  void handleButton(uint32_t now);
+  void handleButton();
   // 清理处理器状态并发送 START 控制包。
   void startRecording();
   // 排入 END 控制包，通知接收端结束当前录音段。

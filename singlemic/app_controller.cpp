@@ -25,10 +25,11 @@ MicrophoneApplication::MicrophoneApplication()
 void MicrophoneApplication::begin() {
   Serial.println("ICS-43434 BLE microphone streamer");
   button_.begin();
-  Serial.printf("PCM: I2S %lu Hz -> BLE/WAV %lu Hz mono 16-bit, raw shift=%d\n",
+  Serial.printf("PCM: I2S %lu Hz -> BLE/WAV %lu Hz mono 16-bit, raw shift=%d pcm shift=%d\n",
                 static_cast<unsigned long>(I2SConfig::CAPTURE_SAMPLE_RATE),
                 static_cast<unsigned long>(AudioConfig::SAMPLE_RATE),
-                AudioConfig::RAW_SHIFT);
+                AudioConfig::RAW_SHIFT,
+                AudioConfig::PCM_SHIFT);
 
   if (!sampler_.begin() || !ble_.begin()) {
     Serial.println("Fatal initialization error; halting");
@@ -64,8 +65,8 @@ void MicrophoneApplication::stopRecording() {
 }
 
 // 按键采用按下沿触发，短按一次切换录音状态。
-void MicrophoneApplication::handleButton(uint32_t now) {
-  if (!button_.pressed(now)) return;
+void MicrophoneApplication::handleButton() {
+  if (!button_.pressed()) return;
   if (recording_) {
     stopRecording();
   } else {
@@ -103,6 +104,7 @@ void MicrophoneApplication::printStats(uint32_t now) {
 // 主处理流程按“状态/按键 -> I2S -> DSP -> BLE 队列”顺序执行。
 void MicrophoneApplication::loop() {
   const uint32_t now = millis();
+  button_.update(now);
   recording_ = ble_.streamActive();
   printStats(now);
 
@@ -111,7 +113,7 @@ void MicrophoneApplication::loop() {
     delay(1);
     return;
   }
-  handleButton(now);
+  handleButton();
 
   // 每个输出帧消耗 DECIMATION_FACTOR 个原始输入采样。
   if (!sampler_.readSamples(rawSamples_, frames * AudioConfig::DECIMATION_FACTOR)) {
