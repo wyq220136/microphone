@@ -27,6 +27,7 @@ PACKET_DATA = 1
 PACKET_START = 2
 PACKET_END = 3
 PACKET_DATA_HUFFMAN = 0x81
+PACKET_DATA_BLOCK_DELTA = 0x82
 MAX_FRAMES_PER_PACKET = 76
 HEADER = struct.Struct("<2sBBHHIH")
 
@@ -120,6 +121,57 @@ def decode_huffman_pcm24(payload: bytes, frames: int) -> bytes:
     return bytes(decoded)
 
 
+def decode_block_delta_pcm24(payload: bytes, frames: int) -> bytes:
+    if frames < 2 or len(payload) < 4:
+        raise ValueError("invalid block-delta payload size")
+
+    bit_width = payload[0]
+    if bit_width < 1 or bit_width > 25:
+        raise ValueError("invalid block-delta bit width")
+    bit_count = (frames - 1) * bit_width
+    expected_size = 4 + (bit_count + 7) // 8
+    if len(payload) != expected_size:
+        raise ValueError("unexpected block-delta payload length")
+
+    anchor_wire = int.from_bytes(payload[1:4], "little")
+    anchor = anchor_wire - (1 << 24) if anchor_wire & (1 << 23) else anchor_wire
+    decoded = bytearray(frames * 3)
+    decoded[0:3] = payload[1:4]
+
+    bitstream = payload[4:]
+    bit_position = 0
+    sign_bit = 1 << (bit_width - 1)
+    sign_range = 1 << bit_width
+    for frame in range(1, frames):
+        encoded_delta = 0
+        for bit in range(bit_width):
+            source_bit = (
+                bitstream[bit_position // 8] >> (bit_position % 8)
+            ) & 1
+            encoded_delta |= source_bit << bit
+            bit_position += 1
+        delta = (
+            encoded_delta - sign_range
+            if encoded_delta & sign_bit
+            else encoded_delta
+        )
+        sample = anchor + delta
+        if sample < -(1 << 23) or sample > (1 << 23) - 1:
+            raise ValueError("block-delta sample outside PCM24 range")
+        target_offset = frame * 3
+        decoded[target_offset:target_offset + 3] = (
+            sample & 0xFFFFFF
+        ).to_bytes(3, "little")
+
+    padding_bits = len(bitstream) * 8 - bit_position
+    if padding_bits:
+        used_bits = bit_position % 8
+        padding_mask = 0xFF & ~((1 << used_bits) - 1)
+        if bitstream[-1] & padding_mask:
+            raise ValueError("nonzero block-delta padding")
+    return bytes(decoded)
+
+
 class Capture:
     def __init__(self, output: Path) -> None:
         self.output = output
@@ -144,7 +196,8 @@ class Capture:
             HEADER.unpack_from(data)
         )
         if magic != MAGIC or packet_type not in (
-            PACKET_DATA, PACKET_DATA_HUFFMAN, PACKET_START, PACKET_END
+            PACKET_DATA, PACKET_DATA_HUFFMAN, PACKET_DATA_BLOCK_DELTA,
+            PACKET_START, PACKET_END
         ):
             return
         if channels != 1 or payload_bytes != len(data) - HEADER.size:
@@ -166,7 +219,14 @@ class Capture:
         if frames == 0 or frames > MAX_FRAMES_PER_PACKET:
             return
         try:
-            if packet_type == PACKET_DATA_HUFFMAN:
+            if packet_type == PACKET_DATA_BLOCK_DELTA:
+                if channels != 1:
+                    return
+                audio_payload = decode_block_delta_pcm24(
+                    bytes(data[HEADER.size:]), frames
+                )
+                sample_width = 3
+            elif packet_type == PACKET_DATA_HUFFMAN:
                 if channels != 1:
                     return
                 audio_payload = decode_huffman_pcm24(

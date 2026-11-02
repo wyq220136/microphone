@@ -14,6 +14,8 @@ class DebouncedButton {
   // 在调用者提供的 millis() 时间点更新状态；仅在确认按下沿时返回 true。
   bool update(uint32_t now);
   bool pressed() const { return changed_ && !stableHigh_; }
+  // 当前稳定电平是否表示按键正在按下（低电平）。
+  bool down() const { return !stableHigh_; }
 
  private:
   // GPIO 编号、原始/稳定电平及最近一次原始变化时间。

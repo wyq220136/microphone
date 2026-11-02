@@ -19,10 +19,15 @@ class I2SSampler {
   void end();
   // 查询 I2S 驱动是否完成初始化。
   bool isReady() const { return ready_; }
-  // 阻塞读取指定数量的 32 位输入采样，成功返回 true。
-  bool readSamples(int32_t *destination, size_t sampleCount);
+  // 保留数组容量，在调用驱动前拒绝越界请求；不接受丢失容量的裸指针。
+  template <size_t Capacity>
+  bool readSamples(int32_t (&destination)[Capacity], size_t sampleCount) {
+    return readSamplesBounded(destination, sampleCount, Capacity);
+  }
 
  private:
+  bool readSamplesBounded(int32_t *destination, size_t sampleCount,
+                          size_t capacity);
   // 防止重复安装/卸载驱动。
   bool ready_ = false;
 };

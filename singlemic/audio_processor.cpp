@@ -47,25 +47,24 @@ int32_t AudioProcessor::antiAliasFilter(int32_t input) {
   return static_cast<int32_t>(value);
 }
 
-// 两倍降采样：每个输入点都更新滤波器，输出每一对样本中的第二个滤波值。
-void AudioProcessor::convertToPcm16(const int32_t *input, size_t inputSamples,
-                                    int16_t *output, size_t outputCapacity) {
+// 倍率1：逐点转换和去直流，不经过降采样FIR。
+// 倍率2：每个输入点都更新FIR，输出每组中最后一个滤波值，保持原算法。
+void AudioProcessor::convertToPcm24(const int32_t *input, size_t inputSamples,
+                                    int32_t *output, size_t outputCapacity) {
   if (input == nullptr || output == nullptr) return;
 
   const size_t frameCount = inputSamples / AudioConfig::DECIMATION_FACTOR;
   const size_t count = frameCount < outputCapacity ? frameCount : outputCapacity;
   for (size_t i = 0; i < count; ++i) {
     const size_t inputIndex = i * AudioConfig::DECIMATION_FACTOR;
-    (void)antiAliasFilter(processRawSample(input[inputIndex]));
-    const int32_t filtered =
-        antiAliasFilter(processRawSample(input[inputIndex + 1]));
-    const int32_t pcm = filtered >> AudioConfig::PCM_SHIFT;
-    if (pcm > 32767) {
-      output[i] = 32767;
-    } else if (pcm < -32768) {
-      output[i] = -32768;
-    } else {
-      output[i] = static_cast<int16_t>(pcm);
+    int32_t sample = 0;
+    // 只访问当前完整输入组；倍率1的最后一帧不再多读一个样本。
+    for (size_t j = 0; j < AudioConfig::DECIMATION_FACTOR; ++j) {
+      sample = processRawSample(input[inputIndex + j]);
+      if (AudioConfig::DECIMATION_FACTOR > 1) {
+        sample = antiAliasFilter(sample);
+      }
     }
+    output[i] = sample;
   }
 }

@@ -1,126 +1,87 @@
 #ifndef SINGLEMIC_BLE_TRANSPORT_H_
 #define SINGLEMIC_BLE_TRANSPORT_H_
-
-#include <stdint.h>
-
 #include <NimBLEDevice.h>
-#include <freertos/FreeRTOS.h>
-#include <freertos/queue.h>
-#include <freertos/task.h>
+#include "transport_channel.h"
 
-#include "packet_protocol.h"
-
-// NimBLE-Arduino 2.x changed callback parameters from ble_gap_conn_desc to
-// NimBLEConnInfo and made notify() return a bool.  The header guard is the
-// only version marker exposed consistently by the library releases we use.
 #if defined(NIMBLE_CPP_DEVICE_H_)
 #define SINGLEMIC_NIMBLE_API_V2 1
 #else
 #define SINGLEMIC_NIMBLE_API_V2 0
 #endif
 
-// 发送任务状态，用于诊断当前队列消费/通知结果等待阶段。
 enum class BleSenderState : uint8_t {
-  DISCONNECTED,
-  WAITING_PACKET,
-  WAITING_RESULT,
-  RETRY_WAIT,
-  DROPPED,
+  DISCONNECTED, WAITING_PACKET, WAITING_RESULT, RETRY_WAIT, DROPPED, FAULT,
 };
-
-// 每秒由应用读取的 BLE 传输快照；计数器为运行期累计值。
 struct BleTransportStats {
-  uint32_t packetsSent;
-  uint32_t packetsDropped;
-  uint32_t queueOverflows;
-  uint32_t notifyRetries;
-  uint32_t notifyOk;
-  uint32_t notifyFailures;
-  uint32_t notifyTimeouts;
-  uint16_t mtu;
-  uint16_t connectionInterval;
-  size_t packetFrames;
-  size_t queueDepth;
-  size_t queueHighWater;
+  uint32_t packetsSent, packetsDropped, queueOverflows;
+  uint32_t notifyRetries, notifyOk, notifyFailures, notifyTimeouts;
+  uint16_t mtu, connectionInterval;
+  size_t packetFrames, queueDepth, queueHighWater;
+  uint32_t txEpoch, staleNotifyIgnored, epochDrops;
+  uint32_t subscriptionAborts, inFlightAborts, eventOverflows;
   BleSenderState senderState;
 };
 
-// BLE 外设端传输层：维护 GATT 服务、接收音频包队列并串行发送通知。
 class BleTransport {
  public:
-  // 初始化 NimBLE、GATT 服务、广告、FreeRTOS 队列和发送任务。
   bool begin();
-  // 当前是否存在 BLE 中心连接。
-  bool connected() const { return connected_; }
-  // 中心端是否订阅了音频特征通知。
-  bool subscribed() const;
-  // 当前 START/END 控制状态。
-  bool streamActive() const { return streamActive_; }
-  // 根据协商 MTU 得到的每个音频包帧数。
-  size_t packetFrames() const { return packetFrames_; }
-  // 开始/结束音频段；控制包和音频数据共用 FIFO，保证顺序。
-  bool startStream();
-  bool stopStream();
-  // 将 PCM 数据复制进应用层队列；队列满时立即失败并增加丢包计数。
-  bool enqueueAudio(const int16_t *samples, size_t frames);
-  // 记录采集侧失败（例如 I2S 读取失败）。
-  void recordCaptureFailure() { ++packetsDropped_; }
-  // 读取发送统计、当前队列水位和协商参数。
-  BleTransportStats stats();
+  bool setPairingMode(bool enabled) { return channel_.setPairingMode(enabled); }
+  bool connected() const { return channel_.connected(); }
+  bool subscribed() const { return channel_.subscribed(); }
+  bool streamActive() const { return channel_.streamActive(); }
+  size_t packetFrames() const { return channel_.packetFrames(); }
+  bool startStream() { return channel_.startStream(); }
+  bool stopStream() { return channel_.stopStream(); }
+  bool enqueueAudio(const int32_t *samples, size_t frames) { return channel_.enqueueAudio(samples, frames); }
+  void recordCaptureFailure() { channel_.recordCaptureFailure(); }
+  BleTransportStats stats() const { return channel_.stats(); }
 
  private:
-  // NimBLE 回调适配类需要调用下列私有事件处理函数。
   friend class BleServerCallbacks;
   friend class BleCharacteristicCallbacks;
-
-  // 内部控制包入队，可指定等待队列空位的时长。
-  bool enqueueControl(AudioProtocol::PacketType type, uint32_t timeoutMs);
-  // 更新队列历史最高水位。
-  void updateQueueHighWater();
-  // NimBLE 事件入口；回调只更新状态/统计并唤醒发送任务。
+  enum EventType { CONNECT, DISCONNECT, MTU, PARAMS, SUBSCRIBE, NOTIFY_STATUS };
+  struct Event {
+    EventType type = CONNECT;
+    uint16_t handle = 0xffff, mtu = 0, interval = 0, value = 0;
+    int status = 0;
+  };
 #if SINGLEMIC_NIMBLE_API_V2
-  void handleConnect(NimBLEServer *server, NimBLEConnInfo &info);
-  void handleDisconnect(NimBLEConnInfo &info, int reason);
-  void handleMtuChange(uint16_t mtu, NimBLEConnInfo &info);
-  void handleConnectionParams(NimBLEConnInfo &info);
+  void handleConnect(NimBLEServer *, NimBLEConnInfo &);
+  void handleDisconnect(NimBLEConnInfo &, int);
+  void handleMtuChange(uint16_t, NimBLEConnInfo &);
+  void handleConnectionParams(NimBLEConnInfo &);
 #else
-  void handleConnect(NimBLEServer *server, ble_gap_conn_desc *desc);
-  void handleDisconnect(ble_gap_conn_desc *desc);
-  void handleMtuChange(uint16_t mtu, ble_gap_conn_desc *desc);
+  void handleConnect(NimBLEServer *, ble_gap_conn_desc *);
+  void handleDisconnect(ble_gap_conn_desc *);
+  void handleMtuChange(uint16_t, ble_gap_conn_desc *);
 #endif
-  void handleNotifyStatus(int code);
-  void handleSubscribe(uint16_t subValue);
-  void refreshNegotiatedMtu();
+  void handleNotifyStatus(int code, uint16_t handle);
+  void handleSubscribe(uint16_t handle, uint16_t value);
+  void postEvent(const Event &event);
+  void processEvent(const Event &event);
+  void step();
+  void publish();
   static void senderTask(void *context);
   void runSenderTask();
+  static constexpr uint16_t INVALID_CONN_HANDLE = 0xffff;
 
   NimBLEServer *server_ = nullptr;
   NimBLECharacteristic *audioCharacteristic_ = nullptr;
-  // 音频与控制包共用 FIFO；senderTask 是唯一通知发送者。
-  QueueHandle_t packetQueue_ = nullptr;
+  TransportChannel<BleTransportStats> channel_;
+  QueueHandle_t eventQueue_ = nullptr;
   TaskHandle_t senderTaskHandle_ = nullptr;
-  // 连接、录音、最后一次通知结果及动态包大小等跨任务状态。
-  volatile bool connected_ = false;
-  volatile bool subscribed_ = false;
-  volatile bool streamActive_ = false;
-  volatile bool lastNotifySucceeded_ = false;
-  volatile size_t packetFrames_ = 0;
-  static constexpr uint16_t INVALID_CONN_HANDLE = 0xffff;
+  std::atomic<uint32_t> eventOverflows_{0};
+  uint32_t seenOverflows_ = 0;
+  bool connected_ = false, subscribed_ = false, pairingMode_ = false;
+  bool advertiseDirty_ = false, notifyInFlight_ = false, sessionFault_ = false;
+  bool hasPacket_ = false, retryPending_ = false;
   uint16_t connectionHandle_ = INVALID_CONN_HANDLE;
-  volatile uint16_t negotiatedMtu_ = 0;
-  volatile uint16_t negotiatedInterval_ = 0;
-  volatile uint32_t notifyOk_ = 0;
-  volatile uint32_t notifyFailures_ = 0;
-  volatile uint32_t notifyTimeouts_ = 0;
-  volatile uint32_t notifyRetries_ = 0;
-  // 下一个 DATA 序号；同一包重试时复用包缓存中的原序号。
-  uint32_t sequenceNumber_ = 0;
-  // 通知与队列累计计数，供每秒串口诊断日志读取。
-  volatile uint32_t packetsSent_ = 0;
-  volatile uint32_t packetsDropped_ = 0;
-  volatile uint32_t queueOverflows_ = 0;
-  volatile size_t queueHighWater_ = 0;
-  volatile BleSenderState senderState_ = BleSenderState::DISCONNECTED;
+  uint16_t negotiatedMtu_ = 0, negotiatedInterval_ = 0;
+  uint32_t txEpoch_ = 0, activeStream_ = 0, completedControl_ = 0;
+  uint32_t notifyStartedMs_ = 0, retryStartedMs_ = 0;
+  uint32_t senderReadyMs_ = 0;
+  uint8_t notifyAttempts_ = 0;
+  TransportPacket currentPacket_;
+  BleTransportStats counters_ = {};
 };
-
 #endif
