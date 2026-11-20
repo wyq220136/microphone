@@ -1,0 +1,123 @@
+Command: D:\Espressif\tools\python\v6.1\venv\Scripts\python.exe D:\esp\v6.1\esp-idf\tools/idf_monitor.py -p COM9 -b 115200 --toolchain-prefix xtensa-esp32-elf- --target esp32 --revision 0 D:\HomeGuard\microphone\gtcrn_esp32\build\gtcrn_esp32.elf D:\HomeGuard\microphone\gtcrn_esp32\build\bootloader\bootloader.elf --force-color -m 'D:\Espressif\tools\python\v6.1\venv\Scripts\python.exe' 'D:\esp\v6.1\esp-idf\tools\idf.py' '-p' 'COM9'
+ets Jul 29 2019 12:21:46
+
+rst:0x1 (POWERON_RESET),boot:0x13 (SPI_FAST_FLASH_BOOT)
+configsip: 153911750, SPIWP:0xee
+clk_drv:0x00,q_drv:0x00,d_drv:0x00,cs0_drv:0x00,hd_drv:0x00,wp_drv:0x00
+mode:DIO, clock div:1
+load:0x3fff0040,len:5380
+load:0x40078000,len:16220
+load:0x40080400,len:3868
+entry 0x400805e0
+[0;32mI (328) quad_psram: This chip is ESP32-D0WDR2-V3[0m
+[0;32mI (329) esp_psram: Found 2MB PSRAM device[0m
+[0;32mI (329) esp_psram: Speed: 80MHz[0m
+[0;32mI (329) esp_psram: PSRAM initialized, cache is in low/high (2-core) mode.[0m
+[0;32mI (335) cpu_start: Multicore app[0m
+[0;32mI (573) esp_psram: SPI SRAM memory test OK[0m
+[0;32mI (581) cpu_start: GPIO 3 and 1 are used as console UART I/O pins[0m
+[0;32mI (581) cpu_start: Pro cpu start user code[0m
+[0;32mI (581) cpu_start: cpu freq: 240000000 Hz[0m
+[0;32mI (583) app_init: Application information:[0m
+[0;32mI (587) app_init: Project name:     gtcrn_esp32[0m
+[0;32mI (591) app_init: App version:      a58c8bf-dirty[0m
+[0;32mI (596) app_init: Compile time:     Nov 12 2026 11:45:45[0m
+[0;32mI (601) app_init: ELF file SHA256:  78dcfae495bbe6fe...[0m
+[0;32mI (606) app_init: ESP-IDF:          v6.1[0m
+[0;32mI (609) efuse_init: Min chip rev:     v0.0[0m
+[0;32mI (613) efuse_init: Max chip rev:     v3.99 [0m
+[0;32mI (617) efuse_init: Chip rev:         v3.1[0m
+[0;32mI (621) heap_init: Initializing. RAM available for dynamic allocation:[0m
+[0;32mI (627) heap_init: At 3FFAE6E0 len 00001920 (6 KiB): DRAM[0m
+[0;32mI (632) heap_init: At 3FFB6A10 len 000295F0 (165 KiB): DRAM[0m
+[0;32mI (637) heap_init: At 3FFE0440 len 00003AE0 (14 KiB): D/IRAM[0m
+[0;32mI (643) heap_init: At 3FFE4350 len 0001BCB0 (111 KiB): D/IRAM[0m
+[0;32mI (648) heap_init: At 4008C8DC len 00013724 (77 KiB): IRAM[0m
+[0;32mI (654) esp_psram: Adding pool of 2048K of PSRAM memory to heap allocator[0m
+[0;32mI (661) spi_flash: detected chip: generic[0m
+[0;32mI (664) spi_flash: flash io: qio[0m
+[0;32mI (668) main_task: Started on CPU0[0m
+[0;32mI (668) esp_psram: Reserving pool of 32K of internal memory for DMA/internal allocations[0m
+[0;32mI (678) main_task: Calling app_main()[0m
+[0;32mI (678) gtcrn_test: GTCRN ESP-DL model validation starting[0m
+[0;32mI (678) gtcrn_test: runtime revision: gru-lut-range-v7[0m
+[0;32mI (688) gtcrn_test: before_model_load: internal_free=367739, internal_largest=155648, psram_free=2095004, psram_largest=2064384[0m
+[0;32mI (708) gtcrn_test: model partition: address=0x00410000 size=1048576 bytes; build model=967184 bytes[0m
+[0;32mI (708) FbsLoader: The storage free size is 3840 KB[0m
+[0;32mI (708) FbsLoader: The partition size is 1024 KB[0m
+[0;32mI (1628) gtcrn_test: after_model_load: internal_free=228435, internal_largest=102400, psram_free=1769996, psram_largest=1671168[0m
+
+[0;32mI (1638) dl::Model: model:main_graph, version:0[0m
+[0;32mI (1638) dl::Model: MODEL LOCATION IN FLASH PARTITION[0m
+[0;32mI (1648) dl::Model: +----------------+--------------+----------+--------------+[0m
+[0;32mI (1648) dl::Model: |                     memory summary                      |[0m
+[0;32mI (1658) dl::Model: +----------------+--------------+----------+--------------+[0m
+[0;32mI (1668) dl::Model: |                | internal RAM | PSRAM    | FLASH        |[0m
+[0;32mI (1668) dl::Model: +----------------+--------------+----------+--------------+[0m
+[0;32mI (1678) dl::Model: | fbs_model      |              |          | 944.50KB     |[0m
+[0;32mI (1688) dl::Model: |  -- parameter  |              |          |  -- 122.33KB |[0m
+[0;32mI (1698) dl::Model: +----------------+--------------+----------+--------------+[0m
+[0;32mI (1698) dl::Model: | parameter_copy |              |          |              |[0m
+[0;32mI (1708) dl::Model: +----------------+--------------+----------+--------------+[0m
+[0;32mI (1718) dl::Model: | variable       |              | 159.17KB |              |[0m
+[0;32mI (1718) dl::Model: +----------------+--------------+----------+--------------+[0m
+[0;32mI (1728) dl::Model: | others         | 130.70KB     | 158.22KB |              |[0m
+[0;32mI (1738) dl::Model: +----------------+--------------+----------+--------------+[0m
+[0;32mI (1748) dl::Model: | total          | 130.70KB     | 317.39KB | 944.50KB     |[0m
+[0;32mI (1748) dl::Model: +----------------+--------------+----------+--------------+[0m
+
+[0;32mI (1758) gtcrn_test: Running embedded model test vectors[0m
+
+[0;32mI (1758) dl::Model: Test max_error = 0.0005 (default)[0m
+[0;32mI (1828) dl::Model: Testing output /Gather_output_0.[0m
+[0;32mI (1828) dl::Model: Testing output /Gather_1_output_0.[0m
+[0;32mI (1838) dl::Model: Testing output /Transpose_output_0.[0m
+[0;32mI (1838) dl::Model: Testing output /Transpose_1_output_0.[0m
+[0;32mI (1848) dl::Model: Testing output /Pow_output_0.[0m
+[0;32mI (1848) dl::Model: Testing output /Pow_1_output_0.[0m
+[0;32mI (1858) dl::Model: Testing output /Add_output_0.[0m
+[0;32mI (1858) dl::Model: Testing output /Add_1_output_0.[0m
+[0;32mI (1858) dl::Model: Testing output /Sqrt_output_0.[0m
+[0;32mI (1868) dl::Model: Testing output /Concat_output_0.[0m
+[0;32mI (1868) dl::Model: Testing output /Slice_output_0.[0m
+[0;32mI (1868) dl::Model: Testing output /Slice_1_output_0.[0m
+[0;32mI (1878) dl::Model: Testing output /erb_fc/MatMul_output_0.[0m
+[0;32mI (1878) dl::Model: Testing output /Concat_1_output_0.[0m
+[0;32mI (1888) dl::Model: Testing output /sfe/unfold/Pad_output_0.[0m
+[0;32mI (1898) dl::Model: Testing output /sfe/unfold/Gather_5_output_0.[0m
+[0;32mI (1898) dl::Model: Testing output /sfe/unfold/Transpose_output_0.[0m
+[0;32mI (1908) dl::Model: Testing output /sfe/Reshape_output_0.[0m
+[0;32mI (1958) dl::Model: Testing output /encoder/en_convs.0/conv/Conv_output_0.[0m
+[0;32mI (1968) dl::Model: Testing output /encoder/en_convs.0/act/PRelu_output_0.[0m
+[0;32mI (1978) dl::Model: Testing output /encoder/en_convs.1/conv/Conv__group_0/input.[0m
+[0;32mI (1978) dl::Model: Testing output /encoder/en_convs.1/conv/Conv__group_1/input.[0m
+[0;32mI (1998) dl::Model: Testing output /encoder/en_convs.1/conv/Conv__group_0/output.[0m
+[0;32mI (2008) dl::Model: Testing output /encoder/en_convs.1/conv/Conv__group_1/output.[0m
+[0;32mI (2008) dl::Model: Testing output /encoder/en_convs.1/conv/Conv_output_0.[0m
+[0;32mI (2018) dl::Model: Testing output /encoder/en_convs.1/act/PRelu_output_0.[0m
+[0;32mI (2018) dl::Model: Testing output /encoder/en_convs.2/Slice_output_0.[0m
+[0;32mI (2028) dl::Model: Testing output /encoder/en_convs.2/sfe/unfold/Pad_output_0.[0m
+[0;32mI (2038) dl::Model: Testing output /encoder/en_convs.2/sfe/unfold/Gather_5_output_0.[0m
+[0;32mI (2038) dl::Model: Testing output /encoder/en_convs.2/sfe/unfold/Transpose_output_0.[0m
+[0;32mI (2048) dl::Model: Testing output /encoder/en_convs.2/sfe/Reshape_output_0.[0m
+[0;32mI (2058) dl::Model: Testing output /encoder/en_convs.2/point_conv1/Conv_output_0.[0m
+[0;32mI (2068) dl::Model: Testing output /encoder/en_convs.2/point_act/PRelu_output_0.[0m
+[0;32mI (2078) dl::Model: Testing output /encoder/en_convs.2/depth_conv/Conv_output_0.[0m
+[0;32mI (2078) dl::Model: Testing output /encoder/en_convs.2/depth_act/PRelu_output_0.[0m
+[0;32mI (2088) dl::Model: Testing output /encoder/en_convs.2/point_conv2/Conv_output_0.[0m
+[0;32mI (2088) dl::Model: Testing output /encoder/en_convs.2/tra/Pow_output_0.[0m
+[0;32mI (2098) dl::Model: Testing output /encoder/en_convs.2/tra/ReduceMean_output_0.[0m
+[0;32mI (2108) dl::Model: Testing output /encoder/en_convs.2/tra/att_gru/Transpose_output_0.[0m
+[0;32mI (2118) dl::Model: Testing output /encoder/en_convs.2/tra/att_gru/GRU_output_0.[0m
+[0;32mI (2158) dl::Model: Testing output /encoder/en_convs.3/tra/att_gru/Transpose_output_0.[0m
+[0;32mI (2158) dl::Model: Testing output /encoder/en_convs.3/tra/att_gru/GRU_output_0.[0m
+[0;32mI (2188) dl::Model: Testing output /encoder/en_convs.4/tra/att_gru/Transpose_output_0.[0m
+[0;32mI (2198) dl::Model: Testing output /encoder/en_convs.4/tra/att_gru/GRU_output_0.[0m
+[0;32mI (2208) dl::Model: Testing output /dpgrnn1/intra_rnn/rnn1/Transpose_output_0.[0m
+[0;32mI (2208) dl::Model: Testing output /dpgrnn1/intra_rnn/rnn2/Transpose_output_0.[0m
+[0;32mI (2238) dl::Model: Testing output /dpgrnn1/intra_rnn/rnn1/GRU_output_0.[0m
+[1;31mE (2238) equal: shape not equal: [33, 1, 10, 8] != [33, 2, 10, 4][0m
+[1;31mE (2238) dl::Model: Test output /dpgrnn1/intra_rnn/rnn1/GRU_output_0 does not match[0m
+
+[1;31mE (2258) gtcrn_test: GTCRN model test failed: ESP_FAIL[0m
+[0;32mI (2288) main_task: Returned from app_main()[0m

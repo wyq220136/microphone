@@ -1,0 +1,48 @@
+Command: D:\Espressif\tools\python\v6.1\venv\Scripts\python.exe D:\esp\v6.1\esp-idf\tools/idf_monitor.py -p COM9 -b 115200 --toolchain-prefix xtensa-esp32-elf- --target esp32 --revision 0 D:\HomeGuard\microphone\gtcrn_esp32\build\gtcrn_esp32.elf D:\HomeGuard\microphone\gtcrn_esp32\build\bootloader\bootloader.elf --force-color -m 'D:\Espressif\tools\python\v6.1\venv\Scripts\python.exe' 'D:\esp\v6.1\esp-idf\tools\idf.py' '-p' 'COM9'
+[0;33m--- Warning: GDB cannot open serial ports accessed as COMx[0m
+[0;33m--- Using \\.\COM9 instead...[0m
+[0;33m--- esp-idf-monitor 1.9.0 on \\.\COM9 115200[0m
+[0;33m--- Quit: Ctrl+] | Menu: Ctrl+T | Help: Ctrl+T followed by Ctrl+H[0m
+[0m--- 0x40080400: [0;33m_invalid_pc_placeholder[0m[0m at [0;32mD:/esp/v6.1/esp-idf/components/xtensa/xtensa_vectors.S[0m[0m:[1;31m2259[0m
+[0m--- 0x400805e0: [0;33mcall_start_cpu0[0m[0m at [0;32mD:/esp/v6.1/esp-idf/components/bootloader/subproject/main/bootloader_start.c[0m[0m:[1;31m27[0m
+[0m--- 0x4016ba15: [0;33mtask_wdt_timeout_handling[0m[0m at [0;32mD:/esp/v6.1/esp-idf/components/esp_system/task_wdt/task_wdt.c[0m[0m:[1;31m436[0m
+[0m--- (inlined by) [0;33mtask_wdt_isr[0m[0m at [0;32mD:/esp/v6.1/esp-idf/components/esp_system/task_wdt/task_wdt.c[0m[0m:[1;31m509[0m
+[0m--- 0x40084431: [0;33m_xt_lowint1[0m[0m at [0;32mD:/esp/v6.1/esp-idf/components/xtensa/xtensa_vectors.S[0m[0m:[1;31m1264[0m
+[0m--- 0x4000bfed: [0;33m_xtos_set_intlevel[0m[0m in [0;32mROM[0m
+[0m--- 0x40088146: [0;33mvPortClearInterruptMaskFromISR[0m[0m at [0;32mD:/esp/v6.1/esp-idf/components/freertos/FreeRTOS-Kernel/portable/xtensa/include/freertos/portmacro.h[0m[0m:[1;31m547[0m
+[0m--- (inlined by) [0;33mvPortExitCritical[0m[0m at [0;32mD:/esp/v6.1/esp-idf/components/freertos/FreeRTOS-Kernel/portable/xtensa/port.c[0m[0m:[1;31m528[0m
+[0m--- 0x4018a177: [0;33mxQueueSemaphoreTake[0m[0m at [0;32mD:/esp/v6.1/esp-idf/components/freertos/FreeRTOS-Kernel/queue.c[0m[0m:[1;31m1777[0m
+[0m--- 0x4018a228: [0;33mxQueueTakeMutexRecursive[0m[0m at [0;32mD:/esp/v6.1/esp-idf/components/freertos/FreeRTOS-Kernel/queue.c[0m[0m:[1;31m835[0m
+[0m--- 0x40082c5a: [0;33mlock_acquire_generic[0m[0m at [0;32mD:/esp/v6.1/esp-idf/components/esp_libc/src/locks.c[0m[0m:[1;31m158[0m
+[0m--- 0x40082eae: [0;33m_lock_acquire_recursive[0m[0m at [0;32mD:/esp/v6.1/esp-idf/components/esp_libc/src/locks.c[0m[0m:[1;31m174[0m
+[0m--- (inlined by) [0;33m__retarget_lock_acquire_recursive[0m[0m at [0;32mD:/esp/v6.1/esp-idf/components/esp_libc/src/locks.c[0m[0m:[1;31m333[0m
+[0m--- 0x4018011e: [0;33m__flockfile[0m[0m at [0;32m/builds/idf/crosstool-NG/.build/xtensa-esp-elf/build/build-picolibc-build-x86_64-build_pc-linux-gnu/../../../src/picolibc-git-1738c754/newlib/libc/tinystdio/stdio_private.h[0m[0m:[1;31m241[0m
+[0m--- (inlined by) [0;33mvfprintf[0m[0m at [0;32m/builds/idf/crosstool-NG/.build/xtensa-esp-elf/build/build-picolibc-build-x86_64-build_pc-linux-gnu/../../../src/picolibc-git-1738c754/newlib/libc/tinystdio/vfprintf.c[0m[0m:[1;31m563[0m
+[0m--- 0x40180c17: [0;33mvprintf[0m[0m at [0;32m/builds/idf/crosstool-NG/.build/xtensa-esp-elf/build/build-picolibc-build-x86_64-build_pc-linux-gnu/../../../src/picolibc-git-1738c754/newlib/libc/tinystdio/vprintf.c[0m[0m:[1;31m38[0m
+[0m--- 0x4008abf5: [0;33mesp_log_va[0m[0m at [0;32mD:/esp/v6.1/esp-idf/components/log/src/log.c[0m[0m:[1;31m43[0m
+[0m--- (inlined by) [0;33mesp_log[0m[0m at [0;32mD:/esp/v6.1/esp-idf/components/log/src/log.c[0m[0m:[1;31m88[0m
+[0m--- 0x400f2517: [0;33mdl::Model::print_module_info(std::map<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, dl::module_info, std::less<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >, std::allocator<std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, dl::module_info> > > const&, bool)[0m[0m at [0;32mD:/HomeGuard/esp-dl/esp-dl/dl/model/src/dl_model_base.cpp[0m[0m:[1;31m1247[0m
+[0m--- 0x400f2887: [0;33mdl::Model::profile_module(bool)[0m[0m at [0;32mD:/HomeGuard/esp-dl/esp-dl/dl/model/src/dl_model_base.cpp[0m[0m:[1;31m1342[0m
+[0m--- 0x400de4ae: [0;33mapp_main[0m[0m at [0;32mD:/HomeGuard/microphone/gtcrn_esp32/main/main.cpp[0m[0m:[1;31m99[0m
+[0m--- 0x400d45b1: [0;33mmain_task[0m[0m at [0;32mD:/esp/v6.1/esp-idf/components/freertos/app_startup.c[0m[0m:[1;31m206[0m
+[0m--- 0x4016ba15: [0;33mtask_wdt_timeout_handling[0m[0m at [0;32mD:/esp/v6.1/esp-idf/components/esp_system/task_wdt/task_wdt.c[0m[0m:[1;31m436[0m
+[0m--- (inlined by) [0;33mtask_wdt_isr[0m[0m at [0;32mD:/esp/v6.1/esp-idf/components/esp_system/task_wdt/task_wdt.c[0m[0m:[1;31m509[0m
+[0m--- 0x40084431: [0;33m_xt_lowint1[0m[0m at [0;32mD:/esp/v6.1/esp-idf/components/xtensa/xtensa_vectors.S[0m[0m:[1;31m1264[0m
+[0m--- 0x400d5f9e: [0;33muart_ll_get_txfifo_len[0m[0m at [0;32mD:/esp/v6.1/esp-idf/components/esp_hal_uart/esp32/include/hal/uart_ll.h[0m[0m:[1;31m517[0m
+[0m--- (inlined by) [0;33muart_tx_char[0m[0m at [0;32mD:/esp/v6.1/esp-idf/components/esp_driver_uart/src/uart_vfs.c[0m[0m:[1;31m191[0m
+[0m--- 0x400d6525: [0;33muart_write[0m[0m at [0;32mD:/esp/v6.1/esp-idf/components/esp_driver_uart/src/uart_vfs.c[0m[0m:[1;31m246[0m
+[0m--- 0x400d16e9: [0;33mconsole_write[0m[0m at [0;32mD:/esp/v6.1/esp-idf/components/esp_stdio/stdio_vfs.c[0m[0m:[1;31m180[0m
+[0m--- 0x400d91d5: [0;33mesp_vfs_write[0m[0m at [0;32mD:/esp/v6.1/esp-idf/components/vfs/vfs_calls.c[0m[0m:[1;31m77[0m
+[0m--- 0x400d4cd6: [0;33mwrite[0m[0m at [0;32mD:/esp/v6.1/esp-idf/components/esp_libc/src/syscalls.c[0m[0m:[1;31m51[0m
+[0m--- 0x40188991: [0;33mbufio_write[0m[0m at [0;32m/builds/idf/crosstool-NG/.build/xtensa-esp-elf/build/build-picolibc-build-x86_64-build_pc-linux-gnu/../../../src/picolibc-git-1738c754/newlib/libc/tinystdio/stdio_private.h[0m[0m:[1;31m183[0m
+[0m--- (inlined by) [0;33m__bufio_flush_locked[0m[0m at [0;32m/builds/idf/crosstool-NG/.build/xtensa-esp-elf/build/build-picolibc-build-x86_64-build_pc-linux-gnu/../../../src/picolibc-git-1738c754/newlib/libc/tinystdio/bufio.c[0m[0m:[1;31m62[0m
+[0m--- 0x4017f601: [0;33m__bufio_put[0m[0m at [0;32m/builds/idf/crosstool-NG/.build/xtensa-esp-elf/build/build-picolibc-build-x86_64-build_pc-linux-gnu/../../../src/picolibc-git-1738c754/newlib/libc/tinystdio/bufio.c[0m[0m:[1;31m187[0m
+[0m--- 0x40180179: [0;33mvfprintf[0m[0m at [0;32m/builds/idf/crosstool-NG/.build/xtensa-esp-elf/build/build-picolibc-build-x86_64-build_pc-linux-gnu/../../../src/picolibc-git-1738c754/newlib/libc/tinystdio/vfprintf.c[0m[0m:[1;31m581[0m
+[0m--- 0x40180c17: [0;33mvprintf[0m[0m at [0;32m/builds/idf/crosstool-NG/.build/xtensa-esp-elf/build/build-picolibc-build-x86_64-build_pc-linux-gnu/../../../src/picolibc-git-1738c754/newlib/libc/tinystdio/vprintf.c[0m[0m:[1;31m38[0m
+[0m--- 0x4008abf5: [0;33mesp_log_va[0m[0m at [0;32mD:/esp/v6.1/esp-idf/components/log/src/log.c[0m[0m:[1;31m43[0m
+[0m--- (inlined by) [0;33mesp_log[0m[0m at [0;32mD:/esp/v6.1/esp-idf/components/log/src/log.c[0m[0m:[1;31m88[0m
+[0m--- 0x400f2517: [0;33mdl::Model::print_module_info(std::map<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, dl::module_info, std::less<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >, std::allocator<std::pair<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const, dl::module_info> > > const&, bool)[0m[0m at [0;32mD:/HomeGuard/esp-dl/esp-dl/dl/model/src/dl_model_base.cpp[0m[0m:[1;31m1247[0m
+[0m--- 0x400f2887: [0;33mdl::Model::profile_module(bool)[0m[0m at [0;32mD:/HomeGuard/esp-dl/esp-dl/dl/model/src/dl_model_base.cpp[0m[0m:[1;31m1342[0m
+[0m--- 0x400de4ae: [0;33mapp_main[0m[0m at [0;32mD:/HomeGuard/microphone/gtcrn_esp32/main/main.cpp[0m[0m:[1;31m99[0m
+[0m--- 0x400d45b1: [0;33mmain_task[0m[0m at [0;32mD:/esp/v6.1/esp-idf/components/freertos/app_startup.c[0m[0m:[1;31m206[0m
+[0m

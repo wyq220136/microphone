@@ -32,7 +32,7 @@ class BleTransport {
   size_t packetFrames() const { return channel_.packetFrames(); }
   bool startStream() { return channel_.startStream(); }
   bool stopStream() { return channel_.stopStream(); }
-  bool enqueueAudio(const int32_t *samples, size_t frames) { return channel_.enqueueAudio(samples, frames); }
+  bool enqueueAudio(const int32_t *samples, size_t frames, int64_t captureUs = 0) { return channel_.enqueueAudio(samples, frames, captureUs); }
   void recordCaptureFailure() { channel_.recordCaptureFailure(); }
   BleTransportStats stats() const { return channel_.stats(); }
 

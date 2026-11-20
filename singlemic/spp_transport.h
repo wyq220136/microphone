@@ -25,6 +25,7 @@ struct SppTransportStats {
   size_t packetFrames, queueDepth, queueHighWater, senderStackMinFree;
   uint32_t txEpoch;
   bool congested, pairingMode;
+  uint32_t latencySamples = 0, latencyP95Us = 0, latencyMaxUs = 0;
   SppSenderState senderState;
 };
 
@@ -38,7 +39,7 @@ class SppTransport {
   size_t packetFrames() const { return channel_.packetFrames(); }
   bool startStream() { return channel_.startStream(); }
   bool stopStream() { return channel_.stopStream(); }
-  bool enqueueAudio(const int32_t *samples, size_t frames) { return channel_.enqueueAudio(samples, frames); }
+  bool enqueueAudio(const int32_t *samples, size_t frames, int64_t captureUs = 0) { return channel_.enqueueAudio(samples, frames, captureUs); }
   void recordCaptureFailure() { channel_.recordCaptureFailure(); }
   SppTransportStats stats() const { return channel_.stats(); }
   void printDiagnostics() { diagnostics_.print("SPP"); }
@@ -82,6 +83,7 @@ class SppTransport {
   uint32_t lastScanAttemptMs_ = 0;
   TransportPacket currentPacket_;
   SppTransportStats counters_ = {};
+  uint32_t latencyHistogram_[64] = {};
   static SppTransport *activeInstance_;
 };
 #endif

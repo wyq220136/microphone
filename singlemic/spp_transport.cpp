@@ -16,6 +16,7 @@
 #include <esp_bt_device.h>
 #include <esp_idf_version.h>
 #include <cstring>
+#include <esp_timer.h>
 
 SppTransport *SppTransport::activeInstance_ = nullptr;
 
@@ -52,7 +53,12 @@ bool SppTransport::begin() {
       esp_bluedroid_init() != ESP_OK) return false;
   if (esp_bluedroid_get_status() != ESP_BLUEDROID_STATUS_ENABLED &&
       esp_bluedroid_enable() != ESP_OK) return false;
-  if (esp_bt_dev_set_device_name(TransportConfig::DEVICE_NAME) != ESP_OK ||
+#if ESP_IDF_VERSION >= ESP_IDF_VERSION_VAL(6, 0, 0)
+  const esp_err_t nameResult = esp_bt_gap_set_device_name(TransportConfig::DEVICE_NAME);
+#else
+  const esp_err_t nameResult = esp_bt_dev_set_device_name(TransportConfig::DEVICE_NAME);
+#endif
+  if (nameResult != ESP_OK ||
       esp_bt_gap_register_callback(gapCallback) != ESP_OK ||
       esp_spp_register_callback(sppCallback) != ESP_OK) return false;
   esp_bt_io_cap_t capability = ESP_BT_IO_CAP_NONE;
@@ -289,7 +295,25 @@ void SppTransport::step() {
   const esp_err_t result = esp_spp_write(connectionHandle_, currentPacket_.packet.length, currentPacket_.packet.bytes);
   ResetProgress::spp(ResetProgress::Stage::SPP_WRITE_RETURNED);
   trace(TRACE_SUBMIT, connectionHandle_, result, currentPacket_.packet.length, 0, result != ESP_OK);
-  if (result == ESP_OK) ++counters_.writeSubmissions;
+  if (result == ESP_OK) {
+    ++counters_.writeSubmissions;
+    if (currentPacket_.captureUs > 0 && !currentPacket_.isControl()) {
+      const uint32_t age = static_cast<uint32_t>(esp_timer_get_time() - currentPacket_.captureUs);
+      const size_t bucket = age / 4000 < 63 ? age / 4000 : 63;
+      ++latencyHistogram_[bucket];
+      ++counters_.latencySamples;
+      if (age > counters_.latencyMaxUs) counters_.latencyMaxUs = age;
+      uint32_t accumulated = 0;
+      const uint32_t threshold = (counters_.latencySamples * 95ULL + 99) / 100;
+      for (size_t i = 0; i < 64; ++i) {
+        accumulated += latencyHistogram_[i];
+        if (accumulated >= threshold) {
+          counters_.latencyP95Us = i == 63 ? counters_.latencyMaxUs : (i+1) * 4000;
+          break;
+        }
+      }
+    }
+  }
   else knownFailure();
 }
 

@@ -1,10 +1,27 @@
 #ifndef SINGLEMIC_CFG_H_
 #define SINGLEMIC_CFG_H_
 
-#include <driver/i2s.h>
+#include <driver/i2s_std.h>
 #include <freertos/FreeRTOS.h>
 #include <stddef.h>
 #include <stdint.h>
+
+#ifndef SINGLEMIC_ENABLE_GTCRN
+#define SINGLEMIC_ENABLE_GTCRN 1
+#endif
+
+namespace DenoiseConfig {
+constexpr size_t FFT_SIZE = 512;
+constexpr size_t HOP_SIZE = 256;
+constexpr size_t POOL_BLOCKS = 8;
+constexpr size_t BACKLOG_LIMIT = 4;
+constexpr uint32_t MAX_BLOCK_AGE_US = 128000;
+constexpr uint32_t INTERNAL_RESERVE = 48 * 1024;
+constexpr uint32_t CAPTURE_STACK = 4096;
+constexpr uint32_t INFERENCE_STACK = 8192;
+constexpr uint32_t WARMUP_FRAMES = 32;
+constexpr uint32_t BENCHMARK_FRAMES = 128;
+}
 
 // 音频输入：0=真实I2S麦克风采样（默认）；1=固定PCM24循环隔离测试。
 // 测试模式不初始化/读取I2S、不执行麦克风DSP；按键、压缩、CRC和蓝牙保持原流程。
@@ -29,12 +46,18 @@ namespace I2SConfig {
 constexpr int BCLK_PIN = 5;
 constexpr int WS_PIN = 18;
 constexpr int DATA_PIN = 19;
-constexpr i2s_port_t PORT = I2S_NUM_1;
+constexpr int PORT = I2S_NUM_1;
 constexpr uint32_t CAPTURE_SAMPLE_RATE = 16000;
 constexpr size_t DMA_BUF_COUNT = 8;
 constexpr size_t DMA_BUF_LENGTH = 256;
 // Bound a stalled DMA read without being shorter than one normal DMA period.
 constexpr uint32_t READ_TIMEOUT_MS = 25;
+}
+
+namespace DenoiseConfig {
+// Space still needed after model preflight: stacks, RX DMA and driver metadata.
+constexpr size_t STARTUP_INTERNAL_BYTES = CAPTURE_STACK + INFERENCE_STACK +
+    I2SConfig::DMA_BUF_COUNT * I2SConfig::DMA_BUF_LENGTH * sizeof(int32_t) + 4096;
 }
 
 namespace IOConfig {
@@ -49,6 +72,10 @@ constexpr uint32_t PAIRING_WINDOW_MS = 120000;
 namespace AudioConfig {
 // 1=逐点输出，不降采样、不经过降采样FIR；2=保留原两倍降采样路径。
 constexpr size_t DECIMATION_FACTOR = 1;
+#if SINGLEMIC_ENABLE_GTCRN
+static_assert(DECIMATION_FACTOR == 1 && I2SConfig::CAPTURE_SAMPLE_RATE == 16000,
+              "GTCRN requires 16 kHz without decimation");
+#endif
 static_assert(DECIMATION_FACTOR == 1 || DECIMATION_FACTOR == 2,
               "Audio DSP supports decimation factors 1 and 2 only");
 constexpr uint32_t SAMPLE_RATE =
@@ -57,7 +84,7 @@ constexpr uint8_t CHANNELS = 1;
 constexpr uint8_t BITS_PER_SAMPLE = 24;
 constexpr uint8_t BYTES_PER_SAMPLE = 3;
 constexpr int RAW_SHIFT = 8;
-constexpr int DC_BLOCK_SHIFT = 8;
+constexpr int DC_BLOCK_SHIFT = 5;
 constexpr size_t ANTI_ALIAS_TAPS = 5;
 static_assert(ANTI_ALIAS_TAPS == 5,
               "Decimation FIR requires exactly five taps");

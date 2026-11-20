@@ -3,6 +3,7 @@
 
 #include <stddef.h>
 #include <stdint.h>
+#include <driver/i2s_std.h>
 
 // I2S 采集适配层：负责驱动初始化、释放以及读取麦克风的 32 位原始采样。
 // 音频转换和 BLE 发送由其他模块负责，避免采集驱动依赖应用协议。
@@ -30,6 +31,7 @@ class I2SSampler {
                           size_t capacity);
   // 防止重复安装/卸载驱动。
   bool ready_ = false;
+  i2s_chan_handle_t rx_ = nullptr;
 };
 
 #endif

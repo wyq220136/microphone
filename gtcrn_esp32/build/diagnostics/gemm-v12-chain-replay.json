@@ -1,0 +1,155 @@
+{
+  "model": "D:\\HomeGuard\\microphone\\gtcrn_esp32\\build\\diagnostics\\v12_before_gemm_int64.espdl",
+  "sha256": "298cc6ebe49fbc3a5ccb13f940a6ae0c873885ab3d780e3dd858421baf0cb8d8",
+  "gemms": [
+    {
+      "node": "Gemm_3",
+      "changed": 0,
+      "count": 80,
+      "max_lsb": 0,
+      "first": -1,
+      "legacy_changed": 0
+    },
+    {
+      "node": "Gemm_6",
+      "changed": 0,
+      "count": 80,
+      "max_lsb": 0,
+      "first": -1,
+      "legacy_changed": 0
+    },
+    {
+      "node": "Gemm_9",
+      "changed": 0,
+      "count": 80,
+      "max_lsb": 0,
+      "first": -1,
+      "legacy_changed": 0
+    },
+    {
+      "node": "Gemm_12",
+      "changed": 0,
+      "count": 5280,
+      "max_lsb": 0,
+      "first": -1,
+      "legacy_changed": 2
+    },
+    {
+      "node": "Gemm_14",
+      "changed": 0,
+      "count": 5280,
+      "max_lsb": 0,
+      "first": -1,
+      "legacy_changed": 1
+    },
+    {
+      "node": "Gemm_16",
+      "changed": 0,
+      "count": 5280,
+      "max_lsb": 0,
+      "first": -1,
+      "legacy_changed": 1
+    },
+    {
+      "node": "Gemm_18",
+      "changed": 0,
+      "count": 5280,
+      "max_lsb": 0,
+      "first": -1,
+      "legacy_changed": 0
+    },
+    {
+      "node": "Gemm_20",
+      "changed": 0,
+      "count": 80,
+      "max_lsb": 0,
+      "first": -1,
+      "legacy_changed": 0
+    },
+    {
+      "node": "Gemm_23",
+      "changed": 0,
+      "count": 80,
+      "max_lsb": 0,
+      "first": -1,
+      "legacy_changed": 0
+    },
+    {
+      "node": "Gemm_26",
+      "changed": 0,
+      "count": 80,
+      "max_lsb": 0,
+      "first": -1,
+      "legacy_changed": 0
+    }
+  ],
+  "chain": [
+    {
+      "node": "/dpgrnn1/inter_rnn/rnn1/Transpose_output_0",
+      "changed": 0,
+      "count": 2640,
+      "max_lsb": 0,
+      "first": -1
+    },
+    {
+      "node": "/dpgrnn1/inter_rnn/rnn2/Transpose_output_0",
+      "changed": 1,
+      "count": 2640,
+      "max_lsb": 1,
+      "first": 2002
+    },
+    {
+      "node": "/dpgrnn1/inter_rnn/rnn1/GRU_output_0",
+      "changed": 0,
+      "count": 2640,
+      "max_lsb": 0,
+      "first": -1
+    },
+    {
+      "node": "/dpgrnn1/inter_rnn/rnn2/GRU_output_0",
+      "changed": 0,
+      "count": 2640,
+      "max_lsb": 0,
+      "first": -1
+    },
+    {
+      "node": "/dpgrnn2/intra_rnn/rnn1/Transpose_output_0",
+      "changed": 0,
+      "count": 2640,
+      "max_lsb": 0,
+      "first": -1
+    },
+    {
+      "node": "/dpgrnn2/intra_rnn/rnn2/Transpose_output_0",
+      "changed": 2,
+      "count": 2640,
+      "max_lsb": 1,
+      "first": 1154
+    },
+    {
+      "node": "/dpgrnn2/intra_rnn/rnn1/GRU_output_0",
+      "changed": 0,
+      "count": 2640,
+      "max_lsb": 0,
+      "first": -1
+    },
+    {
+      "node": "/dpgrnn2/intra_rnn/rnn2/GRU_output_0",
+      "changed": 31,
+      "count": 2640,
+      "max_lsb": 47,
+      "first": 61,
+      "first_over_one": {
+        "position": [
+          0,
+          0,
+          7,
+          5
+        ],
+        "golden": -19789,
+        "actual": -19787
+      }
+    }
+  ],
+  "errors": []
+}

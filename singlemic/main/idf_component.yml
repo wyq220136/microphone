@@ -1,0 +1,4 @@
+dependencies:
+  espressif/esp-dl:
+    version: "3.3.15"
+    override_path: "../../../esp-dl/esp-dl"

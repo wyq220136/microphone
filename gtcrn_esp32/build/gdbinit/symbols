@@ -1,0 +1,9 @@
+
+
+# Load bootloader symbols
+set confirm off
+    add-symbol-file D:/HomeGuard/microphone/gtcrn_esp32/build/bootloader/bootloader.elf
+set confirm on
+
+# Load application symbols
+file D:/HomeGuard/microphone/gtcrn_esp32/build/gtcrn_esp32.elf

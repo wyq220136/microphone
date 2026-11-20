@@ -1,5 +1,12 @@
 # singlemic 单麦克风固件
 
+当前已增加 ESP-IDF + Arduino 的 GTCRN 集成构建。使用方式、模型导出、
+原音回退规则和实际验收记录见 [INTEGRATION.md](INTEGRATION.md) 与
+[VALIDATION.md](VALIDATION.md)。当前集成目标为 Classic SPP；音频继续以
+`int32_t` 保存、PCM24 传输，并由原接收器保存为 PCM32 WAV。
+下文中旧的直接采集发送流程用于了解既有协议；新固件在去直流与打包之间增加
+流式 STFT、GTCRN 和 ISTFT。保留的 BLE 源码未纳入本次默认固件构建。
+
 本目录面向物理模块 `ESP32-WROOM-32E-N8R2`。代码中的设备名称
 `ESP32S3-ICS` 仅用于兼容既有电脑端配置，不代表目标芯片型号。
 

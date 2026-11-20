@@ -1,0 +1,537 @@
+{
+  "schema_version": 1,
+  "target": "c",
+  "quant_type": "w16a16",
+  "float_layernorm": false,
+  "float_magnitude": true,
+  "model_size": 429168,
+  "model_sha256": "ce6ac02f6f8e21c18894394d13e9fdcc31e0b053f48bf3a6763e8f23015a1b4c",
+  "checkpoint_sha256": "0951ed2588c657f558de25ab05b2e5ceeef86710499d5d0703f96242b24a7bae",
+  "sample_rate": 16000,
+  "fft_size": 512,
+  "hop_size": 256,
+  "window": "sqrt_periodic_hann",
+  "normalization": {
+    "enabled": true,
+    "target_rms": 0.1,
+    "min_gain": 0.1,
+    "max_gain": 10.0
+  },
+  "output_level_match": {
+    "enabled": true,
+    "min_gain_db": 0.0,
+    "max_gain_db": 24.0
+  },
+  "inputs": [
+    {
+      "name": "inter_1",
+      "dtype": 5,
+      "shape": [
+        1,
+        33,
+        16
+      ],
+      "exponents": [
+        -14
+      ]
+    },
+    {
+      "name": "en_tra_0",
+      "dtype": 5,
+      "shape": [
+        1,
+        1,
+        16
+      ],
+      "exponents": [
+        -14
+      ]
+    },
+    {
+      "name": "en_conv_1",
+      "dtype": 5,
+      "shape": [
+        1,
+        16,
+        4,
+        33
+      ],
+      "exponents": [
+        -12
+      ]
+    },
+    {
+      "name": "de_conv_2",
+      "dtype": 5,
+      "shape": [
+        1,
+        16,
+        2,
+        33
+      ],
+      "exponents": [
+        -12
+      ]
+    },
+    {
+      "name": "spec",
+      "dtype": 5,
+      "shape": [
+        1,
+        257,
+        1,
+        2
+      ],
+      "exponents": [
+        -9
+      ]
+    },
+    {
+      "name": "de_conv_1",
+      "dtype": 5,
+      "shape": [
+        1,
+        16,
+        4,
+        33
+      ],
+      "exponents": [
+        -12
+      ]
+    },
+    {
+      "name": "de_conv_0",
+      "dtype": 5,
+      "shape": [
+        1,
+        16,
+        10,
+        33
+      ],
+      "exponents": [
+        -12
+      ]
+    },
+    {
+      "name": "en_conv_2",
+      "dtype": 5,
+      "shape": [
+        1,
+        16,
+        10,
+        33
+      ],
+      "exponents": [
+        -10
+      ]
+    },
+    {
+      "name": "de_tra_1",
+      "dtype": 5,
+      "shape": [
+        1,
+        1,
+        16
+      ],
+      "exponents": [
+        -14
+      ]
+    },
+    {
+      "name": "de_tra_2",
+      "dtype": 5,
+      "shape": [
+        1,
+        1,
+        16
+      ],
+      "exponents": [
+        -14
+      ]
+    },
+    {
+      "name": "en_tra_2",
+      "dtype": 5,
+      "shape": [
+        1,
+        1,
+        16
+      ],
+      "exponents": [
+        -14
+      ]
+    },
+    {
+      "name": "en_conv_0",
+      "dtype": 5,
+      "shape": [
+        1,
+        16,
+        2,
+        33
+      ],
+      "exponents": [
+        -11
+      ]
+    },
+    {
+      "name": "inter_0",
+      "dtype": 5,
+      "shape": [
+        1,
+        33,
+        16
+      ],
+      "exponents": [
+        -15
+      ]
+    },
+    {
+      "name": "de_tra_0",
+      "dtype": 5,
+      "shape": [
+        1,
+        1,
+        16
+      ],
+      "exponents": [
+        -15
+      ]
+    },
+    {
+      "name": "en_tra_1",
+      "dtype": 5,
+      "shape": [
+        1,
+        1,
+        16
+      ],
+      "exponents": [
+        -15
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "name": "de_conv_1_out",
+      "dtype": 5,
+      "shape": [
+        1,
+        16,
+        4,
+        33
+      ],
+      "exponents": [
+        -12
+      ]
+    },
+    {
+      "name": "en_conv_2_out",
+      "dtype": 5,
+      "shape": [
+        1,
+        16,
+        10,
+        33
+      ],
+      "exponents": [
+        -10
+      ]
+    },
+    {
+      "name": "de_tra_2_out",
+      "dtype": 5,
+      "shape": [
+        1,
+        1,
+        16
+      ],
+      "exponents": [
+        -14
+      ]
+    },
+    {
+      "name": "en_tra_2_out",
+      "dtype": 5,
+      "shape": [
+        1,
+        1,
+        16
+      ],
+      "exponents": [
+        -14
+      ]
+    },
+    {
+      "name": "inter_0_out",
+      "dtype": 5,
+      "shape": [
+        1,
+        33,
+        16
+      ],
+      "exponents": [
+        -15
+      ]
+    },
+    {
+      "name": "en_conv_0_out",
+      "dtype": 5,
+      "shape": [
+        1,
+        16,
+        2,
+        33
+      ],
+      "exponents": [
+        -11
+      ]
+    },
+    {
+      "name": "enh",
+      "dtype": 5,
+      "shape": [
+        1,
+        257,
+        1,
+        2
+      ],
+      "exponents": [
+        -13
+      ]
+    },
+    {
+      "name": "en_tra_1_out",
+      "dtype": 5,
+      "shape": [
+        1,
+        1,
+        16
+      ],
+      "exponents": [
+        -15
+      ]
+    },
+    {
+      "name": "de_tra_0_out",
+      "dtype": 5,
+      "shape": [
+        1,
+        1,
+        16
+      ],
+      "exponents": [
+        -15
+      ]
+    },
+    {
+      "name": "en_tra_0_out",
+      "dtype": 5,
+      "shape": [
+        1,
+        1,
+        16
+      ],
+      "exponents": [
+        -14
+      ]
+    },
+    {
+      "name": "en_conv_1_out",
+      "dtype": 5,
+      "shape": [
+        1,
+        16,
+        4,
+        33
+      ],
+      "exponents": [
+        -12
+      ]
+    },
+    {
+      "name": "inter_1_out",
+      "dtype": 5,
+      "shape": [
+        1,
+        33,
+        16
+      ],
+      "exponents": [
+        -14
+      ]
+    },
+    {
+      "name": "de_conv_2_out",
+      "dtype": 5,
+      "shape": [
+        1,
+        16,
+        2,
+        33
+      ],
+      "exponents": [
+        -12
+      ]
+    },
+    {
+      "name": "de_conv_0_out",
+      "dtype": 5,
+      "shape": [
+        1,
+        16,
+        10,
+        33
+      ],
+      "exponents": [
+        -12
+      ]
+    },
+    {
+      "name": "de_tra_1_out",
+      "dtype": 5,
+      "shape": [
+        1,
+        1,
+        16
+      ],
+      "exponents": [
+        -14
+      ]
+    }
+  ],
+  "states": [
+    {
+      "input": "en_conv_0",
+      "output": "en_conv_0_out",
+      "onnx_shape": [
+        1,
+        16,
+        2,
+        33
+      ]
+    },
+    {
+      "input": "en_conv_1",
+      "output": "en_conv_1_out",
+      "onnx_shape": [
+        1,
+        16,
+        4,
+        33
+      ]
+    },
+    {
+      "input": "en_conv_2",
+      "output": "en_conv_2_out",
+      "onnx_shape": [
+        1,
+        16,
+        10,
+        33
+      ]
+    },
+    {
+      "input": "de_conv_0",
+      "output": "de_conv_0_out",
+      "onnx_shape": [
+        1,
+        16,
+        10,
+        33
+      ]
+    },
+    {
+      "input": "de_conv_1",
+      "output": "de_conv_1_out",
+      "onnx_shape": [
+        1,
+        16,
+        4,
+        33
+      ]
+    },
+    {
+      "input": "de_conv_2",
+      "output": "de_conv_2_out",
+      "onnx_shape": [
+        1,
+        16,
+        2,
+        33
+      ]
+    },
+    {
+      "input": "en_tra_0",
+      "output": "en_tra_0_out",
+      "onnx_shape": [
+        1,
+        1,
+        16
+      ]
+    },
+    {
+      "input": "en_tra_1",
+      "output": "en_tra_1_out",
+      "onnx_shape": [
+        1,
+        1,
+        16
+      ]
+    },
+    {
+      "input": "en_tra_2",
+      "output": "en_tra_2_out",
+      "onnx_shape": [
+        1,
+        1,
+        16
+      ]
+    },
+    {
+      "input": "de_tra_0",
+      "output": "de_tra_0_out",
+      "onnx_shape": [
+        1,
+        1,
+        16
+      ]
+    },
+    {
+      "input": "de_tra_1",
+      "output": "de_tra_1_out",
+      "onnx_shape": [
+        1,
+        1,
+        16
+      ]
+    },
+    {
+      "input": "de_tra_2",
+      "output": "de_tra_2_out",
+      "onnx_shape": [
+        1,
+        1,
+        16
+      ]
+    },
+    {
+      "input": "inter_0",
+      "output": "inter_0_out",
+      "onnx_shape": [
+        1,
+        33,
+        16
+      ]
+    },
+    {
+      "input": "inter_1",
+      "output": "inter_1_out",
+      "onnx_shape": [
+        1,
+        33,
+        16
+      ]
+    }
+  ]
+}

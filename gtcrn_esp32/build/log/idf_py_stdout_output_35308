@@ -1,0 +1,26 @@
+Command: ninja all
+[1/16] Building CXX object esp-idf/esp-dl/CMakeFiles/__idf_esp-dl.dir/dl/base/dl_kernel.cpp.obj
+[2/16] Building CXX object esp-idf/esp-dl/CMakeFiles/__idf_esp-dl.dir/dl/base/isa/c/dl_c_conv.cpp.obj
+[3/16] Building CXX object esp-idf/esp-dl/CMakeFiles/__idf_esp-dl.dir/dl/base/isa/c/dl_c_dwconv.cpp.obj
+[4/16] Building CXX object esp-idf/esp-dl/CMakeFiles/__idf_esp-dl.dir/dl/base/dl_base_conv_select.cpp.obj
+[5/16] Building CXX object esp-idf/esp-dl/CMakeFiles/__idf_esp-dl.dir/dl/base/dl_base_dwconv_loop.cpp.obj
+[6/16] Building CXX object esp-idf/esp-dl/CMakeFiles/__idf_esp-dl.dir/dl/base/dl_base_conv_loop.cpp.obj
+[7/16] Building CXX object esp-idf/esp-dl/CMakeFiles/__idf_esp-dl.dir/dl/base/isa/c/dl_c_conv_tail.cpp.obj
+[8/16] Performing build step for 'bootloader'
+[1/1] C:\WINDOWS\system32\cmd.exe /C "cd /D D:\HomeGuard\microphone\gtcrn_esp32\build\bootloader && D:\Espressif\tools\python\v6.1\venv\Scripts\python.exe D:/esp/v6.1/esp-idf/components/partition_table/check_sizes.py --offset 0x8000 bootloader 0x1000 D:/HomeGuard/microphone/gtcrn_esp32/build/bootloader/bootloader.bin"
+Bootloader binary size 0x63d0 bytes. 0xc30 bytes (11%) free.
+[9/16] No install step for 'bootloader'
+[10/16] Completed 'bootloader'
+[11/16] Building CXX object esp-idf/esp-dl/CMakeFiles/__idf_esp-dl.dir/dl/module/src/dl_module_creator.cpp.obj
+[12/16] Linking C static library esp-idf\esp-dl\libesp-dl.a
+[13/16] Generating esp-idf/esp_system/ld/sections.ld
+Skipping linker script generation, section names unchanged
+[14/16] Linking CXX executable gtcrn_esp32.elf
+[15/16] Generating binary image from built executable
+esptool v5.3.1
+Creating ESP32 image...
+Merged 3 ELF sections.
+Successfully created ESP32 image.
+Generated D:/HomeGuard/microphone/gtcrn_esp32/build/gtcrn_esp32.bin
+[16/16] C:\WINDOWS\system32\cmd.exe /C "cd /D D:\HomeGuard\microphone\gtcrn_esp32\build && D:\Espressif\tools\python\v6.1\venv\Scripts\python.exe D:/esp/v6.1/esp-idf/components/partition_table/check_sizes.py --offset 0x8000 partition --type app D:/HomeGuard/microphone/gtcrn_esp32/build/partition_table/partition-table.bin D:/HomeGuard/microphone/gtcrn_esp32/build/gtcrn_esp32.bin"
+gtcrn_esp32.bin binary size 0x102530 bytes. Smallest app partition is 0x400000 bytes. 0x2fdad0 bytes (75%) free.

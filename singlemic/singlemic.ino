@@ -4,7 +4,7 @@
 #include "reset_progress.h"
 
 // Arduino loopTask stack size in bytes (ESP32 FreeRTOS units).
-SET_LOOP_TASK_STACK_SIZE(4096);
+SET_LOOP_TASK_STACK_SIZE(8192);
 
 // Arduino 入口保持精简：应用对象管理完整生命周期。
 namespace {

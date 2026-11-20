@@ -1,0 +1,1179 @@
+Command: D:\Espressif\tools\python\v6.1\venv\Scripts\python.exe D:\esp\v6.1\esp-idf\tools/idf_monitor.py -p COM9 -b 115200 --toolchain-prefix xtensa-esp32-elf- --target esp32 --revision 0 D:\HomeGuard\microphone\gtcrn_esp32\build\gtcrn_esp32.elf D:\HomeGuard\microphone\gtcrn_esp32\build\bootloader\bootloader.elf --force-color -m 'D:\Espressif\tools\python\v6.1\venv\Scripts\python.exe' 'D:\esp\v6.1\esp-idf\tools\idf.py' '-p' 'COM9'
+ets Jul 29 2019 12:21:46
+
+rst:0x1 (POWERON_RESET),boot:0x13 (SPI_FAST_FLASH_BOOT)
+configsip: 153911750, SPIWP:0xee
+clk_drv:0x00,q_drv:0x00,d_drv:0x00,cs0_drv:0x00,hd_drv:0x00,wp_drv:0x00
+mode:DIO, clock div:1
+load:0x3fff0040,len:5380
+load:0x40078000,len:16220
+load:0x40080400,len:3868
+entry 0x400805e0
+[0;32mI (345) quad_psram: This chip is ESP32-D0WDR2-V3[0m
+[0;32mI (346) esp_psram: Found 2MB PSRAM device[0m
+[0;32mI (346) esp_psram: Speed: 80MHz[0m
+[0;32mI (346) esp_psram: PSRAM initialized, cache is in low/high (2-core) mode.[0m
+[0;32mI (352) cpu_start: Multicore app[0m
+[0;32mI (590) esp_psram: SPI SRAM memory test OK[0m
+[0;32mI (598) cpu_start: GPIO 3 and 1 are used as console UART I/O pins[0m
+[0;32mI (598) cpu_start: Pro cpu start user code[0m
+[0;32mI (598) cpu_start: cpu freq: 240000000 Hz[0m
+[0;32mI (600) app_init: Application information:[0m
+[0;32mI (604) app_init: Project name:     gtcrn_esp32[0m
+[0;32mI (608) app_init: App version:      a58c8bf-dirty[0m
+[0;32mI (613) app_init: Compile time:     Nov 19 2026 16:24:52[0m
+[0;32mI (618) app_init: ELF file SHA256:  bc8e139980ff7a85...[0m
+[0;32mI (623) app_init: ESP-IDF:          v6.1[0m
+[0;32mI (626) efuse_init: Min chip rev:     v0.0[0m
+[0;32mI (630) efuse_init: Max chip rev:     v3.99 [0m
+[0;32mI (634) efuse_init: Chip rev:         v3.1[0m
+[0;32mI (638) heap_init: Initializing. RAM available for dynamic allocation:[0m
+[0;32mI (644) heap_init: At 3FFAE6E0 len 00001920 (6 KiB): DRAM[0m
+[0;32mI (649) heap_init: At 3FFB6A30 len 000295D0 (165 KiB): DRAM[0m
+[0;32mI (655) heap_init: At 3FFE0440 len 00003AE0 (14 KiB): D/IRAM[0m
+[0;32mI (660) heap_init: At 3FFE4350 len 0001BCB0 (111 KiB): D/IRAM[0m
+[0;32mI (665) heap_init: At 4008C8DC len 00013724 (77 KiB): IRAM[0m
+[0;32mI (671) esp_psram: Adding pool of 2048K of PSRAM memory to heap allocator[0m
+[0;32mI (678) spi_flash: detected chip: generic[0m
+[0;32mI (681) spi_flash: flash io: qio[0m
+[0;32mI (685) main_task: Started on CPU0[0m
+[0;32mI (685) esp_psram: Reserving pool of 32K of internal memory for DMA/internal allocations[0m
+[0;32mI (695) main_task: Calling app_main()[0m
+[0;32mI (695) gtcrn_test: GTCRN ESP-DL model validation starting[0m
+[0;32mI (695) gtcrn_test: runtime revision: clip-direct-int16-v14[0m
+[0;32mI (705) gtcrn_test: GRU FP32 LUT SHA256: a591bf1fb184b4c8d7aef2a9c8b702a0f3ac9098a16e270ac73fe7b344a0a586[0m
+[0;32mI (715) gtcrn_test: before_model_load: internal_free=367707, internal_largest=155648, psram_free=2095004, psram_largest=2064384[0m
+[0;32mI (725) gtcrn_test: model partition: address=0x00410000 size=1048576 bytes; build model=988400 bytes[0m
+[0;32mI (735) FbsLoader: The storage free size is 3776 KB[0m
+[0;32mI (735) FbsLoader: The partition size is 1024 KB[0m
+[0;32mI (1585) gtcrn_test: after_model_load: internal_free=228427, internal_largest=102400, psram_free=1827376, psram_largest=1736704[0m
+
+[0;32mI (1585) dl::Model: model:main_graph, version:0[0m
+[0;32mI (1595) dl::Model: MODEL LOCATION IN FLASH PARTITION[0m
+[0;32mI (1595) dl::Model: +----------------+--------------+----------+--------------+[0m
+[0;32mI (1605) dl::Model: |                     memory summary                      |[0m
+[0;32mI (1615) dl::Model: +----------------+--------------+----------+--------------+[0m
+[0;32mI (1615) dl::Model: |                | internal RAM | PSRAM    | FLASH        |[0m
+[0;32mI (1625) dl::Model: +----------------+--------------+----------+--------------+[0m
+[0;32mI (1635) dl::Model: | fbs_model      |              |          | 965.22KB     |[0m
+[0;32mI (1645) dl::Model: |  -- parameter  |              |          |  -- 121.81KB |[0m
+[0;32mI (1645) dl::Model: +----------------+--------------+----------+--------------+[0m
+[0;32mI (1655) dl::Model: | parameter_copy |              |          |              |[0m
+[0;32mI (1665) dl::Model: +----------------+--------------+----------+--------------+[0m
+[0;32mI (1665) dl::Model: | variable       |              | 159.17KB |              |[0m
+[0;32mI (1675) dl::Model: +----------------+--------------+----------+--------------+[0m
+[0;32mI (1685) dl::Model: | others         | 130.68KB     | 102.18KB |              |[0m
+[0;32mI (1685) dl::Model: +----------------+--------------+----------+--------------+[0m
+[0;32mI (1695) dl::Model: | total          | 130.68KB     | 261.36KB | 965.22KB     |[0m
+[0;32mI (1705) dl::Model: +----------------+--------------+----------+--------------+[0m
+
+[0;32mI (1715) gtcrn_test: Running embedded model test vectors[0m
+GRU_TRACE 0 0 21 XW 396 485 83 -128 125 174 -1557 -773 -545 832 262 0 323 342 190 764 168 370 -157 -19 183 421 125 -94
+GRU_TRACE 0 0 21 HR 418 61 269 247 179 -431 -265 -164 -124 -142 -65 160 30 15 76 277 -130 -204 107 231 -70 121 -213 -332
+GRU_TRACE 0 0 21 GATES 3f54a1d1 3f3e7113 3f2a5859 3f0ecef4 3f24ebef 3ec110dc 3ce2d6c0 3e0d8be4 3e5a29a8 3f4b32f3 3f18535c 3f13d6bc 3f2a74d6 3f2ae69a 3f208593 3f625d82 3e889cb3 3ec543f1 be37fb26 3e604e34 3e84e3a2 3f40d639 bc8ffc34 bf23c90f
+GRU_TRACE 0 0 21 H 1481 3233 -1970 3174 3026 15376 -560 -18067
+GRU_TRACE 0 1 21 XW 264 256 26 -155 -216 77 -1401 -686 -644 868 192 -130 221 116 180 765 169 280 -233 -79 238 427 134 -105
+GRU_TRACE 0 1 21 HR 136 -129 300 314 952 42 -227 -103 168 137 510 391 -299 315 219 931 21 -124 255 354 -370 47 -481 -275
+GRU_TRACE 0 1 21 GATES 3f2f9a63 3f0fcb4a 3f276d4a 3f13b780 3f4edd7e 3f0ecef4 3d239550 3e349efc 3e90e3d2 3f6078f2 3f4c2cae 3f1fefb7 3eec89a2 3f32e769 3f2f7ecd 3f7700bf 3ea87d41 3ea4e9d0 bd6fb9c9 3e8a77c0 3e053d86 3f372d62 bebaf49c bf1e596c
+GRU_TRACE 0 1 21 H 4402 6442 -1952 5580 3264 18944 -11510 -19880
+GRU_TRACE 0 2 21 XW 105 130 -56 -151 -518 86 -1267 -637 -922 929 139 -260 216 -38 95 772 151 286 -251 -69 300 459 122 -86
+GRU_TRACE 0 2 21 HR 449 -250 465 448 1109 65 -273 -288 129 310 628 439 -542 188 320 1048 195 -226 303 379 -417 28 -486 -361
+GRU_TRACE 0 2 21 GATES 3f3f3369 3ee222f6 3f3091bd 3f241e2c 3f42a2b0 3f12bd47 3d40d0d0 3e106e00 3e337634 3f6b17ee 3f513975 3f16265c 3eb1256c 3f129df6 3f3135b9 3f78e263 3eb15928 3e1acde3 bbbfff70 3e949a50 3e97586b 3f3ac2dc beca59fe bf316201
+GRU_TRACE 0 2 21 H 6161 5611 -1406 6991 4803 21062 -12883 -22307
+GRU_TRACE 0 3 21 XW 101 223 -108 -75 -504 216 -1195 -695 -918 742 114 -202 326 -172 -3 778 81 360 -228 -9 273 387 37 0
+GRU_TRACE 0 3 21 HR 519 -281 524 515 1223 136 -215 -309 130 361 707 530 -571 183 375 1123 228 -236 341 441 -431 -7 -517 -337
+GRU_TRACE 0 3 21 GATES 3f453d2e 3ef183f8 3f3150fc 3f33d903 3f4d888d 3f2a5859 3d753680 3dfca720 3e34e968 3f6564d2 3f551f52 3f27a72e 3ec3e480 3f015ffd 3f2c8e92 3f79e694 3e6d97d6 3e90ee76 3ddf1c6c 3eff10b8 3e54da37 3f224caa bf0ad4d0 bf111022
+GRU_TRACE 0 3 21 H 6492 7547 123 9767 5199 20966 -17478 -19029
+GRU_TRACE 0 4 21 XW 124 84 -38 -206 -549 26 -1186 -572 -965 976 86 -290 134 92 51 741 172 248 -219 -67 329 476 146 -138
+GRU_TRACE 0 4 21 HR 780 -257 612 563 1257 36 -242 -500 132 460 674 520 -692 55 373 1045 312 -319 401 456 -404 -3 -490 -388
+GRU_TRACE 0 4 21 GATES 3f5a9a06 3ed52826 3f4112b3 3f2ae69a 3f4ca840 3f07bd94 3d6d3b90 3de0ad68 3e2830ac 3f7163c5 3f50b314 3f1c46ae 3e80d7f8 3f123ff4 3f322a53 3f786905 3ed1e481 bdd33efa 3e54da37 3ec7d074 3ed535ad 3f3a86e6 beba1696 bf436307
+GRU_TRACE 0 4 21 H 7506 1169 1767 10771 6893 22333 -12232 -24353
+GRU_TRACE 0 5 21 XW 131 246 -95 -127 -475 221 -1276 -744 -946 852 196 -209 361 -43 72 809 105 367 -223 -12 299 429 73 -39
+GRU_TRACE 0 5 21 HR 680 -233 612 510 1358 253 -91 -307 148 343 752 692 -501 211 416 1083 207 -272 461 581 -366 -119 -516 -273
+GRU_TRACE 0 5 21 GATES 3f546bae 3f019ffa 3f3ba434 3f2dc2c1 3f5945d1 3f375a1a 3d84a708 3de90398 3e32055c 3f696214 3f5d4373 3f38435b 3edd376a 3f14d047 3f38c42a 3f79cb91 3e898a5a 3e69ce17 3ea87d41 3f28fb7f 3e898a5a 3f1b3999 bf068acb bf08b33d
+GRU_TRACE 0 5 21 H 7727 4285 4175 14259 7182 21634 -16898 -18278
+GRU_TRACE 0 6 21 XW 144 191 -52 -200 -465 135 -1298 -680 -980 989 210 -246 267 107 132 784 160 310 -224 -49 321 478 127 -113
+GRU_TRACE 0 6 21 HR 1007 -167 716 589 1368 61 -153 -576 157 483 662 660 -658 20 399 939 313 -369 538 583 -332 -84 -489 -342
+GRU_TRACE 0 6 21 GATES 3f678c21 3f02ffdc 3f4909fb 3f2e69dd 3f5a8a0d 3f183483 3d6363d0 3da23900 3e2af41c 3f725429 3f588faf 3f311a71 3ea2bd30 3f0fcb4a 3f3d00b2 3f77731c 3ec8a94d bd9bb2f1 3ed88158 3f195081 3ecb31d7 3f2fcf7b bedaf673 bf332f6c
+GRU_TRACE 0 6 21 H 8216 976 6254 15969 8034 21987 -14174 -22567
+GRU_TRACE 0 7 21 XW 169 257 -95 -198 -490 249 -1288 -780 -966 901 268 -205 377 64 126 828 121 356 -240 -16 331 437 91 -76
+GRU_TRACE 0 7 21 HR 974 -148 712 538 1434 210 -69 -416 195 385 747 771 -585 124 389 946 255 -339 610 675 -300 -167 -498 -286
+GRU_TRACE 0 7 21 GATES 3f673319 3f0d92e3 3f44f92a 3f29010e 3f5d073c 3f35d167 3d8718a0 3db49cf8 3e39e918 3f6cca21 3f610227 3f40541c 3eccb41e 3f173d4e 3f3b720e 3f783c57 3ea151c1 3da79fca 3f057401 3f3e6b38 3ec7d074 3f141670 befa8731 bf18fe51
+GRU_TRACE 0 7 21 H 8420 1739 8751 18825 8683 21108 -15911 -19846
+GRU_TRACE 0 8 21 XW 191 295 -58 -199 -383 225 -1359 -765 -964 967 271 -198 365 164 144 820 141 365 -203 -16 320 469 112 -96
+GRU_TRACE 0 8 21 HR 1176 -89 769 569 1442 127 -73 -528 213 427 711 785 -650 31 363 838 295 -388 684 710 -256 -174 -478 -309
+GRU_TRACE 0 8 21 GATES 3f6f6b1f 3f19687e 3f4ce5b6 3f2c564a 3f63462f 3f2a5859 3d6b7e00 3d97c058 3e3feda4 3f7037ba 3f5f359c 3f424530 3eba88d2 3f1815a6 3f3aa88a 3f7655ff 3ebaf49c 3affffeb 3f2540bb 3f453d8d 3ed535ad 3f1d1bc9 bedd6869 bf2540bb
+GRU_TRACE 0 8 21 H 8650 1068 11227 20924 9240 20774 -14270 -21056
+GRU_TRACE 0 9 21 XW 165 287 -82 -168 -422 245 -1322 -775 -972 912 259 -197 386 77 120 817 122 377 -213 -7 311 449 88 -67
+GRU_TRACE 0 9 21 HR 1209 -43 772 562 1472 157 -50 -466 262 390 747 843 -659 51 327 793 281 -373 758 765 -234 -204 -488 -292
+GRU_TRACE 0 9 21 GATES 3f6fa114 3f1def82 3f4b32f3 3f2ef495 3f62d2a3 3f2fd17d 3d837230 3da6a730 3e4cbb00 3f6d5669 3f6086c2 3f4781a3 3ebd5282 3f0feacd 3f3493bd 3f756ce2 3eab28c3 3d77b288 3f35340d 3f5160cf 3ed2b94f 3f12c03a beec9a9f bf170d28
+GRU_TRACE 0 9 21 H 8797 1418 13695 22784 9724 20151 -15087 -19475
+[0;32mI (2245) gru_isolated: GRU_ISOLATED /dpgrnn1/inter_rnn/rnn1/GRU changed=0/2640 max_lsb=0[0m
+
+[0;32mI (2265) dl::Model: Test max_error = 0.0005 (default)[0m
+[0;32mI (2325) dl::Model: Testing output /Gather_output_0.[0m
+[0;32mI (2325) dl::Model: GRU_DIAG OUTPUT /Gather_output_0: changed=0/2570 max_lsb=0 exponent=-9 first=-1[0m
+[0;32mI (2325) dl::Model: Testing output /Gather_1_output_0.[0m
+[0;32mI (2335) dl::Model: GRU_DIAG OUTPUT /Gather_1_output_0: changed=0/2570 max_lsb=0 exponent=-9 first=-1[0m
+[0;32mI (2345) dl::Model: Testing output /Transpose_output_0.[0m
+[0;32mI (2345) dl::Model: GRU_DIAG OUTPUT /Transpose_output_0: changed=0/2570 max_lsb=0 exponent=-9 first=-1[0m
+[0;32mI (2355) dl::Model: Testing output /Transpose_1_output_0.[0m
+[0;32mI (2355) dl::Model: GRU_DIAG OUTPUT /Transpose_1_output_0: changed=0/2570 max_lsb=0 exponent=-9 first=-1[0m
+[0;32mI (2375) dl::Model: Testing output /Pow_output_0.[0m
+[0;32mI (2385) dl::Model: Testing output /Pow_1_output_0.[0m
+[0;32mI (2385) dl::Model: Testing output /Add_output_0.[0m
+[0;32mI (2385) dl::Model: GRU_DIAG OUTPUT /Add_output_0: changed=0/2570 max_lsb=0 exponent=-3 first=-1[0m
+[0;32mI (2385) dl::Model: Testing output /Add_1_output_0.[0m
+[0;32mI (2395) dl::Model: GRU_DIAG OUTPUT /Add_1_output_0: changed=0/2570 max_lsb=0 exponent=-3 first=-1[0m
+[0;32mI (2405) dl::Model: Testing output /Sqrt_output_0.[0m
+[0;32mI (2415) dl::Model: Testing output /Concat_output_0.[0m
+[0;32mI (2415) dl::Model: GRU_DIAG OUTPUT /Concat_output_0: changed=0/7710 max_lsb=0 exponent=-9 first=-1[0m
+[0;32mI (2425) dl::Model: Testing output /Slice_output_0.[0m
+[0;32mI (2425) dl::Model: GRU_DIAG OUTPUT /Slice_output_0: changed=0/1950 max_lsb=0 exponent=-9 first=-1[0m
+[0;32mI (2435) dl::Model: Testing output /Slice_1_output_0.[0m
+[0;32mI (2445) dl::Model: GRU_DIAG OUTPUT /Slice_1_output_0: changed=0/5760 max_lsb=0 exponent=-9 first=-1[0m
+[0;32mI (2455) dl::Model: Testing output /erb_fc/MatMul_output_0.[0m
+[0;32mI (2455) dl::Model: GRU_DIAG OUTPUT /erb_fc/MatMul_output_0: changed=0/1920 max_lsb=0 exponent=-9 first=-1[0m
+[0;32mI (2465) dl::Model: Testing output /Concat_1_output_0.[0m
+[0;32mI (2465) dl::Model: GRU_DIAG OUTPUT /Concat_1_output_0: changed=0/3870 max_lsb=0 exponent=-9 first=-1[0m
+[0;32mI (2475) dl::Model: Testing output /sfe/unfold/Pad_output_0.[0m
+[0;32mI (2485) dl::Model: GRU_DIAG OUTPUT /sfe/unfold/Pad_output_0: changed=0/3930 max_lsb=0 exponent=-9 first=-1[0m
+[0;32mI (2495) dl::Model: Testing output /sfe/unfold/Gather_5_output_0.[0m
+[0;32mI (2495) dl::Model: GRU_DIAG OUTPUT /sfe/unfold/Gather_5_output_0: changed=0/11610 max_lsb=0 exponent=-9 first=-1[0m
+[0;32mI (2515) dl::Model: Testing output /sfe/unfold/Transpose_output_0.[0m
+[0;32mI (2515) dl::Model: GRU_DIAG OUTPUT /sfe/unfold/Transpose_output_0: changed=0/11610 max_lsb=0 exponent=-9 first=-1[0m
+[0;32mI (2525) dl::Model: Testing output /sfe/Reshape_output_0.[0m
+[0;32mI (2535) dl::Model: GRU_DIAG OUTPUT /sfe/Reshape_output_0: changed=0/11610 max_lsb=0 exponent=-9 first=-1[0m
+[0;32mI (2595) dl::Model: Testing output /encoder/en_convs.0/conv/Conv_output_0.[0m
+[0;32mI (2595) dl::Model: GRU_DIAG OUTPUT /encoder/en_convs.0/conv/Conv_output_0: changed=0/10400 max_lsb=0 exponent=-10 first=-1[0m
+[0;32mI (2605) dl::Model: Testing output /encoder/en_convs.0/act/PRelu_output_0.[0m
+[0;32mI (2605) dl::Model: GRU_DIAG OUTPUT /encoder/en_convs.0/act/PRelu_output_0: changed=0/10400 max_lsb=0 exponent=-16 first=-1[0m
+[0;32mI (2615) dl::Model: Testing output /encoder/en_convs.1/conv/Conv__group_0/input.[0m
+[0;32mI (2625) dl::Model: GRU_DIAG OUTPUT /encoder/en_convs.1/conv/Conv__group_0/input: changed=0/5200 max_lsb=0 exponent=-16 first=-1[0m
+[0;32mI (2635) dl::Model: Testing output /encoder/en_convs.1/conv/Conv__group_1/input.[0m
+[0;32mI (2645) dl::Model: GRU_DIAG OUTPUT /encoder/en_convs.1/conv/Conv__group_1/input: changed=0/5200 max_lsb=0 exponent=-16 first=-1[0m
+[0;32mI (2665) dl::Model: Testing output /encoder/en_convs.1/conv/Conv__group_0/output.[0m
+[0;32mI (2665) dl::Model: GRU_DIAG OUTPUT /encoder/en_convs.1/conv/Conv__group_0/output: changed=0/2640 max_lsb=0 exponent=-11 first=-1[0m
+[0;32mI (2685) dl::Model: Testing output /encoder/en_convs.1/conv/Conv__group_1/output.[0m
+[0;32mI (2685) dl::Model: GRU_DIAG OUTPUT /encoder/en_convs.1/conv/Conv__group_1/output: changed=0/2640 max_lsb=0 exponent=-11 first=-1[0m
+[0;32mI (2695) dl::Model: Testing output /encoder/en_convs.1/conv/Conv_output_0.[0m
+[0;32mI (2705) dl::Model: GRU_DIAG OUTPUT /encoder/en_convs.1/conv/Conv_output_0: changed=0/5280 max_lsb=0 exponent=-11 first=-1[0m
+[0;32mI (2715) dl::Model: Testing output /encoder/en_convs.1/act/PRelu_output_0.[0m
+[0;32mI (2725) dl::Model: GRU_DIAG OUTPUT /encoder/en_convs.1/act/PRelu_output_0: changed=0/5280 max_lsb=0 exponent=-13 first=-1[0m
+[0;32mI (2735) dl::Model: Testing output /encoder/en_convs.2/Slice_output_0.[0m
+[0;32mI (2735) dl::Model: GRU_DIAG OUTPUT /encoder/en_convs.2/Slice_output_0: changed=0/2640 max_lsb=0 exponent=-13 first=-1[0m
+[0;32mI (2755) dl::Model: Testing output /encoder/en_convs.2/sfe/unfold/Pad_output_0.[0m
+[0;32mI (2755) dl::Model: GRU_DIAG OUTPUT /encoder/en_convs.2/sfe/unfold/Pad_output_0: changed=0/2800 max_lsb=0 exponent=-13 first=-1[0m
+[0;32mI (2765) dl::Model: Testing output /encoder/en_convs.2/sfe/unfold/Gather_5_output_0.[0m
+[0;32mI (2775) dl::Model: GRU_DIAG OUTPUT /encoder/en_convs.2/sfe/unfold/Gather_5_output_0: changed=0/7920 max_lsb=0 exponent=-13 first=-1[0m
+[0;32mI (2785) dl::Model: Testing output /encoder/en_convs.2/sfe/unfold/Transpose_output_0.[0m
+[0;32mI (2795) dl::Model: GRU_DIAG OUTPUT /encoder/en_convs.2/sfe/unfold/Transpose_output_0: changed=0/7920 max_lsb=0 exponent=-13 first=-1[0m
+[0;32mI (2805) dl::Model: Testing output /encoder/en_convs.2/sfe/Reshape_output_0.[0m
+[0;32mI (2815) dl::Model: GRU_DIAG OUTPUT /encoder/en_convs.2/sfe/Reshape_output_0: changed=0/7920 max_lsb=0 exponent=-13 first=-1[0m
+[0;32mI (2825) dl::Model: Testing output /encoder/en_convs.2/point_conv1/Conv_output_0.[0m
+[0;32mI (2835) dl::Model: GRU_DIAG OUTPUT /encoder/en_convs.2/point_conv1/Conv_output_0: changed=0/5280 max_lsb=0 exponent=-11 first=-1[0m
+[0;32mI (2845) dl::Model: Testing output /encoder/en_convs.2/point_act/PRelu_output_0.[0m
+[0;32mI (2845) dl::Model: GRU_DIAG OUTPUT /encoder/en_convs.2/point_act/PRelu_output_0: changed=0/5280 max_lsb=0 exponent=-11 first=-1[0m
+[0;32mI (2865) dl::Model: Testing output /encoder/en_convs.2/depth_conv/Conv_output_0.[0m
+[0;32mI (2865) dl::Model: GRU_DIAG OUTPUT /encoder/en_convs.2/depth_conv/Conv_output_0: changed=0/5280 max_lsb=0 exponent=-11 first=-1[0m
+[0;32mI (2875) dl::Model: Testing output /encoder/en_convs.2/depth_act/PRelu_output_0.[0m
+[0;32mI (2885) dl::Model: GRU_DIAG OUTPUT /encoder/en_convs.2/depth_act/PRelu_output_0: changed=0/5280 max_lsb=0 exponent=-11 first=-1[0m
+[0;32mI (2895) dl::Model: Testing output /encoder/en_convs.2/point_conv2/Conv_output_0.[0m
+[0;32mI (2905) dl::Model: GRU_DIAG OUTPUT /encoder/en_convs.2/point_conv2/Conv_output_0: changed=0/2640 max_lsb=0 exponent=-11 first=-1[0m
+[0;32mI (2915) dl::Model: Testing output /encoder/en_convs.2/tra/Pow_output_0.[0m
+[0;32mI (2925) dl::Model: Testing output /encoder/en_convs.2/tra/ReduceMean_output_0.[0m
+[0;32mI (2925) dl::Model: GRU_DIAG OUTPUT /encoder/en_convs.2/tra/ReduceMean_output_0: changed=0/80 max_lsb=0 exponent=-11 first=-1[0m
+[0;32mI (2935) dl::Model: Testing output /encoder/en_convs.2/tra/att_gru/Transpose_output_0.[0m
+[0;32mI (2945) dl::Model: GRU_DIAG OUTPUT /encoder/en_convs.2/tra/att_gru/Transpose_output_0: changed=0/80 max_lsb=0 exponent=-11 first=-1[0m
+[0;32mI (2965) dl::Model: Testing output /encoder/en_convs.2/tra/att_gru/GRU_output_0.[0m
+[0;32mI (2965) dl::Model: GRU_DIAG OUTPUT /encoder/en_convs.2/tra/att_gru/GRU_output_0: changed=0/160 max_lsb=0 exponent=-14 first=-1[0m
+[0;32mI (3015) dl::Model: Testing output /encoder/en_convs.3/tra/att_gru/Transpose_output_0.[0m
+[0;32mI (3015) dl::Model: GRU_DIAG OUTPUT /encoder/en_convs.3/tra/att_gru/Transpose_output_0: changed=0/80 max_lsb=0 exponent=-12 first=-1[0m
+[0;32mI (3025) dl::Model: Testing output /encoder/en_convs.3/tra/att_gru/GRU_output_0.[0m
+[0;32mI (3025) dl::Model: GRU_DIAG OUTPUT /encoder/en_convs.3/tra/att_gru/GRU_output_0: changed=0/160 max_lsb=0 exponent=-15 first=-1[0m
+[0;32mI (3075) dl::Model: Testing output /encoder/en_convs.4/tra/att_gru/Transpose_output_0.[0m
+[0;32mI (3075) dl::Model: GRU_DIAG OUTPUT /encoder/en_convs.4/tra/att_gru/Transpose_output_0: changed=0/80 max_lsb=0 exponent=-11 first=-1[0m
+[0;32mI (3085) dl::Model: Testing output /encoder/en_convs.4/tra/att_gru/GRU_output_0.[0m
+[0;32mI (3085) dl::Model: GRU_DIAG OUTPUT /encoder/en_convs.4/tra/att_gru/GRU_output_0: changed=0/160 max_lsb=0 exponent=-14 first=-1[0m
+[0;32mI (3105) dl::Model: Testing output /dpgrnn1/intra_rnn/rnn1/Transpose_output_0.[0m
+[0;32mI (3105) dl::Model: GRU_DIAG OUTPUT /dpgrnn1/intra_rnn/rnn1/Transpose_output_0: changed=0/2640 max_lsb=0 exponent=-13 first=-1[0m
+[0;32mI (3115) dl::Model: Testing output /dpgrnn1/intra_rnn/rnn2/Transpose_output_0.[0m
+[0;32mI (3125) dl::Model: GRU_DIAG OUTPUT /dpgrnn1/intra_rnn/rnn2/Transpose_output_0: changed=0/2640 max_lsb=0 exponent=-13 first=-1[0m
+[0;32mI (3155) dl::Model: Testing output /dpgrnn1/intra_rnn/rnn1/GRU_output_0.[0m
+[0;32mI (3155) dl::Model: GRU_DIAG OUTPUT /dpgrnn1/intra_rnn/rnn1/GRU_output_0: changed=0/2640 max_lsb=0 exponent=-15 first=-1[0m
+[0;32mI (3185) dl::Model: Testing output /dpgrnn1/intra_rnn/rnn2/GRU_output_0.[0m
+[0;32mI (3185) dl::Model: GRU_DIAG OUTPUT /dpgrnn1/intra_rnn/rnn2/GRU_output_0: changed=0/2640 max_lsb=0 exponent=-15 first=-1[0m
+[0;32mI (3205) dl::Model: Testing output /dpgrnn1/Reshape_1_output_0.[0m
+[0;32mI (3205) dl::Model: GRU_DIAG OUTPUT /dpgrnn1/Reshape_1_output_0: changed=0/5280 max_lsb=0 exponent=-13 first=-1[0m
+[0;32mI (3225) dl::Model: Testing output /dpgrnn1/inter_rnn/rnn1/Transpose_output_0.[0m
+[0;32mI (3225) dl::Model: GRU_DIAG OUTPUT /dpgrnn1/inter_rnn/rnn1/Transpose_output_0: changed=0/2640 max_lsb=0 exponent=-12 first=-1[0m
+[0;32mI (3225) dl::Model: Testing output /dpgrnn1/inter_rnn/rnn2/Transpose_output_0.[0m
+[0;32mI (3235) dl::Model: GRU_DIAG OUTPUT /dpgrnn1/inter_rnn/rnn2/Transpose_output_0: changed=0/2640 max_lsb=0 exponent=-12 first=-1[0m
+[0;32mI (3245) dl::Model: GRU_DIAG INPUT /dpgrnn1/inter_rnn/rnn1/Transpose_output_0: changed=0/2640 max_lsb=0 exponent=-12 first=-1[0m
+[0;32mI (3285) dl::Model: Testing output /dpgrnn1/inter_rnn/rnn1/GRU_output_0.[0m
+[0;32mI (3285) dl::Model: GRU_DIAG OUTPUT /dpgrnn1/inter_rnn/rnn1/GRU_output_0: changed=0/2640 max_lsb=0 exponent=-15 first=-1[0m
+[0;32mI (3315) dl::Model: Testing output /dpgrnn1/inter_rnn/rnn2/GRU_output_0.[0m
+[0;32mI (3325) dl::Model: GRU_DIAG OUTPUT /dpgrnn1/inter_rnn/rnn2/GRU_output_0: changed=0/2640 max_lsb=0 exponent=-15 first=-1[0m
+[0;32mI (3335) dl::Model: Testing output /dpgrnn1/Transpose_2_output_0.[0m
+[0;32mI (3335) dl::Model: GRU_DIAG OUTPUT /dpgrnn1/Transpose_2_output_0: changed=0/5280 max_lsb=0 exponent=-13 first=-1[0m
+[0;32mI (3355) dl::Model: Testing output /dpgrnn2/intra_rnn/rnn1/Transpose_output_0.[0m
+[0;32mI (3355) dl::Model: GRU_DIAG OUTPUT /dpgrnn2/intra_rnn/rnn1/Transpose_output_0: changed=0/2640 max_lsb=0 exponent=-12 first=-1[0m
+[0;32mI (3365) dl::Model: Testing output /dpgrnn2/intra_rnn/rnn2/Transpose_output_0.[0m
+[0;32mI (3365) dl::Model: GRU_DIAG OUTPUT /dpgrnn2/intra_rnn/rnn2/Transpose_output_0: changed=0/2640 max_lsb=0 exponent=-12 first=-1[0m
+[0;32mI (3405) dl::Model: Testing output /dpgrnn2/intra_rnn/rnn1/GRU_output_0.[0m
+[0;32mI (3405) dl::Model: GRU_DIAG OUTPUT /dpgrnn2/intra_rnn/rnn1/GRU_output_0: changed=0/2640 max_lsb=0 exponent=-15 first=-1[0m
+[0;32mI (3435) dl::Model: Testing output /dpgrnn2/intra_rnn/rnn2/GRU_output_0.[0m
+[0;32mI (3435) dl::Model: GRU_DIAG OUTPUT /dpgrnn2/intra_rnn/rnn2/GRU_output_0: changed=0/2640 max_lsb=0 exponent=-15 first=-1[0m
+[0;32mI (3455) dl::Model: Testing output /dpgrnn2/inter_rnn/rnn1/Transpose_output_0.[0m
+[0;32mI (3455) dl::Model: GRU_DIAG OUTPUT /dpgrnn2/inter_rnn/rnn1/Transpose_output_0: changed=0/2640 max_lsb=0 exponent=-12 first=-1[0m
+[0;32mI (3465) dl::Model: Testing output /dpgrnn2/inter_rnn/rnn2/Transpose_output_0.[0m
+[0;32mI (3475) dl::Model: GRU_DIAG OUTPUT /dpgrnn2/inter_rnn/rnn2/Transpose_output_0: changed=0/2640 max_lsb=0 exponent=-12 first=-1[0m
+[0;32mI (3515) dl::Model: Testing output /dpgrnn2/inter_rnn/rnn1/GRU_output_0.[0m
+[0;32mI (3515) dl::Model: GRU_DIAG OUTPUT /dpgrnn2/inter_rnn/rnn1/GRU_output_0: changed=0/2640 max_lsb=0 exponent=-15 first=-1[0m
+[0;32mI (3545) dl::Model: Testing output /dpgrnn2/inter_rnn/rnn2/GRU_output_0.[0m
+[0;32mI (3545) dl::Model: GRU_DIAG OUTPUT /dpgrnn2/inter_rnn/rnn2/GRU_output_0: changed=0/2640 max_lsb=0 exponent=-14 first=-1[0m
+[0;32mI (3615) dl::Model: Testing output /decoder/de_convs.0/tra/att_gru/Transpose_output_0.[0m
+[0;32mI (3615) dl::Model: GRU_DIAG OUTPUT /decoder/de_convs.0/tra/att_gru/Transpose_output_0: changed=0/80 max_lsb=0 exponent=-12 first=-1[0m
+[0;32mI (3625) dl::Model: Testing output /decoder/de_convs.0/tra/att_gru/GRU_output_0.[0m
+[0;32mI (3625) dl::Model: GRU_DIAG OUTPUT /decoder/de_convs.0/tra/att_gru/GRU_output_0: changed=0/160 max_lsb=0 exponent=-15 first=-1[0m
+[0;32mI (3685) dl::Model: Testing output /decoder/de_convs.1/tra/att_gru/Transpose_output_0.[0m
+[0;32mI (3685) dl::Model: GRU_DIAG OUTPUT /decoder/de_convs.1/tra/att_gru/Transpose_output_0: changed=0/80 max_lsb=0 exponent=-7 first=-1[0m
+[0;32mI (3695) dl::Model: Testing output /decoder/de_convs.1/tra/att_gru/GRU_output_0.[0m
+[0;32mI (3705) dl::Model: GRU_DIAG OUTPUT /decoder/de_convs.1/tra/att_gru/GRU_output_0: changed=0/160 max_lsb=0 exponent=-14 first=-1[0m
+[0;32mI (3755) dl::Model: Testing output /decoder/de_convs.2/tra/att_gru/Transpose_output_0.[0m
+[0;32mI (3755) dl::Model: GRU_DIAG OUTPUT /decoder/de_convs.2/tra/att_gru/Transpose_output_0: changed=0/80 max_lsb=0 exponent=-12 first=-1[0m
+[0;32mI (3765) dl::Model: Testing output /decoder/de_convs.2/tra/att_gru/GRU_output_0.[0m
+[0;32mI (3775) dl::Model: GRU_DIAG OUTPUT /decoder/de_convs.2/tra/att_gru/GRU_output_0: changed=0/160 max_lsb=0 exponent=-14 first=-1[0m
+[0;32mI (3795) dl::Model: Testing output /decoder/de_convs.3/conv/ConvTranspose__group_0/input.[0m
+[0;32mI (3795) dl::Model: GRU_DIAG OUTPUT /decoder/de_convs.3/conv/ConvTranspose__group_0/input: changed=0/2640 max_lsb=0 exponent=-9 first=-1[0m
+[0;32mI (3805) dl::Model: Testing output /decoder/de_convs.3/conv/ConvTranspose__group_1/input.[0m
+[0;32mI (3815) dl::Model: GRU_DIAG OUTPUT /decoder/de_convs.3/conv/ConvTranspose__group_1/input: changed=0/2640 max_lsb=0 exponent=-9 first=-1[0m
+[0;32mI (3845) dl::Model: Testing output /decoder/de_convs.3/conv/ConvTranspose__group_0/output.[0m
+[0;32mI (3845) dl::Model: GRU_DIAG OUTPUT /decoder/de_convs.3/conv/ConvTranspose__group_0/output: changed=0/5200 max_lsb=0 exponent=-9 first=-1[0m
+[0;32mI (3875) dl::Model: Testing output /decoder/de_convs.3/conv/ConvTranspose__group_1/output.[0m
+[0;32mI (3885) dl::Model: GRU_DIAG OUTPUT /decoder/de_convs.3/conv/ConvTranspose__group_1/output: changed=0/5200 max_lsb=0 exponent=-9 first=-1[0m
+[0;32mI (3945) dl::Model: Testing output output.[0m
+[0;32mI (3945) dl::Model: GRU_DIAG OUTPUT output: changed=1/5140 max_lsb=1 exponent=-9 first=4345[0m
+[0;32mI (3965) dl::Model: Test Pass![0m
+[0;32mI (3965) gtcrn_test: GTCRN model test passed; profiling operators by latency[0m
+
+[0;32mI (3965) dl::Model: model:main_graph, version:0[0m
+[0;32mI (4855) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (4855) dl::Model: |                                       module summary                                        |[0m
+[0;32mI (4865) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (4875) dl::Model: | name                                                          | type             | latency  |[0m
+[0;32mI (4885) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (4905) dl::Model: | total                                                         |                  | 751587us |[0m
+[0;32mI (4905) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (4915) dl::Model: | /encoder/en_convs.0/conv/Conv                                 | Conv             | 47309us  |[0m
+[0;32mI (4925) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (4935) dl::Model: | /dpgrnn2/inter_rnn/rnn2/GRU                                   | GRU              | 28950us  |[0m
+[0;32mI (4945) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (4955) dl::Model: | /dpgrnn1/inter_rnn/rnn2/GRU                                   | GRU              | 28191us  |[0m
+[0;32mI (4965) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (4975) dl::Model: | /dpgrnn2/inter_rnn/rnn1/GRU                                   | GRU              | 28176us  |[0m
+[0;32mI (4985) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (4995) dl::Model: | /dpgrnn1/inter_rnn/rnn1/GRU                                   | GRU              | 26874us  |[0m
+[0;32mI (5005) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (5015) dl::Model: | /dpgrnn2/intra_rnn/rnn1/GRU                                   | GRU              | 24765us  |[0m
+[0;32mI (5025) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (5045) dl::Model: | /dpgrnn2/intra_rnn/rnn2/GRU                                   | GRU              | 24606us  |[0m
+[0;32mI (5055) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (5065) dl::Model: | /dpgrnn1/intra_rnn/rnn1/GRU                                   | GRU              | 24550us  |[0m
+[0;32mI (5075) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (5085) dl::Model: | /dpgrnn1/intra_rnn/rnn2/GRU                                   | GRU              | 23016us  |[0m
+[0;32mI (5095) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (5105) dl::Model: | /decoder/de_convs.3/conv/ConvTranspose__group_1/ConvTranspose | Conv             | 21791us  |[0m
+[0;32mI (5115) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (5125) dl::Model: | /decoder/de_convs.3/conv/ConvTranspose__group_0/ConvTranspose | Conv             | 21715us  |[0m
+[0;32mI (5135) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (5145) dl::Model: | /decoder/de_convs.4/conv/ConvTranspose                        | Conv             | 20192us  |[0m
+[0;32mI (5155) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (5165) dl::Model: | /encoder/en_convs.1/conv/Conv__group_0/Conv                   | Conv             | 11685us  |[0m
+[0;32mI (5175) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (5185) dl::Model: | /encoder/en_convs.1/conv/Conv__group_1/Conv                   | Conv             | 11292us  |[0m
+[0;32mI (5195) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (5205) dl::Model: | /decoder/de_convs.0/depth_conv/ConvTranspose                  | Conv             | 8832us   |[0m
+[0;32mI (5215) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (5225) dl::Model: | /decoder/de_convs.1/depth_conv/ConvTranspose                  | Conv             | 8641us   |[0m
+[0;32mI (5235) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (5245) dl::Model: | /decoder/de_convs.2/depth_conv/ConvTranspose                  | Conv             | 8104us   |[0m
+[0;32mI (5255) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (5265) dl::Model: | /encoder/en_convs.2/depth_conv/Conv                           | Conv             | 7540us   |[0m
+[0;32mI (5275) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (5285) dl::Model: | /encoder/en_convs.3/depth_conv/Conv                           | Conv             | 7342us   |[0m
+[0;32mI (5295) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (5305) dl::Model: | /encoder/en_convs.4/depth_conv/Conv                           | Conv             | 6053us   |[0m
+[0;32mI (5315) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (5325) dl::Model: | PPQ_Operation_2                                               | InsertZeros      | 6043us   |[0m
+[0;32mI (5335) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (5345) dl::Model: | /decoder/de_convs.3/bn/BatchNormalization                     | Conv             | 5803us   |[0m
+[0;32mI (5355) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (5365) dl::Model: | PPQ_Operation_3                                               | Transpose        | 5521us   |[0m
+[0;32mI (5375) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (5385) dl::Model: | /decoder/de_convs.0/Pad                                       | Pad              | 4942us   |[0m
+[0;32mI (5395) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (5405) dl::Model: | /erb_fc/MatMul                                                | MatMul           | 4919us   |[0m
+[0;32mI (5415) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (5425) dl::Model: | /sfe/unfold/Gather_5                                          | Gather           | 4891us   |[0m
+[0;32mI (5435) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (5445) dl::Model: | /decoder/de_convs.1/Pad                                       | Pad              | 4730us   |[0m
+[0;32mI (5455) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (5465) dl::Model: | /ierb_fc/MatMul                                               | MatMul           | 4478us   |[0m
+[0;32mI (5475) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (5485) dl::Model: | /decoder/de_convs.2/Pad                                       | Pad              | 4380us   |[0m
+[0;32mI (5495) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (5505) dl::Model: | PPQ_Operation_20                                              | Transpose        | 4335us   |[0m
+[0;32mI (5515) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (5525) dl::Model: | /decoder/de_convs.3/act/PRelu                                 | PRelu            | 3908us   |[0m
+[0;32mI (5535) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (5545) dl::Model: | /encoder/en_convs.0/act/PRelu                                 | PRelu            | 3884us   |[0m
+[0;32mI (5555) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (5565) dl::Model: | /encoder/en_convs.3/sfe/unfold/Gather_5                       | Gather           | 3239us   |[0m
+[0;32mI (5575) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (5585) dl::Model: | /decoder/de_convs.2/sfe/unfold/Gather_5                       | Gather           | 3221us   |[0m
+[0;32mI (5595) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (5605) dl::Model: | /decoder/de_convs.1/sfe/unfold/Gather_5                       | Gather           | 3043us   |[0m
+[0;32mI (5615) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (5625) dl::Model: | /encoder/en_convs.4/sfe/unfold/Gather_5                       | Gather           | 3013us   |[0m
+[0;32mI (5635) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (5645) dl::Model: | /encoder/en_convs.2/tra/att_gru/GRU                           | GRU              | 2869us   |[0m
+[0;32mI (5655) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (5665) dl::Model: | PPQ_Operation_24                                              | Transpose        | 2862us   |[0m
+[0;32mI (5675) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[1;31mE (5695) task_wdt: Task watchdog got triggered. The following tasks/users did not reset the watchdog in time:[0m
+[1;31mE (5695) task_wdt:  - IDLE0 (CPU 0)[0m
+[1;31mE (5695) task_wdt: Tasks currently running:[0m
+[1;31mE (5695) task_wdt: CPU 0: main[0m
+[1;31mE (5695) task_wdt: CPU 1: IDLE1[0m
+[1;31mE (5695) task_wdt: Print CPU 0 (current core) backtrace[0m
+
+
+Backtrace: 0x4016BA15:0x3FFB1330 0x40084431:0x3FFB1370 0x4000BFED:0x3FFB7950 0x40088146:0x3FFB7960 0x4018A177:0x3FFB7980 0x4018A228:0x3FFB79C0 0x40082C5A:0x3FFB79E0 0x40082EAE:0x3FFB7A20 0x4018011E:0x3FFB7A50 0x40180C17:0x3FFB7AD0 0x4008ABF5:0x3FFB7B00 0x400F2517:0x3FFB7B60 0x400F2887:0x3FFB7C90 0x400DE4AE:0x3FFB7CE0 0x400D45B1:0x3FFB7D30
+
+[0;32mI (5695) dl::Model: | /decoder/de_convs.0/sfe/unfold/Gather_5                       | Gather           | 2838us   |[0m
+[0;32mI (5755) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (5765) dl::Model: | /decoder/de_convs.1/tra/att_gru/GRU                           | GRU              | 2821us   |[0m
+[0;32mI (5775) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (5785) dl::Model: | /ReduceSum                                                    | ReduceSum        | 2817us   |[0m
+[0;32mI (5795) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (5805) dl::Model: | /encoder/en_convs.3/tra/att_gru/GRU                           | GRU              | 2784us   |[0m
+[0;32mI (5815) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (5825) dl::Model: | /encoder/en_convs.4/tra/att_gru/GRU                           | GRU              | 2772us   |[0m
+[0;32mI (5835) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (5845) dl::Model: | /decoder/de_convs.1/point_conv1/ConvTranspose                 | Conv             | 2740us   |[0m
+[0;32mI (5855) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (5865) dl::Model: | /decoder/de_convs.2/tra/att_gru/GRU                           | GRU              | 2718us   |[0m
+[0;32mI (5875) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (5885) dl::Model: | /encoder/en_convs.2/sfe/unfold/Gather_5                       | Gather           | 2710us   |[0m
+[0;32mI (5895) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (5915) dl::Model: | /decoder/de_convs.0/tra/att_gru/GRU                           | GRU              | 2691us   |[0m
+[0;32mI (5925) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (5935) dl::Model: | /decoder/Add_4                                                | Add              | 2677us   |[0m
+[0;32mI (5945) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (5955) dl::Model: | Gemm_18                                                       | Gemm             | 2543us   |[0m
+[0;32mI (5965) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (5975) dl::Model: | Gemm_14                                                       | Gemm             | 2523us   |[0m
+[0;32mI (5985) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (5995) dl::Model: | /encoder/en_convs.3/sfe/unfold/Pad                            | Pad              | 2435us   |[0m
+[0;32mI (6005) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (6015) dl::Model: | /decoder/de_convs.2/point_conv1/ConvTranspose                 | Conv             | 2430us   |[0m
+[0;32mI (6025) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (6035) dl::Model: | Gemm_16                                                       | Gemm             | 2427us   |[0m
+[0;32mI (6045) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (6055) dl::Model: | /decoder/de_convs.1/sfe/unfold/Pad                            | Pad              | 2375us   |[0m
+[0;32mI (6065) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (6075) dl::Model: | /encoder/en_convs.4/point_conv1/Conv                          | Conv             | 2369us   |[0m
+[0;32mI (6085) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (6095) dl::Model: | /encoder/en_convs.4/sfe/unfold/Pad                            | Pad              | 2326us   |[0m
+[0;32mI (6105) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (6115) dl::Model: | /decoder/de_convs.0/point_conv1/ConvTranspose                 | Conv             | 2301us   |[0m
+[0;32mI (6125) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (6135) dl::Model: | /decoder/de_convs.2/sfe/unfold/Pad                            | Pad              | 2258us   |[0m
+[0;32mI (6145) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (6155) dl::Model: | /ReduceSum_1                                                  | ReduceSum        | 2237us   |[0m
+[0;32mI (6165) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (6175) dl::Model: | Gemm_12                                                       | Gemm             | 2229us   |[0m
+[0;32mI (6185) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (6195) dl::Model: | PPQ_Operation_26                                              | Transpose        | 2224us   |[0m
+[0;32mI (6205) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (6215) dl::Model: | /decoder/de_convs.0/sfe/unfold/Pad                            | Pad              | 2218us   |[0m
+[0;32mI (6225) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (6235) dl::Model: | /encoder/en_convs.2/sfe/unfold/Pad                            | Pad              | 2205us   |[0m
+[0;32mI (6245) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (6255) dl::Model: | /Pow                                                          | Pow              | 2192us   |[0m
+[0;32mI (6265) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (6275) dl::Model: | PPQ_Operation_18                                              | Transpose        | 2183us   |[0m
+[0;32mI (6285) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (6295) dl::Model: | /encoder/en_convs.2/point_conv1/Conv                          | Conv             | 2165us   |[0m
+[0;32mI (6305) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (6315) dl::Model: | PPQ_Operation_30                                              | Transpose        | 2145us   |[0m
+[0;32mI (6325) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (6335) dl::Model: | PPQ_Operation_14                                              | Transpose        | 2128us   |[0m
+[0;32mI (6345) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (6355) dl::Model: | /encoder/en_convs.3/point_conv1/Conv                          | Conv             | 2098us   |[0m
+[0;32mI (6365) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (6375) dl::Model: | PPQ_Operation_6                                               | Transpose        | 2041us   |[0m
+[0;32mI (6385) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (6395) dl::Model: | PPQ_Operation_10                                              | Transpose        | 1974us   |[0m
+[0;32mI (6405) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (6415) dl::Model: | /encoder/en_convs.1/conv/Conv__group_1/Slice                  | Slice            | 1965us   |[0m
+[0;32mI (6425) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (6435) dl::Model: | /Transpose_2                                                  | Transpose        | 1946us   |[0m
+[0;32mI (6445) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (6455) dl::Model: | /decoder/de_convs.0/depth_act/PRelu                           | PRelu            | 1910us   |[0m
+[0;32mI (6465) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (6475) dl::Model: | /decoder/de_convs.3/conv/ConvTranspose                        | Concat           | 1905us   |[0m
+[0;32mI (6485) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (6495) dl::Model: | /decoder/de_convs.1/depth_act/PRelu                           | PRelu            | 1893us   |[0m
+[0;32mI (6505) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (6515) dl::Model: | /sfe/unfold/Transpose                                         | Transpose        | 1877us   |[0m
+[0;32mI (6525) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (6535) dl::Model: | /decoder/de_convs.1/point_act/PRelu                           | PRelu            | 1872us   |[0m
+[0;32mI (6545) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (6565) dl::Model: | /encoder/en_convs.4/point_act/PRelu                           | PRelu            | 1858us   |[0m
+[0;32mI (6575) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (6585) dl::Model: | /decoder/de_convs.0/point_act/PRelu                           | PRelu            | 1847us   |[0m
+[0;32mI (6595) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (6605) dl::Model: | /encoder/en_convs.1/act/PRelu                                 | PRelu            | 1846us   |[0m
+[0;32mI (6615) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (6625) dl::Model: | /encoder/en_convs.2/depth_act/PRelu                           | PRelu            | 1837us   |[0m
+[0;32mI (6635) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (6645) dl::Model: | PPQ_Operation_32                                              | Transpose        | 1830us   |[0m
+[0;32mI (6655) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (6665) dl::Model: | /encoder/en_convs.4/depth_act/PRelu                           | PRelu            | 1823us   |[0m
+[0;32mI (6675) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (6685) dl::Model: | /encoder/en_convs.2/point_act/PRelu                           | PRelu            | 1813us   |[0m
+[0;32mI (6695) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (6705) dl::Model: | /encoder/en_convs.3/depth_act/PRelu                           | PRelu            | 1809us   |[0m
+[0;32mI (6715) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (6725) dl::Model: | /dpgrnn1/Transpose                                            | Transpose        | 1803us   |[0m
+[0;32mI (6735) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (6745) dl::Model: | /decoder/de_convs.2/point_act/PRelu                           | PRelu            | 1800us   |[0m
+[0;32mI (6755) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (6765) dl::Model: | PPQ_Operation_25                                              | Transpose        | 1784us   |[0m
+[0;32mI (6775) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (6785) dl::Model: | /encoder/en_convs.3/point_act/PRelu                           | PRelu            | 1777us   |[0m
+[0;32mI (6795) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (6805) dl::Model: | /decoder/de_convs.0/tra/Pow                                   | Pow              | 1755us   |[0m
+[0;32mI (6815) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (6825) dl::Model: | /decoder/de_convs.2/depth_act/PRelu                           | PRelu            | 1742us   |[0m
+[0;32mI (6835) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (6845) dl::Model: | PPQ_Operation_19                                              | Transpose        | 1717us   |[0m
+[0;32mI (6855) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (6865) dl::Model: | /Gather                                                       | Gather           | 1715us   |[0m
+[0;32mI (6875) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (6885) dl::Model: | /decoder/de_convs.2/tra/Pow                                   | Pow              | 1691us   |[0m
+[0;32mI (6895) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (6905) dl::Model: | /decoder/de_convs.1/tra/Pow                                   | Pow              | 1671us   |[0m
+[0;32mI (6915) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (6925) dl::Model: | PPQ_Operation_66                                              | RequantizeLinear | 1620us   |[0m
+[0;32mI (6935) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (6945) dl::Model: | /encoder/en_convs.4/tra/Pow                                   | Pow              | 1558us   |[0m
+[0;32mI (6955) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (6965) dl::Model: | /dpgrnn2/Transpose_2                                          | Transpose        | 1556us   |[0m
+[0;32mI (6975) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (6985) dl::Model: | PPQ_Operation_31                                              | Transpose        | 1549us   |[0m
+[0;32mI (6995) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (7005) dl::Model: | /encoder/en_convs.2/tra/Pow                                   | Pow              | 1510us   |[0m
+[0;32mI (7015) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (7025) dl::Model: | /Pow_1                                                        | Pow              | 1495us   |[0m
+[0;32mI (7035) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (7045) dl::Model: | /encoder/en_convs.3/tra/Pow                                   | Pow              | 1454us   |[0m
+[0;32mI (7055) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (7065) dl::Model: | /Gather_1                                                     | Gather           | 1430us   |[0m
+[0;32mI (7075) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (7085) dl::Model: | _dpgrnn2_inter_ln_LayerNormalization_Scale                    | Mul              | 1406us   |[0m
+[0;32mI (7095) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (7105) dl::Model: | /decoder/de_convs.0/point_conv2/ConvTranspose                 | Conv             | 1404us   |[0m
+[0;32mI (7115) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (7125) dl::Model: | /decoder/de_convs.1/point_conv2/ConvTranspose                 | Conv             | 1391us   |[0m
+[0;32mI (7135) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (7145) dl::Model: | /encoder/en_convs.4/point_conv2/Conv                          | Conv             | 1367us   |[0m
+[0;32mI (7155) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (7165) dl::Model: | /encoder/en_convs.1/conv/Conv__group_0/Slice                  | Slice            | 1356us   |[0m
+[0;32mI (7175) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (7185) dl::Model: | /Mul                                                          | Mul              | 1350us   |[0m
+[0;32mI (7195) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (7215) dl::Model: | /Transpose_3                                                  | Transpose        | 1313us   |[0m
+[0;32mI (7225) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (7235) dl::Model: | _dpgrnn2_inter_ln_LayerNormalization_Div                      | Div              | 1309us   |[0m
+[0;32mI (7245) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (7255) dl::Model: | /decoder/Add                                                  | Add              | 1306us   |[0m
+[0;32mI (7265) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (7275) dl::Model: | /decoder/Add_1                                                | Add              | 1291us   |[0m
+[0;32mI (7285) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (7295) dl::Model: | /decoder/Add_2                                                | Add              | 1277us   |[0m
+[0;32mI (7305) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (7315) dl::Model: | /Concat                                                       | Concat           | 1271us   |[0m
+[0;32mI (7325) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (7335) dl::Model: | PPQ_Operation_55                                              | RequantizeLinear | 1268us   |[0m
+[0;32mI (7345) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (7355) dl::Model: | /encoder/en_convs.3/sfe/unfold/Transpose                      | Transpose        | 1263us   |[0m
+[0;32mI (7365) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (7375) dl::Model: | /decoder/de_convs.2/point_conv2/ConvTranspose                 | Conv             | 1259us   |[0m
+[0;32mI (7385) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (7395) dl::Model: | PPQ_Operation_36                                              | Transpose        | 1241us   |[0m
+[0;32mI (7405) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (7415) dl::Model: | /decoder/de_convs.1/sfe/unfold/Transpose                      | Transpose        | 1236us   |[0m
+[0;32mI (7425) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (7435) dl::Model: | /encoder/en_convs.3/point_conv2/Conv                          | Conv             | 1236us   |[0m
+[0;32mI (7445) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (7455) dl::Model: | /encoder/en_convs.4/sfe/unfold/Transpose                      | Transpose        | 1232us   |[0m
+[0;32mI (7465) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (7475) dl::Model: | PPQ_Operation_4                                               | Transpose        | 1205us   |[0m
+[0;32mI (7485) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (7495) dl::Model: | /encoder/en_convs.2/sfe/unfold/Transpose                      | Transpose        | 1180us   |[0m
+[0;32mI (7505) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (7515) dl::Model: | _dpgrnn2_intra_ln_LayerNormalization_Div                      | Div              | 1178us   |[0m
+[0;32mI (7525) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (7535) dl::Model: | /decoder/Add_3                                                | Add              | 1155us   |[0m
+[0;32mI (7545) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (7555) dl::Model: | /dpgrnn2/Add                                                  | Add              | 1126us   |[0m
+[0;32mI (7565) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (7575) dl::Model: | /Transpose_1                                                  | Transpose        | 1124us   |[0m
+[0;32mI (7585) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (7595) dl::Model: | _dpgrnn2_inter_ln_LayerNormalization_Square                   | Mul              | 1100us   |[0m
+[0;32mI (7605) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (7615) dl::Model: | /sfe/unfold/Pad                                               | Pad              | 1087us   |[0m
+[0;32mI (7625) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (7635) dl::Model: | PPQ_Operation_63                                              | RequantizeLinear | 1077us   |[0m
+[0;32mI (7645) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (7655) dl::Model: | /Transpose                                                    | Transpose        | 1074us   |[0m
+[0;32mI (7665) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (7675) dl::Model: | /encoder/en_convs.2/point_conv2/Conv                          | Conv             | 1073us   |[0m
+[0;32mI (7685) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (7695) dl::Model: | /encoder/en_convs.4/tra/Mul                                   | Mul              | 1067us   |[0m
+[0;32mI (7705) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (7715) dl::Model: | /dpgrnn2/Add_1                                                | Add              | 1057us   |[0m
+[0;32mI (7725) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (7735) dl::Model: | /decoder/de_convs.0/sfe/unfold/Transpose                      | Transpose        | 1056us   |[0m
+[0;32mI (7745) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (7755) dl::Model: | /encoder/en_convs.2/tra/Mul                                   | Mul              | 1048us   |[0m
+[0;32mI (7765) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (7775) dl::Model: | _dpgrnn1_intra_ln_LayerNormalization_Scale                    | Mul              | 1040us   |[0m
+[0;32mI (7785) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (7795) dl::Model: | /encoder/en_convs.3/tra/Mul                                   | Mul              | 1040us   |[0m
+[0;32mI (7805) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (7815) dl::Model: | _dpgrnn1_inter_ln_LayerNormalization_Div                      | Div              | 1034us   |[0m
+[0;32mI (7825) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (7835) dl::Model: | PPQ_Operation_54                                              | RequantizeLinear | 1034us   |[0m
+[0;32mI (7845) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (7865) dl::Model: | _dpgrnn2_intra_ln_LayerNormalization_Scale                    | Mul              | 1033us   |[0m
+[0;32mI (7875) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (7885) dl::Model: | _dpgrnn2_intra_ln_LayerNormalization_Square                   | Mul              | 1027us   |[0m
+[0;32mI (7895) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (7905) dl::Model: | _dpgrnn2_intra_ln_LayerNormalization_Sub                      | Sub              | 1025us   |[0m
+[0;32mI (7915) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (7925) dl::Model: | _dpgrnn1_intra_ln_LayerNormalization_Div                      | Div              | 1025us   |[0m
+[0;32mI (7935) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (7945) dl::Model: | _dpgrnn1_inter_ln_LayerNormalization_Scale                    | Mul              | 1016us   |[0m
+[0;32mI (7955) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (7965) dl::Model: | /decoder/de_convs.1/tra/Mul                                   | Mul              | 1015us   |[0m
+[0;32mI (7975) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (7985) dl::Model: | /mask/Mul_2                                                   | Mul              | 1012us   |[0m
+[0;32mI (7995) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (8005) dl::Model: | PPQ_Operation_68                                              | DequantizeLinear | 1010us   |[0m
+[0;32mI (8015) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (8025) dl::Model: | /Mul_2                                                        | Mul              | 1010us   |[0m
+[0;32mI (8035) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (8045) dl::Model: | /decoder/de_convs.0/tra/Mul                                   | Mul              | 1006us   |[0m
+[0;32mI (8055) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (8065) dl::Model: | /decoder/de_convs.2/tra/Mul                                   | Mul              | 1004us   |[0m
+[0;32mI (8075) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (8085) dl::Model: | /dpgrnn1/inter_rnn/Concat                                     | Concat           | 1003us   |[0m
+[0;32mI (8095) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (8105) dl::Model: | _dpgrnn1_inter_ln_LayerNormalization_Square                   | Mul              | 970us    |[0m
+[0;32mI (8115) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (8125) dl::Model: | /dpgrnn2/intra_rnn/Concat                                     | Concat           | 960us    |[0m
+[0;32mI (8135) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (8145) dl::Model: | /dpgrnn1/Add_1                                                | Add              | 960us    |[0m
+[0;32mI (8155) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (8165) dl::Model: | _dpgrnn1_intra_ln_LayerNormalization_Square                   | Mul              | 955us    |[0m
+[0;32mI (8175) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (8185) dl::Model: | /dpgrnn1/Add                                                  | Add              | 943us    |[0m
+[0;32mI (8195) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (8205) dl::Model: | PPQ_Operation_65                                              | RequantizeLinear | 937us    |[0m
+[0;32mI (8215) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (8225) dl::Model: | /dpgrnn1/intra_rnn/Concat                                     | Concat           | 924us    |[0m
+[0;32mI (8235) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (8245) dl::Model: | /Mul_1                                                        | Mul              | 921us    |[0m
+[0;32mI (8255) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (8265) dl::Model: | /encoder/en_convs.1/conv/Conv                                 | Concat           | 900us    |[0m
+[0;32mI (8275) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (8285) dl::Model: | /mask/Add                                                     | Add              | 897us    |[0m
+[0;32mI (8295) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (8305) dl::Model: | _dpgrnn2_inter_ln_LayerNormalization_Sub                      | Sub              | 893us    |[0m
+[0;32mI (8315) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (8325) dl::Model: | /encoder/en_convs.2/Transpose_1                               | Transpose        | 877us    |[0m
+[0;32mI (8335) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (8345) dl::Model: | /dpgrnn2/inter_rnn/Concat                                     | Concat           | 876us    |[0m
+[0;32mI (8355) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (8365) dl::Model: | PPQ_Operation_35                                              | Transpose        | 869us    |[0m
+[0;32mI (8375) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (8385) dl::Model: | /mask/Mul                                                     | Mul              | 848us    |[0m
+[0;32mI (8395) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (8405) dl::Model: | /mask/Mul_3                                                   | Mul              | 843us    |[0m
+[0;32mI (8415) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (8425) dl::Model: | PPQ_Operation_5                                               | Transpose        | 840us    |[0m
+[0;32mI (8435) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (8445) dl::Model: | PPQ_Operation_9                                               | Transpose        | 838us    |[0m
+[0;32mI (8455) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (8465) dl::Model: | /decoder/de_convs.2/sfe/unfold/Transpose                      | Transpose        | 835us    |[0m
+[0;32mI (8475) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (8485) dl::Model: | /Slice_1                                                      | Slice            | 828us    |[0m
+[0;32mI (8495) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (8515) dl::Model: | /Sqrt                                                         | Sqrt             | 826us    |[0m
+[0;32mI (8525) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (8535) dl::Model: | PPQ_Operation_60                                              | RequantizeLinear | 809us    |[0m
+[0;32mI (8545) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (8555) dl::Model: | /encoder/en_convs.3/Concat_1                                  | Concat           | 803us    |[0m
+[0;32mI (8565) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (8575) dl::Model: | PPQ_Operation_58                                              | RequantizeLinear | 801us    |[0m
+[0;32mI (8585) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (8595) dl::Model: | /Concat_2                                                     | Concat           | 793us    |[0m
+[0;32mI (8605) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (8615) dl::Model: | /dpgrnn2/inter_rnn/Slice_1                                    | Slice            | 787us    |[0m
+[0;32mI (8625) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (8635) dl::Model: | PPQ_Operation_57                                              | RequantizeLinear | 775us    |[0m
+[0;32mI (8645) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (8655) dl::Model: | PPQ_Operation_62                                              | RequantizeLinear | 768us    |[0m
+[0;32mI (8665) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (8675) dl::Model: | /dpgrnn2/inter_rnn/Slice                                      | Slice            | 755us    |[0m
+[0;32mI (8685) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (8695) dl::Model: | /decoder/de_convs.3/conv/ConvTranspose__group_1/Slice         | Slice            | 749us    |[0m
+[0;32mI (8705) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (8715) dl::Model: | /encoder/en_convs.2/Concat_1                                  | Concat           | 747us    |[0m
+[0;32mI (8725) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (8735) dl::Model: | _dpgrnn2_inter_ln_LayerNormalization_Bias                     | Add              | 742us    |[0m
+[0;32mI (8745) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (8755) dl::Model: | /dpgrnn1/inter_rnn/rnn1/Transpose_1                           | Transpose        | 731us    |[0m
+[0;32mI (8765) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (8775) dl::Model: | /decoder/de_convs.1/Concat_1                                  | Concat           | 718us    |[0m
+[0;32mI (8785) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (8795) dl::Model: | PPQ_Operation_67                                              | DequantizeLinear | 693us    |[0m
+[0;32mI (8805) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (8815) dl::Model: | PPQ_Operation_1                                               | InsertZeros      | 693us    |[0m
+[0;32mI (8825) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (8835) dl::Model: | /dpgrnn2/intra_rnn/Slice_1                                    | Slice            | 693us    |[0m
+[0;32mI (8845) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (8855) dl::Model: | /dpgrnn1/intra_rnn/Slice_1                                    | Slice            | 693us    |[0m
+[0;32mI (8865) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (8875) dl::Model: | /dpgrnn2/intra_rnn/Slice                                      | Slice            | 692us    |[0m
+[0;32mI (8885) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (8895) dl::Model: | _dpgrnn1_intra_ln_LayerNormalization_Sub                      | Sub              | 691us    |[0m
+[0;32mI (8905) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (8915) dl::Model: | /decoder/de_convs.3/conv/ConvTranspose__group_0/Slice         | Slice            | 690us    |[0m
+[0;32mI (8925) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (8935) dl::Model: | /decoder/de_convs.2/Concat_1                                  | Concat           | 690us    |[0m
+[0;32mI (8945) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (8955) dl::Model: | /dpgrnn1/inter_rnn/Slice_1                                    | Slice            | 680us    |[0m
+[0;32mI (8965) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (8975) dl::Model: | /dpgrnn1/inter_rnn/Slice                                      | Slice            | 672us    |[0m
+[0;32mI (8985) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (8995) dl::Model: | PPQ_Operation_0                                               | InsertZeros      | 669us    |[0m
+[0;32mI (9005) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (9015) dl::Model: | PPQ_Operation_23                                              | Transpose        | 668us    |[0m
+[0;32mI (9025) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (9035) dl::Model: | /dpgrnn2/inter_rnn/rnn1/Transpose_1                           | Transpose        | 665us    |[0m
+[0;32mI (9045) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (9055) dl::Model: | /dpgrnn2/intra_rnn/rnn1/Transpose                             | Transpose        | 658us    |[0m
+[0;32mI (9065) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (9075) dl::Model: | PPQ_Operation_17                                              | Transpose        | 656us    |[0m
+[0;32mI (9085) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (9095) dl::Model: | PPQ_Operation_13                                              | Transpose        | 654us    |[0m
+[0;32mI (9105) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (9115) dl::Model: | _dpgrnn1_inter_ln_LayerNormalization_Sub                      | Sub              | 653us    |[0m
+[0;32mI (9125) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (9135) dl::Model: | PPQ_Operation_29                                              | Transpose        | 653us    |[0m
+[0;32mI (9145) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (9165) dl::Model: | /mask/Mul_1                                                   | Mul              | 650us    |[0m
+[0;32mI (9175) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (9185) dl::Model: | /decoder/de_convs.0/Transpose_1                               | Transpose        | 639us    |[0m
+[0;32mI (9195) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (9205) dl::Model: | /Concat_1                                                     | Concat           | 629us    |[0m
+[0;32mI (9215) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (9225) dl::Model: | _dpgrnn2_intra_ln_LayerNormalization_Bias                     | Add              | 628us    |[0m
+[0;32mI (9235) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (9245) dl::Model: | /encoder/en_convs.4/Transpose_1                               | Transpose        | 616us    |[0m
+[0;32mI (9255) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (9265) dl::Model: | _dpgrnn1_intra_ln_LayerNormalization_Bias                     | Add              | 604us    |[0m
+[0;32mI (9275) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (9285) dl::Model: | _dpgrnn1_inter_ln_LayerNormalization_Bias                     | Add              | 593us    |[0m
+[0;32mI (9295) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (9305) dl::Model: | /dpgrnn2/inter_rnn/rnn1/Transpose                             | Transpose        | 587us    |[0m
+[0;32mI (9315) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (9325) dl::Model: | /mask/Sub                                                     | Sub              | 583us    |[0m
+[0;32mI (9335) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (9345) dl::Model: | /encoder/en_convs.2/Slice_1                                   | Slice            | 571us    |[0m
+[0;32mI (9355) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (9365) dl::Model: | /mask/Concat                                                  | Concat           | 571us    |[0m
+[0;32mI (9375) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (9385) dl::Model: | /decoder/de_convs.2/Slice_1                                   | Slice            | 555us    |[0m
+[0;32mI (9395) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (9405) dl::Model: | /dpgrnn1/intra_rnn/rnn1/Transpose                             | Transpose        | 554us    |[0m
+[0;32mI (9415) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (9425) dl::Model: | /decoder/de_convs.0/Concat_1                                  | Concat           | 553us    |[0m
+[0;32mI (9435) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (9445) dl::Model: | /encoder/en_convs.4/Concat_1                                  | Concat           | 538us    |[0m
+[0;32mI (9455) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (9465) dl::Model: | Gemm_26                                                       | Gemm             | 529us    |[0m
+[0;32mI (9475) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (9485) dl::Model: | /dpgrnn1/Transpose_1                                          | Transpose        | 528us    |[0m
+[0;32mI (9495) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (9505) dl::Model: | Gemm_6                                                        | Gemm             | 526us    |[0m
+[0;32mI (9515) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (9525) dl::Model: | Gemm_20                                                       | Gemm             | 523us    |[0m
+[0;32mI (9535) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (9545) dl::Model: | /dpgrnn1/inter_rnn/rnn1/Transpose                             | Transpose        | 523us    |[0m
+[0;32mI (9555) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (9565) dl::Model: | Gemm_23                                                       | Gemm             | 519us    |[0m
+[0;32mI (9575) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (9585) dl::Model: | /dpgrnn2/Transpose                                            | Transpose        | 518us    |[0m
+[0;32mI (9595) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (9605) dl::Model: | Gemm_9                                                        | Gemm             | 516us    |[0m
+[0;32mI (9615) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (9625) dl::Model: | PPQ_Operation_78                                              | DequantizeLinear | 512us    |[0m
+[0;32mI (9635) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (9645) dl::Model: | /dpgrnn1/Transpose_2                                          | Transpose        | 506us    |[0m
+[0;32mI (9655) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (9665) dl::Model: | /ReduceMean                                                   | ReduceMean       | 499us    |[0m
+[0;32mI (9675) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (9685) dl::Model: | /dpgrnn2/Transpose_1                                          | Transpose        | 498us    |[0m
+[0;32mI (9695) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (9705) dl::Model: | /dpgrnn2/intra_rnn/rnn2/Transpose                             | Transpose        | 497us    |[0m
+[0;32mI (9715) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (9725) dl::Model: | /dpgrnn1/intra_rnn/Slice                                      | Slice            | 496us    |[0m
+[0;32mI (9735) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (9745) dl::Model: | /mask/Gather_2                                                | Gather           | 495us    |[0m
+[0;32mI (9755) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (9765) dl::Model: | PPQ_Operation_39                                              | QuantizeLinear   | 494us    |[0m
+[0;32mI (9775) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (9785) dl::Model: | /dpgrnn1/inter_rnn/rnn2/Transpose                             | Transpose        | 486us    |[0m
+[0;32mI (9795) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (9815) dl::Model: | /decoder/de_convs.0/Slice                                     | Slice            | 484us    |[0m
+[0;32mI (9825) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (9835) dl::Model: | /dpgrnn2/intra_rnn/rnn1/Transpose_1                           | Transpose        | 481us    |[0m
+[0;32mI (9845) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (9855) dl::Model: | /dpgrnn2/intra_rnn/rnn1/Transpose_2                           | Transpose        | 464us    |[0m
+[0;32mI (9865) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (9875) dl::Model: | _dpgrnn1_intra_ln_LayerNormalization_ReduceMean               | ReduceMean       | 461us    |[0m
+[0;32mI (9885) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (9895) dl::Model: | /dpgrnn1/inter_rnn/rnn2/Transpose_1                           | Transpose        | 460us    |[0m
+[0;32mI (9905) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (9915) dl::Model: | /dpgrnn1/intra_rnn/rnn1/Transpose_1                           | Transpose        | 459us    |[0m
+[0;32mI (9925) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (9935) dl::Model: | PPQ_Operation_61                                              | RequantizeLinear | 458us    |[0m
+[0;32mI (9945) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (9955) dl::Model: | _dpgrnn1_inter_ln_LayerNormalization_ReduceMean               | ReduceMean       | 454us    |[0m
+[0;32mI (9965) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (9975) dl::Model: | _dpgrnn2_inter_ln_LayerNormalization_ReduceMean               | ReduceMean       | 451us    |[0m
+[0;32mI (9985) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (9995) dl::Model: | Gemm_3                                                        | Gemm             | 446us    |[0m
+[0;32mI (10005) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (10015) dl::Model: | /decoder/de_convs.2/Slice                                     | Slice            | 442us    |[0m
+[0;32mI (10025) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (10035) dl::Model: | _dpgrnn2_intra_ln_LayerNormalization_ReduceMean               | ReduceMean       | 437us    |[0m
+[0;32mI (10045) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (10055) dl::Model: | /dpgrnn2/intra_rnn/rnn2/Transpose_1                           | Transpose        | 436us    |[0m
+[0;32mI (10065) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (10075) dl::Model: | /decoder/de_convs.0/tra/ReduceMean                            | ReduceMean       | 435us    |[0m
+[0;32mI (10085) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (10095) dl::Model: | /decoder/de_convs.0/Slice_1                                   | Slice            | 434us    |[0m
+[0;32mI (10105) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (10115) dl::Model: | /dpgrnn2/inter_rnn/rnn2/Transpose_1                           | Transpose        | 427us    |[0m
+[0;32mI (10125) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (10135) dl::Model: | /encoder/en_convs.4/tra/ReduceMean                            | ReduceMean       | 426us    |[0m
+[0;32mI (10145) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (10155) dl::Model: | /encoder/en_convs.3/Slice                                     | Slice            | 426us    |[0m
+[0;32mI (10165) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (10175) dl::Model: | PPQ_Operation_38                                              | Transpose        | 425us    |[0m
+[0;32mI (10185) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (10195) dl::Model: | _dpgrnn2_intra_ln_LayerNormalization_ReduceVariance           | ReduceMean       | 420us    |[0m
+[0;32mI (10205) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (10215) dl::Model: | /decoder/de_convs.2/tra/ReduceMean                            | ReduceMean       | 420us    |[0m
+[0;32mI (10225) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (10235) dl::Model: | PPQ_Operation_69                                              | DequantizeLinear | 415us    |[0m
+[0;32mI (10245) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (10255) dl::Model: | PPQ_Operation_56                                              | RequantizeLinear | 414us    |[0m
+[0;32mI (10265) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (10275) dl::Model: | _dpgrnn2_inter_ln_LayerNormalization_ReduceVariance           | ReduceMean       | 413us    |[0m
+[0;32mI (10285) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (10305) dl::Model: | /encoder/en_convs.2/tra/ReduceMean                            | ReduceMean       | 410us    |[0m
+[0;32mI (10315) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (10325) dl::Model: | /encoder/en_convs.3/tra/ReduceMean                            | ReduceMean       | 408us    |[0m
+[0;32mI (10335) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (10345) dl::Model: | /decoder/de_convs.1/tra/ReduceMean                            | ReduceMean       | 408us    |[0m
+[0;32mI (10355) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (10365) dl::Model: | /encoder/en_convs.2/Slice                                     | Slice            | 407us    |[0m
+[0;32mI (10375) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (10385) dl::Model: | PPQ_Operation_40                                              | QuantizeLinear   | 402us    |[0m
+[0;32mI (10395) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (10405) dl::Model: | /dpgrnn2/intra_rnn/rnn2/Transpose_2                           | Transpose        | 398us    |[0m
+[0;32mI (10415) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (10425) dl::Model: | /encoder/en_convs.2/sfe/unfold/Gather_4                       | Gather           | 397us    |[0m
+[0;32mI (10435) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (10445) dl::Model: | PPQ_Operation_64                                              | RequantizeLinear | 397us    |[0m
+[0;32mI (10455) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (10465) dl::Model: | /encoder/en_convs.3/Transpose_1                               | Transpose        | 392us    |[0m
+[0;32mI (10475) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (10485) dl::Model: | /decoder/de_convs.4/act/Tanh                                  | LUT              | 392us    |[0m
+[0;32mI (10495) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (10505) dl::Model: | /decoder/de_convs.1/Slice                                     | Slice            | 382us    |[0m
+[0;32mI (10515) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (10525) dl::Model: | PPQ_Operation_51                                              | QuantizeLinear   | 382us    |[0m
+[0;32mI (10535) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (10545) dl::Model: | _dpgrnn1_inter_ln_LayerNormalization_ReduceVariance           | ReduceMean       | 377us    |[0m
+[0;32mI (10555) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (10565) dl::Model: | PPQ_Operation_59                                              | RequantizeLinear | 373us    |[0m
+[0;32mI (10575) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (10585) dl::Model: | PPQ_Operation_37                                              | Transpose        | 372us    |[0m
+[0;32mI (10595) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (10605) dl::Model: | _dpgrnn1_intra_ln_LayerNormalization_ReduceVariance           | ReduceMean       | 371us    |[0m
+[0;32mI (10615) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (10625) dl::Model: | PPQ_Operation_53                                              | RequantizeLinear | 365us    |[0m
+[0;32mI (10635) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (10645) dl::Model: | /mask/Gather                                                  | Gather           | 364us    |[0m
+[0;32mI (10655) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (10665) dl::Model: | /encoder/en_convs.4/Slice                                     | Slice            | 352us    |[0m
+[0;32mI (10675) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (10685)E (10695) task_wdt: Task watchdog got triggered. The following tasks/users did not reset the watchdog in time:[0m
+[1;31mE (10695) task_wdt:  - IDLE0 (CPU 0)[0m
+[1;31mE (10695) task_wdt: Tasks currently running:[0m
+[1;31mE (10695) task_wdt: CPU 0: main[0m
+[1;31mE (10695) task_wdt: CPU 1: IDLE1[0m
+[1;31mE (10695) task_wdt: Print CPU 0 (current core) backtrace[0m
+
+
+Backtrace: 0x4016BA15:0x3FFB1330 0x40084431:0x3FFB1370 0x400D5F9E:0x3FFB7940 0x400D6525:0x3FFB7970 0x400D16E9:0x3FFB79A0 0x400D91D5:0x3FFB79C0 0x400D4CD6:0x3FFB79E0 0x40188991:0x3FFB7A00 0x4017F601:0x3FFB7A30 0x40180179:0x3FFB7A50 0x40180C17:0x3FFB7AD0 0x4008ABF5:0x3FFB7B00 0x400F2517:0x3FFB7B60 0x400F2887:0x3FFB7C90 0x400DE4AE:0x3FFB7CE0 0x400D45B1:0x3FFB7D30
+
+ dl::Model: | PPQ_Operation_44                                              | QuantizeLinear   | 347us    |
+[0;32mI (10755) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (10765) dl::Model: | PPQ_Operation_72                                              | DequantizeLinear | 344us    |[0m
+[0;32mI (10785) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (10795) dl::Model: | PPQ_Operation_50                                              | QuantizeLinear   | 342us    |[0m
+[0;32mI (10805) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (10815) dl::Model: | PPQ_Operation_71                                              | DequantizeLinear | 335us    |[0m
+[0;32mI (10825) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (10835) dl::Model: | PPQ_Operation_49                                              | QuantizeLinear   | 332us    |[0m
+[0;32mI (10845) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (10855) dl::Model: | PPQ_Operation_41                                              | QuantizeLinear   | 321us    |[0m
+[0;32mI (10865) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (10875) dl::Model: | PPQ_Operation_43                                              | QuantizeLinear   | 315us    |[0m
+[0;32mI (10885) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (10895) dl::Model: | PPQ_Operation_42                                              | QuantizeLinear   | 307us    |[0m
+[0;32mI (10905) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (10915) dl::Model: | /decoder/de_convs.2/Transpose_1                               | Transpose        | 302us    |[0m
+[0;32mI (10925) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (10935) dl::Model: | /mask/Gather_3                                                | Gather           | 294us    |[0m
+[0;32mI (10945) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (10955) dl::Model: | /Add                                                          | Add              | 293us    |[0m
+[0;32mI (10965) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (10975) dl::Model: | /dpgrnn2/inter_rnn/rnn2/Transpose                             | Transpose        | 290us    |[0m
+[0;32mI (10985) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (10995) dl::Model: | /decoder/de_convs.1/Transpose_1                               | Transpose        | 288us    |[0m
+[0;32mI (11005) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (11015) dl::Model: | /dpgrnn1/intra_rnn/rnn2/Transpose                             | Transpose        | 283us    |[0m
+[0;32mI (11025) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (11035) dl::Model: | /encoder/en_convs.3/sfe/unfold/Gather_4                       | Gather           | 279us    |[0m
+[0;32mI (11045) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (11055) dl::Model: | /encoder/en_convs.4/Slice_1                                   | Slice            | 279us    |[0m
+[0;32mI (11065) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (11075) dl::Model: | /dpgrnn1/intra_rnn/rnn2/Transpose_1                           | Transpose        | 275us    |[0m
+[0;32mI (11085) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (11095) dl::Model: | /encoder/en_convs.3/Slice_1                                   | Slice            | 274us    |[0m
+[0;32mI (11105) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (11115) dl::Model: | PPQ_Operation_79                                              | DequantizeLinear | 272us    |[0m
+[0;32mI (11125) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (11135) dl::Model: | /encoder/en_convs.4/sfe/unfold/Gather_4                       | Gather           | 268us    |[0m
+[0;32mI (11145) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (11155) dl::Model: | /Slice                                                        | Slice            | 260us    |[0m
+[0;32mI (11165) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (11175) dl::Model: | /dpgrnn1/intra_rnn/rnn2/Transpose_2                           | Transpose        | 258us    |[0m
+[0;32mI (11185) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (11205) dl::Model: | PPQ_Operation_77                                              | DequantizeLinear | 244us    |[0m
+[0;32mI (11215) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (11225) dl::Model: | /mask/Gather_1                                                | Gather           | 239us    |[0m
+[0;32mI (11235) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (11245) dl::Model: | /Slice_2                                                      | Slice            | 238us    |[0m
+[0;32mI (11255) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (11265) dl::Model: | /decoder/de_convs.1/Slice_1                                   | Slice            | 229us    |[0m
+[0;32mI (11275) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (11285) dl::Model: | /Add_1                                                        | Add              | 214us    |[0m
+[0;32mI (11295) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (11305) dl::Model: | PPQ_Operation_70                                              | DequantizeLinear | 212us    |[0m
+[0;32mI (11315) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (11325) dl::Model: | /dpgrnn1/intra_rnn/rnn1/Transpose_2                           | Transpose        | 208us    |[0m
+[0;32mI (11335) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (11345) dl::Model: | /sfe/unfold/Gather_4                                          | Gather           | 206us    |[0m
+[0;32mI (11355) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (11365) dl::Model: | /ReduceMean_1                                                 | ReduceMean       | 205us    |[0m
+[0;32mI (11375) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (11385) dl::Model: | /Slice_3                                                      | Slice            | 182us    |[0m
+[0;32mI (11395) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (11405) dl::Model: | /decoder/de_convs.0/sfe/unfold/Gather_4                       | Gather           | 169us    |[0m
+[0;32mI (11415) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (11425) dl::Model: | /decoder/de_convs.1/sfe/unfold/Gather_4                       | Gather           | 157us    |[0m
+[0;32mI (11435) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (11445) dl::Model: | /Add_2                                                        | Add              | 155us    |[0m
+[0;32mI (11455) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (11465) dl::Model: | /decoder/de_convs.2/sfe/unfold/Gather_4                       | Gather           | 149us    |[0m
+[0;32mI (11475) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (11485) dl::Model: | _dpgrnn2_intra_ln_LayerNormalization_AddEpsilon               | Add              | 148us    |[0m
+[0;32mI (11495) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (11505) dl::Model: | _dpgrnn2_inter_ln_LayerNormalization_AddEpsilon               | Add              | 145us    |[0m
+[0;32mI (11515) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (11525) dl::Model: | _dpgrnn1_intra_ln_LayerNormalization_AddEpsilon               | Add              | 141us    |[0m
+[0;32mI (11535) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (11545) dl::Model: | _dpgrnn1_inter_ln_LayerNormalization_AddEpsilon               | Add              | 138us    |[0m
+[0;32mI (11555) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (11565) dl::Model: | PPQ_Operation_27                                              | Transpose        | 120us    |[0m
+[0;32mI (11575) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (11585) dl::Model: | PPQ_Operation_21                                              | Transpose        | 114us    |[0m
+[0;32mI (11595) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (11605) dl::Model: | PPQ_Operation_33                                              | Transpose        | 113us    |[0m
+[0;32mI (11615) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (11635) dl::Model: | /decoder/de_convs.2/tra/att_act/Sigmoid                       | LUT              | 111us    |[0m
+[0;32mI (11645) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (11655) dl::Model: | /Add_3                                                        | Add              | 108us    |[0m
+[0;32mI (11665) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (11675) dl::Model: | PPQ_Operation_15                                              | Transpose        | 107us    |[0m
+[0;32mI (11685) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (11695) dl::Model: | PPQ_Operation_7                                               | Transpose        | 102us    |[0m
+[0;32mI (11705) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (11715) dl::Model: | PPQ_Operation_11                                              | Transpose        | 96us     |[0m
+[0;32mI (11725) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (11735) dl::Model: | /encoder/en_convs.4/tra/att_act/Sigmoid                       | LUT              | 93us     |[0m
+[0;32mI (11745) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (11755) dl::Model: | /decoder/de_convs.0/tra/att_act/Sigmoid                       | LUT              | 92us     |[0m
+[0;32mI (11765) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (11775) dl::Model: | /encoder/en_convs.3/tra/att_gru/Transpose_1                   | Transpose        | 92us     |[0m
+[0;32mI (11785) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (11795) dl::Model: | /decoder/de_convs.1/tra/att_act/Sigmoid                       | LUT              | 90us     |[0m
+[0;32mI (11805) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (11815) dl::Model: | /encoder/en_convs.4/tra/att_gru/Transpose_1                   | Transpose        | 81us     |[0m
+[0;32mI (11825) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (11835) dl::Model: | /encoder/en_convs.3/tra/att_act/Sigmoid                       | LUT              | 79us     |[0m
+[0;32mI (11845) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (11855) dl::Model: | /encoder/en_convs.2/tra/att_act/Sigmoid                       | LUT              | 78us     |[0m
+[0;32mI (11865) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (11875) dl::Model: | /encoder/en_convs.2/tra/att_gru/Transpose_1                   | Transpose        | 73us     |[0m
+[0;32mI (11885) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (11895) dl::Model: | PPQ_Operation_12                                              | Transpose        | 70us     |[0m
+[0;32mI (11905) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (11915) dl::Model: | /encoder/en_convs.3/tra/Transpose_1                           | Transpose        | 69us     |[0m
+[0;32mI (11925) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (11935) dl::Model: | /decoder/de_convs.1/tra/att_gru/Transpose_1                   | Transpose        | 64us     |[0m
+[0;32mI (11945) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (11955) dl::Model: | PPQ_Operation_80                                              | DequantizeLinear | 64us     |[0m
+[0;32mI (11965) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (11975) dl::Model: | PPQ_Operation_8                                               | Transpose        | 63us     |[0m
+[0;32mI (11985) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (11995) dl::Model: | /encoder/en_convs.4/tra/Transpose_1                           | Transpose        | 63us     |[0m
+[0;32mI (12005) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (12015) dl::Model: | /decoder/de_convs.2/tra/att_gru/Transpose_1                   | Transpose        | 63us     |[0m
+[0;32mI (12025) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (12035) dl::Model: | /decoder/de_convs.0/tra/att_gru/Transpose_1                   | Transpose        | 63us     |[0m
+[0;32mI (12055) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (12065) dl::Model: | PPQ_Operation_28                                              | Transpose        | 61us     |[0m
+[0;32mI (12075) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (12085) dl::Model: | PPQ_Operation_16                                              | Transpose        | 60us     |[0m
+[0;32mI (12095) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (12105) dl::Model: | /decoder/de_convs.0/tra/Transpose_1                           | Transpose        | 57us     |[0m
+[0;32mI (12115) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (12125) dl::Model: | PPQ_Operation_75                                              | DequantizeLinear | 57us     |[0m
+[0;32mI (12135) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (12145) dl::Model: | PPQ_Operation_74                                              | DequantizeLinear | 57us     |[0m
+[0;32mI (12155) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (12165) dl::Model: | PPQ_Operation_73                                              | DequantizeLinear | 56us     |[0m
+[0;32mI (12175) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (12185) dl::Model: | PPQ_Operation_22                                              | Transpose        | 56us     |[0m
+[0;32mI (12195) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (12205) dl::Model: | PPQ_Operation_34                                              | Transpose        | 56us     |[0m
+[0;32mI (12215) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (12225) dl::Model: | /Clip                                                         | Clip             | 55us     |[0m
+[0;32mI (12235) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (12245) dl::Model: | /decoder/de_convs.2/tra/Transpose_1                           | Transpose        | 54us     |[0m
+[0;32mI (12255) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (12265) dl::Model: | /decoder/de_convs.1/tra/Transpose_1                           | Transpose        | 53us     |[0m
+[0;32mI (12275) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (12285) dl::Model: | PPQ_Operation_76                                              | DequantizeLinear | 52us     |[0m
+[0;32mI (12295) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (12305) dl::Model: | /encoder/en_convs.2/tra/Transpose_1                           | Transpose        | 48us     |[0m
+[0;32mI (12315) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (12325) dl::Model: | /Div                                                          | Div              | 42us     |[0m
+[0;32mI (12335) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (12345) dl::Model: | _dpgrnn2_intra_ln_LayerNormalization_Sqrt                     | Sqrt             | 40us     |[0m
+[0;32mI (12355) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (12365) dl::Model: | _dpgrnn2_inter_ln_LayerNormalization_Sqrt                     | Sqrt             | 39us     |[0m
+[0;32mI (12375) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (12385) dl::Model: | _dpgrnn1_intra_ln_LayerNormalization_Sqrt                     | Sqrt             | 39us     |[0m
+[0;32mI (12395) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (12405) dl::Model: | _dpgrnn1_inter_ln_LayerNormalization_Sqrt                     | Sqrt             | 35us     |[0m
+[0;32mI (12415) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (12425) dl::Model: | /decoder/de_convs.2/sfe/Reshape                               | Reshape          | 35us     |[0m
+[0;32mI (12435) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (12445) dl::Model: | /decoder/de_convs.1/sfe/Reshape                               | Reshape          | 34us     |[0m
+[0;32mI (12455) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (12475) dl::Model: | /sfe/Reshape                                                  | Reshape          | 33us     |[0m
+[0;32mI (12485) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (12495) dl::Model: | /mask/Unsqueeze                                               | Unsqueeze        | 33us     |[0m
+[0;32mI (12505) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (12515) dl::Model: | /encoder/en_convs.2/sfe/Reshape                               | Reshape          | 33us     |[0m
+[0;32mI (12525) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (12535) dl::Model: | /encoder/en_convs.2/Unsqueeze_1                               | Unsqueeze        | 33us     |[0m
+[0;32mI (12545) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (12555) dl::Model: | /Sqrt_1                                                       | Sqrt             | 33us     |[0m
+[0;32mI (12565) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (12575) dl::Model: | Reshape_13                                                    | Reshape          | 32us     |[0m
+[0;32mI (12585) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (12595) dl::Model: | /decoder/de_convs.2/Unsqueeze_1                               | Unsqueeze        | 32us     |[0m
+[0;32mI (12605) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (12615) dl::Model: | Reshape_17                                                    | Reshape          | 31us     |[0m
+[0;32mI (12625) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (12635) dl::Model: | /encoder/en_convs.3/Unsqueeze_1                               | Unsqueeze        | 29us     |[0m
+[0;32mI (12645) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (12655) dl::Model: | /dpgrnn1/Reshape_2                                            | Reshape          | 29us     |[0m
+[0;32mI (12665) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (12675) dl::Model: | /dpgrnn1/intra_rnn/rnn1/Reshape                               | Reshape          | 29us     |[0m
+[0;32mI (12685) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (12695) dl::Model: | /encoder/en_convs.4/Unsqueeze_1                               | Unsqueeze        | 27us     |[0m
+[0;32mI (12705) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (12715) dl::Model: | /decoder/de_convs.0/sfe/Reshape                               | Reshape          | 27us     |[0m
+[0;32mI (12725) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (12735) dl::Model: | /encoder/en_convs.4/sfe/Reshape                               | Reshape          | 27us     |[0m
+[0;32mI (12745) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (12755) dl::Model: | /dpgrnn2/intra_rnn/rnn1/Reshape                               | Reshape          | 26us     |[0m
+[0;32mI (12765) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (12775) dl::Model: | /decoder/de_convs.1/Unsqueeze_1                               | Unsqueeze        | 26us     |[0m
+[0;32mI (12785) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (12795) dl::Model: | PPQ_Operation_46                                              | QuantizeLinear   | 26us     |[0m
+[0;32mI (12805) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (12815) dl::Model: | /encoder/en_convs.3/sfe/Reshape                               | Reshape          | 26us     |[0m
+[0;32mI (12825) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (12835) dl::Model: | /dpgrnn2/Reshape_3                                            | Reshape          | 26us     |[0m
+[0;32mI (12845) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (12855) dl::Model: | /decoder/de_convs.0/Reshape_2                                 | Reshape          | 26us     |[0m
+[0;32mI (12865) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (12875) dl::Model: | /decoder/de_convs.0/Unsqueeze_1                               | Unsqueeze        | 25us     |[0m
+[0;32mI (12895) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (12905) dl::Model: | PPQ_Operation_48                                              | QuantizeLinear   | 25us     |[0m
+[0;32mI (12915) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (12925) dl::Model: | /encoder/en_convs.2/Reshape_2                                 | Reshape          | 25us     |[0m
+[0;32mI (12935) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (12945) dl::Model: | /decoder/de_convs.2/tra/att_gru/Squeeze                       | Squeeze          | 25us     |[0m
+[0;32mI (12955) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (12965) dl::Model: | /dpgrnn1/inter_rnn/rnn1/Squeeze                               | Squeeze          | 25us     |[0m
+[0;32mI (12975) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (12985) dl::Model: | /encoder/en_convs.4/Reshape_2                                 | Reshape          | 24us     |[0m
+[0;32mI (12995) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (13005) dl::Model: | /encoder/en_convs.3/Reshape_2                                 | Reshape          | 24us     |[0m
+[0;32mI (13015) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (13025) dl::Model: | /encoder/en_convs.3/tra/att_gru/Squeeze                       | Squeeze          | 24us     |[0m
+[0;32mI (13035) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (13045) dl::Model: | PPQ_Operation_52                                              | QuantizeLinear   | 23us     |[0m
+[0;32mI (13055) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (13065) dl::Model: | /encoder/en_convs.2/tra/att_gru/Squeeze                       | Squeeze          | 23us     |[0m
+[0;32mI (13075) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (13085) dl::Model: | PPQ_Operation_45                                              | QuantizeLinear   | 23us     |[0m
+[0;32mI (13095) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (13105) dl::Model: | /dpgrnn1/Reshape                                              | Reshape          | 22us     |[0m
+[0;32mI (13115) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (13125) dl::Model: | /encoder/en_convs.4/tra/att_gru/Squeeze                       | Squeeze          | 22us     |[0m
+[0;32mI (13135) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (13145) dl::Model: | /dpgrnn2/Reshape                                              | Reshape          | 22us     |[0m
+[0;32mI (13155) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (13165) dl::Model: | PPQ_Operation_47                                              | QuantizeLinear   | 22us     |[0m
+[0;32mI (13175) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (13185) dl::Model: | /Unsqueeze_1                                                  | Unsqueeze        | 22us     |[0m
+[0;32mI (13195) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (13205) dl::Model: | /decoder/de_convs.0/tra/att_gru/Squeeze                       | Squeeze          | 21us     |[0m
+[0;32mI (13215) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (13225) dl::Model: | /dpgrnn2/inter_rnn/rnn1/Squeeze                               | Squeeze          | 21us     |[0m
+[0;32mI (13235) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (13245) dl::Model: | /decoder/de_convs.1/Reshape_2                                 | Reshape          | 21us     |[0m
+[0;32mI (13255) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (13265) dl::Model: | /dpgrnn2/Reshape_1                                            | Reshape          | 21us     |[0m
+[0;32mI (13275) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (13285) dl::Model: | /dpgrnn1/Reshape_1                                            | Reshape          | 20us     |[0m
+[0;32mI (13295) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (13315) dl::Model: | Reshape_19                                                    | Reshape          | 19us     |[0m
+[0;32mI (13325) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (13335) dl::Model: | Reshape_5                                                     | Reshape          | 18us     |[0m
+[0;32mI (13345) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (13355) dl::Model: | /decoder/de_convs.2/Reshape_2                                 | Reshape          | 18us     |[0m
+[0;32mI (13365) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (13375) dl::Model: | Reshape_15                                                    | Reshape          | 18us     |[0m
+[0;32mI (13385) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (13395) dl::Model: | /dpgrnn1/Reshape_3                                            | Reshape          | 18us     |[0m
+[0;32mI (13405) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (13415) dl::Model: | /Unsqueeze_2                                                  | Unsqueeze        | 17us     |[0m
+[0;32mI (13425) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (13435) dl::Model: | /decoder/de_convs.1/tra/att_gru/Squeeze                       | Squeeze          | 17us     |[0m
+[0;32mI (13445) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (13455) dl::Model: | /dpgrnn2/Reshape_2                                            | Reshape          | 17us     |[0m
+[0;32mI (13465) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (13475) dl::Model: | /decoder/de_convs.0/tra/Unsqueeze                             | Unsqueeze        | 17us     |[0m
+[0;32mI (13485) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (13495) dl::Model: | Reshape_11                                                    | Reshape          | 17us     |[0m
+[0;32mI (13505) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (13515) dl::Model: | /encoder/en_convs.3/tra/Unsqueeze                             | Unsqueeze        | 17us     |[0m
+[0;32mI (13525) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (13535) dl::Model: | /encoder/en_convs.4/tra/Unsqueeze                             | Unsqueeze        | 17us     |[0m
+[0;32mI (13545) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (13555) dl::Model: | /Unsqueeze                                                    | Unsqueeze        | 17us     |[0m
+[0;32mI (13565) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (13575) dl::Model: | /Unsqueeze_5                                                  | Unsqueeze        | 16us     |[0m
+[0;32mI (13585) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (13595) dl::Model: | Reshape_25                                                    | Reshape          | 16us     |[0m
+[0;32mI (13605) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (13615) dl::Model: | /decoder/de_convs.1/tra/Unsqueeze                             | Unsqueeze        | 15us     |[0m
+[0;32mI (13625) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (13635) dl::Model: | Reshape_2                                                     | Reshape          | 15us     |[0m
+[0;32mI (13645) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (13655) dl::Model: | /decoder/de_convs.2/Unsqueeze                                 | Unsqueeze        | 14us     |[0m
+[0;32mI (13665) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (13675) dl::Model: | Reshape_8                                                     | Reshape          | 14us     |[0m
+[0;32mI (13685) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (13695) dl::Model: | Reshape_7                                                     | Reshape          | 14us     |[0m
+[0;32mI (13705) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (13715) dl::Model: | Reshape_22                                                    | Reshape          | 14us     |[0m
+[0;32mI (13735) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (13745) dl::Model: | /encoder/en_convs.2/tra/Unsqueeze                             | Unsqueeze        | 14us     |[0m
+[0;32mI (13755) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (13765) dl::Model: | /decoder/de_convs.2/tra/Unsqueeze                             | Unsqueeze        | 13us     |[0m
+[0;32mI (13775) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (13785) dl::Model: | /decoder/de_convs.1/Unsqueeze                                 | Unsqueeze        | 12us     |[0m
+[0;32mI (13795) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (13805) dl::Model: | /dpgrnn2/inter_rnn/rnn2/Squeeze                               | Squeeze          | 11us     |[0m
+[0;32mI (13815) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (13825) dl::Model: | /mask/Unsqueeze_1                                             | Unsqueeze        | 11us     |[0m
+[0;32mI (13835) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (13845) dl::Model: | /encoder/en_convs.4/Unsqueeze                                 | Unsqueeze        | 10us     |[0m
+[0;32mI (13855) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (13865) dl::Model: | Reshape_21                                                    | Reshape          | 10us     |[0m
+[0;32mI (13875) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (13885) dl::Model: | /encoder/en_convs.2/Unsqueeze                                 | Unsqueeze        | 10us     |[0m
+[0;32mI (13895) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (13905) dl::Model: | Reshape_4                                                     | Reshape          | 9us      |[0m
+[0;32mI (13915) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (13925) dl::Model: | Reshape_10                                                    | Reshape          | 9us      |[0m
+[0;32mI (13935) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (13945) dl::Model: | Reshape_24                                                    | Reshape          | 8us      |[0m
+[0;32mI (13955) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (13965) dl::Model: | /encoder/en_convs.3/Unsqueeze                                 | Unsqueeze        | 8us      |[0m
+[0;32mI (13975) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (13985) dl::Model: | /decoder/de_convs.0/Unsqueeze                                 | Unsqueeze        | 8us      |[0m
+[0;32mI (13995) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (14005) dl::Model: | /dpgrnn1/inter_rnn/rnn2/Squeeze                               | Squeeze          | 8us      |[0m
+[0;32mI (14015) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (14025) dl::Model: | Reshape_27                                                    | Reshape          | 7us      |[0m
+[0;32mI (14035) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (14045) dl::Model: | /dpgrnn2/intra_rnn/rnn2/Reshape                               | Reshape          | 6us      |[0m
+[0;32mI (14055) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+[0;32mI (14065) dl::Model: | /dpgrnn1/intra_rnn/rnn2/Reshape                               | Reshape          | 5us      |[0m
+[0;32mI (14075) dl::Model: +---------------------------------------------------------------+------------------+----------+[0m
+
+[0;32mI (14095) gtcrn_test: after_model_profile: internal_free=226675, internal_largest=90112, psram_free=1749892, psram_largest=1671168[0m
+[0;32mI (14135) gtcrn_test: GTCRN validation completed successfully[0m
+[0;32mI (14135) main_task: Returned from app_main()[0m

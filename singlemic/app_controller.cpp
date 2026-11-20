@@ -3,7 +3,9 @@
 #include <Arduino.h>
 #include <esp_heap_caps.h>
 #include <esp_ota_ops.h>
+#include <esp_app_desc.h>
 #include <esp_system.h>
+#include <algorithm>
 
 #include "cfg.h"
 #include "reset_progress.h"
@@ -53,14 +55,15 @@ MicrophoneApplication::MicrophoneApplication()
     : pairingButton_(IOConfig::USER_KEY_1),
       recordButton_(IOConfig::USER_KEY_2) {}
 
-// 初始化流程：串口信息 -> 按键 -> I2S -> BLE。失败时停在安全状态并报错。
+// 初始化流程：串口信息 -> 按键 -> 蓝牙 -> 模型预检与采集流水线。
 void MicrophoneApplication::begin() {
+  Serial.println("Audio pipeline revision: singlemic-gtcrn-stream-v1");
   Serial.printf("ESP32 reset reason=%d free_heap=%u min_heap=%u\n",
                 static_cast<int>(esp_reset_reason()),
                 static_cast<unsigned>(ESP.getFreeHeap()),
                 static_cast<unsigned>(ESP.getMinFreeHeap()));
   char elfSha256[65] = {};
-  esp_ota_get_app_elf_sha256(elfSha256, sizeof(elfSha256));
+  esp_app_get_elf_sha256(elfSha256, sizeof(elfSha256));
   Serial.printf("Firmware ELF SHA256=%s SDK=%s\n", elfSha256,
                 esp_get_idf_version());
 #if SINGLEMIC_TRANSPORT_MODE == SINGLEMIC_TRANSPORT_CLASSIC_SPP
@@ -92,19 +95,24 @@ void MicrophoneApplication::begin() {
                 static_cast<unsigned long>(AudioConfig::SAMPLE_RATE),
                 AudioConfig::RAW_SHIFT);
 
-  const bool inputReady = checkInternalHeap("before_i2s") && sampler_.begin() &&
-                          checkInternalHeap("after_i2s");
+  const bool inputReady = checkInternalHeap("before_audio_pipeline");
 #endif
   if (!inputReady || !transport_.begin() ||
       !checkInternalHeap("after_transport_begin")) {
     Serial.println("Fatal initialization error; halting");
     while (true) delay(1000);
   }
+#if !SINGLEMIC_FIXED_PCM_TEST
+  if (!pipeline_.begin()) {
+    Serial.println("Fatal audio pipeline initialization error; halting");
+    while (true) delay(1000);
+  }
+#endif
 }
 
 // 只有连接并订阅通知后才开始录音，避免数据发出前接收端尚未就绪。
 void MicrophoneApplication::startRecording() {
-  if (recording_) return;
+  if (recording_ || stopping_) return;
   if (!transport_.connected()) {
     Serial.println("Recording start refused: transport is not connected");
     return;
@@ -118,11 +126,17 @@ void MicrophoneApplication::startRecording() {
     Serial.println("Recording start refused: internal heap corruption detected");
     return;
   }
-#if !SINGLEMIC_FIXED_PCM_TEST
-  processor_.reset();
-#endif
   ResetProgress::main(ResetProgress::Stage::START_QUEUE);
   if (transport_.startStream()) {
+#if !SINGLEMIC_FIXED_PCM_TEST
+    if (++audioSession_ == 0) ++audioSession_;
+    if (!pipeline_.start(audioSession_)) {
+      transport_.stopStream();
+      Serial.println("Audio pipeline refused recording start");
+      return;
+    }
+#endif
+    packetizer_.reset();
     recording_ = true;
 #if SINGLEMIC_FIXED_PCM_TEST
     fixedSource_.reset(micros());
@@ -138,12 +152,20 @@ void MicrophoneApplication::startRecording() {
 // END 与此前已排队的数据使用同一 FIFO，保证接收端最后收到结束标记。
 void MicrophoneApplication::stopRecording() {
   if (!recording_) return;
+#if !SINGLEMIC_FIXED_PCM_TEST
+  if (!stopping_) {
+    pipeline_.requestStop();
+    stopping_ = true;
+    Serial.println("Recording stopping: draining audio before END");
+  }
+#else
   if (transport_.stopStream()) {
     recording_ = false;
     Serial.println("Recording stopped");
   } else {
     Serial.println("Recording stop packet dropped");
   }
+#endif
 }
 
 // 按键采用按下沿触发，短按一次切换录音状态。
@@ -193,8 +215,14 @@ void MicrophoneApplication::handlePairingButton(uint32_t now) {
 void MicrophoneApplication::printStats(uint32_t now) {
   if (now - lastStatsMs_ < 1000) return;
   lastStatsMs_ = now;
+#if !SINGLEMIC_FIXED_PCM_TEST
+  pipeline_.printStats();
+#endif
 #if SINGLEMIC_TRANSPORT_MODE == SINGLEMIC_TRANSPORT_CLASSIC_SPP
   const SppTransportStats stats = transport_.stats();
+  Serial.printf("Audio capture-to-SPP-submit: samples=%lu p95_us=%lu max_us=%lu\n",
+      static_cast<unsigned long>(stats.latencySamples), static_cast<unsigned long>(stats.latencyP95Us),
+      static_cast<unsigned long>(stats.latencyMaxUs));
   Serial.printf(
       "SPP=%s pairing=%s recording=%s state=%s frames=%u queue=%u high=%u/%u "
       "sent=%lu bytes=%lu dropped=%lu queue_full=%lu "
@@ -273,7 +301,7 @@ void MicrophoneApplication::printStats(uint32_t now) {
 #endif
 }
 
-// 主处理流程按“状态/按键 -> I2S -> DSP -> BLE 队列”顺序执行。
+// 主循环处理状态和按键，再将独立音频流水线的输出分包送入蓝牙队列。
 void MicrophoneApplication::loop() {
   const uint32_t now = millis();
   ResetProgress::main(ResetProgress::Stage::BUTTONS);
@@ -281,7 +309,13 @@ void MicrophoneApplication::loop() {
   recordButton_.update(now);
   handlePairingButton(now);
   ResetProgress::main(ResetProgress::Stage::SNAPSHOT);
-  recording_ = transport_.streamActive();
+  if (recording_ && !transport_.streamActive()) {
+#if !SINGLEMIC_FIXED_PCM_TEST
+    pipeline_.abort();
+#endif
+    recording_ = stopping_ = false;
+    packetizer_.reset();
+  }
   ResetProgress::main(ResetProgress::Stage::STATS);
   printStats(now);
 #if SINGLEMIC_TRANSPORT_MODE == SINGLEMIC_TRANSPORT_CLASSIC_SPP
@@ -319,23 +353,23 @@ void MicrophoneApplication::loop() {
   ResetProgress::main(ResetProgress::Stage::ENQUEUE);
   transport_.enqueueAudio(pcmSamples_, frames);
 #else
-  // 每个输出帧消耗 DECIMATION_FACTOR 个原始输入采样。
-  ResetProgress::main(ResetProgress::Stage::I2S_READ);
-  if (!sampler_.readSamples(rawSamples_, frames * AudioConfig::DECIMATION_FACTOR)) {
-    transport_.recordCaptureFailure();
-    delay(5);
-    return;
+  if (!recording_) { delay(1); return; }
+  const auto emit = [this](const int32_t *samples, size_t count, int64_t captureUs) {
+    transport_.enqueueAudio(samples, count, captureUs);
+  };
+  AudioPipeline::Output output;
+  for (unsigned budget = 0; budget < DenoiseConfig::POOL_BLOCKS && pipeline_.poll(output); ++budget) {
+    packetizer_.append(output.samples, output.rawSamples, output.count,
+        output.mode == AudioPipeline::Mode::RAW, output.captureUs,
+        AudioConfig::SAMPLE_RATE, frames, emit);
+    pipeline_.release(output);
   }
-
-  ResetProgress::main(ResetProgress::Stage::SNAPSHOT);
-  if (recording_ && transport_.connected()) {
-    // I2S 读取持续进行；只有录音且链路仍连接时才做转换和排队。
-    ResetProgress::main(ResetProgress::Stage::DSP);
-    processor_.convertToPcm24(rawSamples_,
-                              frames * AudioConfig::DECIMATION_FACTOR,
-                              pcmSamples_, frames);
-    ResetProgress::main(ResetProgress::Stage::ENQUEUE);
-    transport_.enqueueAudio(pcmSamples_, frames);
+  if (pipeline_.drained()) {
+    packetizer_.flush(emit);
+    if (transport_.stopStream()) {
+      recording_ = stopping_ = false;
+      Serial.println("Recording stopped: tail drained, END queued");
+    }
   }
 #endif
 }

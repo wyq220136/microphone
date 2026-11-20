@@ -13,6 +13,7 @@
 struct TransportPacket {
   AudioProtocol::Packet packet;
   uint32_t epoch = 0, stream = 0, control = 0;
+  int64_t captureUs = 0; // Local telemetry only; never serialized on the wire.
   bool isControl() const { return packet.bytes[2] == 2 || packet.bytes[2] == 3; }
 };
 
@@ -66,7 +67,7 @@ class TransportChannel {
   bool startStream() { return enqueueControl(true); }
   bool stopStream() { return enqueueControl(false); }
 
-  bool enqueueAudio(const int32_t *samples, size_t frames) {
+  bool enqueueAudio(const int32_t *samples, size_t frames, int64_t captureUs = 0) {
     // Called synchronously from MicrophoneApplication::loop() on loopTask.
     // Full-byte Huffman and CRC run here before the completed packet enters
     // the FIFO. Never call from a Bluetooth callback, ISR or sender task.
@@ -76,6 +77,7 @@ class TransportChannel {
     TransportPacket packet;
     packet.epoch = s.epoch;
     packet.stream = stream_;
+    packet.captureUs = captureUs;
     AudioProtocol::buildAudioPacket(packet.packet, samples, frames, sequence_++);
     const Snapshot latest = snapshot();
     if (latest.epoch != s.epoch || !usable(latest)) {

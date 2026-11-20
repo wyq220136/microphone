@@ -68,7 +68,8 @@ void begin() {
     }
   }
   retained.magic = 0;
-  retained.mainWord = retained.sppWord = static_cast<uint32_t>(Stage::BOOT);
+  retained.mainWord = static_cast<uint32_t>(Stage::BOOT);
+  retained.sppWord = static_cast<uint32_t>(Stage::BOOT);
   retained.inverseMagic = ~kMagic;
   asm volatile("memw" ::: "memory");
   retained.magic = kMagic;

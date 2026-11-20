@@ -6,6 +6,8 @@
 #include "I2SSampler.h"
 #include "active_transport.h"
 #include "audio_processor.h"
+#include "audio_pipeline.h"
+#include "audio_packetizer.h"
 #include "button.h"
 #if SINGLEMIC_FIXED_PCM_TEST
 #include "fixed_pcm_source.h"
@@ -36,8 +38,7 @@ class MicrophoneApplication {
   void stopRecording();
 
   // 各子系统实例由应用统一拥有，按职责彼此隔离。
-  I2SSampler sampler_;
-  AudioProcessor processor_;
+  AudioPipeline pipeline_;
 #if SINGLEMIC_FIXED_PCM_TEST
   FixedPcmSource fixedSource_;
 #endif
@@ -46,6 +47,9 @@ class MicrophoneApplication {
   DebouncedButton recordButton_;
   // 当前录音状态和统计日志节拍。
   bool recording_ = false;
+  bool stopping_ = false;
+  uint32_t audioSession_ = 0;
+  AudioPacketizer<PacketConfig::MAX_PACKET_FRAMES> packetizer_;
   bool pairingButtonHeld_ = false;
   bool pairingHoldTriggered_ = false;
   bool pairingWindowActive_ = false;
@@ -53,9 +57,9 @@ class MicrophoneApplication {
   uint32_t pairingWindowStartedAt_ = 0;
   uint32_t lastStatsMs_ = 0;
   // 按最大 BLE 包尺寸预留输入/输出缓存，避免循环中动态分配内存。
-  int32_t rawSamples_[PacketConfig::MAX_PACKET_FRAMES *
-                     AudioConfig::DECIMATION_FACTOR] = {};
+#if SINGLEMIC_FIXED_PCM_TEST
   int32_t pcmSamples_[PacketConfig::MAX_PACKET_FRAMES] = {};
+#endif
 };
 
 #endif

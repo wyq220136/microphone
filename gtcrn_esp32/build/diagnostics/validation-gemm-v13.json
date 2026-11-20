@@ -1,0 +1,116 @@
+{
+  "model": "gtcrn_debug.espdl",
+  "sha256": "d1ed46c87e24d5aab0323051861c373ce93cc82b9985c0a9255170612a038e2d",
+  "require_exact": true,
+  "test_dtypes": {
+    "int16": 70,
+    "float32": 4
+  },
+  "grus": [
+    {
+      "node": "/encoder/en_convs.2/tra/att_gru/GRU",
+      "count": 160,
+      "changed": 0,
+      "over_one_lsb": 0,
+      "max_lsb": 0
+    },
+    {
+      "node": "/encoder/en_convs.3/tra/att_gru/GRU",
+      "count": 160,
+      "changed": 0,
+      "over_one_lsb": 0,
+      "max_lsb": 0
+    },
+    {
+      "node": "/encoder/en_convs.4/tra/att_gru/GRU",
+      "count": 160,
+      "changed": 0,
+      "over_one_lsb": 0,
+      "max_lsb": 0
+    },
+    {
+      "node": "/dpgrnn1/intra_rnn/rnn1/GRU",
+      "count": 2640,
+      "changed": 0,
+      "over_one_lsb": 0,
+      "max_lsb": 0
+    },
+    {
+      "node": "/dpgrnn1/intra_rnn/rnn2/GRU",
+      "count": 2640,
+      "changed": 0,
+      "over_one_lsb": 0,
+      "max_lsb": 0
+    },
+    {
+      "node": "/dpgrnn1/inter_rnn/rnn1/GRU",
+      "count": 2640,
+      "changed": 0,
+      "over_one_lsb": 0,
+      "max_lsb": 0
+    },
+    {
+      "node": "/dpgrnn1/inter_rnn/rnn2/GRU",
+      "count": 2640,
+      "changed": 0,
+      "over_one_lsb": 0,
+      "max_lsb": 0
+    },
+    {
+      "node": "/dpgrnn2/intra_rnn/rnn1/GRU",
+      "count": 2640,
+      "changed": 0,
+      "over_one_lsb": 0,
+      "max_lsb": 0
+    },
+    {
+      "node": "/dpgrnn2/intra_rnn/rnn2/GRU",
+      "count": 2640,
+      "changed": 0,
+      "over_one_lsb": 0,
+      "max_lsb": 0
+    },
+    {
+      "node": "/dpgrnn2/inter_rnn/rnn1/GRU",
+      "count": 2640,
+      "changed": 0,
+      "over_one_lsb": 0,
+      "max_lsb": 0
+    },
+    {
+      "node": "/dpgrnn2/inter_rnn/rnn2/GRU",
+      "count": 2640,
+      "changed": 0,
+      "over_one_lsb": 0,
+      "max_lsb": 0
+    },
+    {
+      "node": "/decoder/de_convs.0/tra/att_gru/GRU",
+      "count": 160,
+      "changed": 0,
+      "over_one_lsb": 0,
+      "max_lsb": 0
+    },
+    {
+      "node": "/decoder/de_convs.1/tra/att_gru/GRU",
+      "count": 160,
+      "changed": 0,
+      "over_one_lsb": 0,
+      "max_lsb": 0
+    },
+    {
+      "node": "/decoder/de_convs.2/tra/att_gru/GRU",
+      "count": 160,
+      "changed": 0,
+      "over_one_lsb": 0,
+      "max_lsb": 0
+    }
+  ],
+  "errors": [],
+  "model_bytes": 988400,
+  "same_graph_structure": true,
+  "changed_activation_exponents": [],
+  "same_initializer_multiset": true,
+  "checked_initializer_consumers": 453,
+  "changed_initializers": []
+}

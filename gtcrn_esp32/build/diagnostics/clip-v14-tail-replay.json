@@ -1,0 +1,212 @@
+{
+  "model": "gtcrn_debug.espdl",
+  "sha256": "d1ed46c87e24d5aab0323051861c373ce93cc82b9985c0a9255170612a038e2d",
+  "errors": [],
+  "direct_clip": {
+    "changed": 1,
+    "count": 5140,
+    "max_lsb": 1,
+    "first": 4345,
+    "first_values": [
+      19,
+      621,
+      -128,
+      -43,
+      144,
+      66,
+      -140,
+      58
+    ],
+    "trace": {
+      "/Transpose_3_output_0": {
+        "shape": [
+          1,
+          257,
+          10,
+          2
+        ],
+        "dtype": "int16",
+        "exponent": -12,
+        "first_values": [
+          37,
+          1237,
+          -255,
+          -85,
+          286,
+          132,
+          -279,
+          115
+        ]
+      },
+      "/Add_2_output_0": {
+        "shape": [
+          1
+        ],
+        "dtype": "int16",
+        "exponent": -11,
+        "first_values": [
+          4130
+        ]
+      },
+      "/Add_3_output_0": {
+        "shape": [
+          1
+        ],
+        "dtype": "int16",
+        "exponent": -18,
+        "first_values": [
+          32767
+        ]
+      },
+      "/Div_output_0": {
+        "shape": [
+          1
+        ],
+        "dtype": "int16",
+        "exponent": -6,
+        "first_values": [
+          1033
+        ]
+      },
+      "/Sqrt_1_output_0": {
+        "shape": [
+          1
+        ],
+        "dtype": "float32",
+        "exponent": 0,
+        "first_values": [
+          4.0175395011901855
+        ]
+      },
+      "PPQ_Variable_302": {
+        "shape": [
+          1
+        ],
+        "dtype": "int16",
+        "exponent": -10,
+        "first_values": [
+          4114
+        ]
+      },
+      "/Clip_output_0": {
+        "shape": [
+          1
+        ],
+        "dtype": "int16",
+        "exponent": -11,
+        "first_values": [
+          8228
+        ]
+      }
+    }
+  },
+  "legacy_clip_lut": {
+    "changed": 4612,
+    "count": 5140,
+    "max_lsb": 33,
+    "first": 1,
+    "first_over_one": {
+      "position": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "golden": 621,
+      "actual": 619
+    },
+    "first_values": [
+      19,
+      619,
+      -127,
+      -42,
+      143,
+      66,
+      -139,
+      58
+    ],
+    "trace": {
+      "/Transpose_3_output_0": {
+        "shape": [
+          1,
+          257,
+          10,
+          2
+        ],
+        "dtype": "int16",
+        "exponent": -12,
+        "first_values": [
+          37,
+          1237,
+          -255,
+          -85,
+          286,
+          132,
+          -279,
+          115
+        ]
+      },
+      "/Add_2_output_0": {
+        "shape": [
+          1
+        ],
+        "dtype": "int16",
+        "exponent": -11,
+        "first_values": [
+          4130
+        ]
+      },
+      "/Add_3_output_0": {
+        "shape": [
+          1
+        ],
+        "dtype": "int16",
+        "exponent": -18,
+        "first_values": [
+          32767
+        ]
+      },
+      "/Div_output_0": {
+        "shape": [
+          1
+        ],
+        "dtype": "int16",
+        "exponent": -6,
+        "first_values": [
+          1033
+        ]
+      },
+      "/Sqrt_1_output_0": {
+        "shape": [
+          1
+        ],
+        "dtype": "float32",
+        "exponent": 0,
+        "first_values": [
+          4.0175395011901855
+        ]
+      },
+      "PPQ_Variable_302": {
+        "shape": [
+          1
+        ],
+        "dtype": "int16",
+        "exponent": -10,
+        "first_values": [
+          4114
+        ]
+      },
+      "/Clip_output_0": {
+        "shape": [
+          1
+        ],
+        "dtype": "int16",
+        "exponent": -11,
+        "first_values": [
+          8192
+        ]
+      }
+    }
+  },
+  "identical_pre_clip_inputs": true
+}

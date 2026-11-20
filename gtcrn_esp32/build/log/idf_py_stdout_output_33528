@@ -1,0 +1,8 @@
+Command: ninja all
+[1/4] C:\WINDOWS\system32\cmd.exe /C "cd /D D:\HomeGuard\microphone\gtcrn_esp32\build && D:\Espressif\tools\python\v6.1\venv\Scripts\python.exe D:/esp/v6.1/esp-idf/components/partition_table/check_sizes.py --offset 0x8000 partition --type app D:/HomeGuard/microphone/gtcrn_esp32/build/partition_table/partition-table.bin D:/HomeGuard/microphone/gtcrn_esp32/build/gtcrn_esp32.bin"
+gtcrn_esp32.bin binary size 0x102440 bytes. Smallest app partition is 0x400000 bytes. 0x2fdbc0 bytes (75%) free.
+[2/4] Performing build step for 'bootloader'
+[1/1] C:\WINDOWS\system32\cmd.exe /C "cd /D D:\HomeGuard\microphone\gtcrn_esp32\build\bootloader && D:\Espressif\tools\python\v6.1\venv\Scripts\python.exe D:/esp/v6.1/esp-idf/components/partition_table/check_sizes.py --offset 0x8000 bootloader 0x1000 D:/HomeGuard/microphone/gtcrn_esp32/build/bootloader/bootloader.bin"
+Bootloader binary size 0x63d0 bytes. 0xc30 bytes (11%) free.
+[3/4] No install step for 'bootloader'
+[4/4] Completed 'bootloader'
