@@ -121,7 +121,7 @@ enum class Mode : uint8_t {
 };
 
 constexpr Mode MODE = static_cast<Mode>(SINGLEMIC_TRANSPORT_MODE);
-constexpr char DEVICE_NAME[] = "ESP32S3-ICS";
+constexpr char DEVICE_NAME[] = "ESP32HHH";
 }
 
 // Shared wire format. Keep this BLE-MTU-sized so both transports emit the
@@ -157,6 +157,12 @@ namespace SPPConfig {
 constexpr size_t PACKET_QUEUE_DEPTH = 64;
 constexpr uint32_t CONTROL_QUEUE_TIMEOUT_MS = 100;
 constexpr uint32_t WRITE_TIMEOUT_MS = 2000;
+// Coalesce queued DATA packets without changing the shared wire protocol.
+// Four full packets occupy 976 bytes, below ESP_SPP_MAX_MTU (990 bytes).
+constexpr size_t WRITE_BATCH_PACKETS = 4;
+constexpr size_t WRITE_BATCH_BYTES =
+    WRITE_BATCH_PACKETS * PacketConfig::MAX_PACKET_BYTES;
+constexpr uint32_t WRITE_RETRY_DELAY_MS = 5;
 constexpr uint32_t SENDER_TASK_STACK = 4096;  // Bytes, not StackType_t words.
 constexpr UBaseType_t SENDER_TASK_PRIORITY = 2;
 constexpr BaseType_t SENDER_TASK_CORE = 0;

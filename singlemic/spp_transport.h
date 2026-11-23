@@ -8,6 +8,9 @@
 #if !defined(CONFIG_IDF_TARGET_ESP32) || !defined(CONFIG_BT_SPP_ENABLED)
 #error "Classic SPP requires the classic ESP32 target with Bluedroid SPP"
 #endif
+static_assert(SPPConfig::WRITE_BATCH_PACKETS > 0 &&
+                  SPPConfig::WRITE_BATCH_BYTES <= ESP_SPP_MAX_MTU,
+              "SPP write batch must fit the stack's maximum MTU");
 
 enum class SppSenderState : uint8_t {
   DISCONNECTED, WAITING_PACKET, WAITING_CONGESTION, WRITING, CONTROL_RETRY,
@@ -16,6 +19,7 @@ enum class SppSenderState : uint8_t {
 struct SppTransportStats {
   uint32_t packetsSent, packetsDropped, queueOverflows;
   uint32_t writeSubmissions, writeEvents, writeFailures, writeTimeouts;
+  uint32_t partialWrites;
   uint32_t congestionEvents, disconnects, epochDrops, bytesQueued;
   uint32_t eventOverflows, staleEvents, controlFailures, diagnosticFaults;
   uint32_t lastWriteEventMs, lastCongestionEventMs, waitMs;
@@ -23,6 +27,7 @@ struct SppTransportStats {
   int lastWriteStatus, lastCloseStatus;
   bool lastCloseAsync;
   size_t packetFrames, queueDepth, queueHighWater, senderStackMinFree;
+  size_t writeBatchHighWater;
   uint32_t txEpoch;
   bool congested, pairingMode;
   uint32_t latencySamples = 0, latencyP95Us = 0, latencyMaxUs = 0;
@@ -65,6 +70,8 @@ class SppTransport {
   void trace(int kind, uint32_t handle, int status, int length,
              uint32_t detail, bool fault = false, uint32_t timeMs = 0);
   void knownFailure();
+  void prepareWriteBatch();
+  void clearWriteBatch();
 
   TransportChannel<SppTransportStats> channel_;
   TransportDiagnostics diagnostics_;
@@ -82,6 +89,11 @@ class SppTransport {
   uint32_t completedControl_ = 0, writeStartedMs_ = 0, retryStartedMs_ = 0;
   uint32_t lastScanAttemptMs_ = 0;
   TransportPacket currentPacket_;
+  // Owner-task-only storage. Retain identical bytes through a known-zero retry.
+  uint8_t writeBatch_[SPPConfig::WRITE_BATCH_BYTES] = {};
+  size_t writeBatchLength_ = 0, writeBatchPackets_ = 0, writeBatchOffset_ = 0;
+  int64_t writeBatchCaptureUs_[SPPConfig::WRITE_BATCH_PACKETS] = {};
+  bool writeBatchLatencyRecorded_ = false;
   SppTransportStats counters_ = {};
   uint32_t latencyHistogram_[64] = {};
   static SppTransport *activeInstance_;

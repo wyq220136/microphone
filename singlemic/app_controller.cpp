@@ -226,7 +226,7 @@ void MicrophoneApplication::printStats(uint32_t now) {
   Serial.printf(
       "SPP=%s pairing=%s recording=%s state=%s frames=%u queue=%u high=%u/%u "
       "sent=%lu bytes=%lu dropped=%lu queue_full=%lu "
-      "write_submit=%lu write_evt=%lu write_fail=%lu "
+      "write_submit=%lu write_evt=%lu batch_high=%u/%u partial=%lu write_fail=%lu "
       "write_timeout=%lu wait_ms=%lu last_write_ms=%lu last_cong_ms=%lu "
       "write_status=%d event_full=%lu stale=%lu control_fail=%lu "
       "congestion=%lu congested=%s disconnects=%lu epoch=%lu epoch_drop=%lu "
@@ -246,6 +246,9 @@ void MicrophoneApplication::printStats(uint32_t now) {
       static_cast<unsigned long>(stats.queueOverflows),
       static_cast<unsigned long>(stats.writeSubmissions),
       static_cast<unsigned long>(stats.writeEvents),
+      static_cast<unsigned>(stats.writeBatchHighWater),
+      static_cast<unsigned>(SPPConfig::WRITE_BATCH_PACKETS),
+      static_cast<unsigned long>(stats.partialWrites),
       static_cast<unsigned long>(stats.writeFailures),
       static_cast<unsigned long>(stats.writeTimeouts),
       static_cast<unsigned long>(stats.waitMs),

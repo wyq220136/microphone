@@ -80,6 +80,10 @@ bool SppTransport::begin() {
     return false;
   }
   Serial.println("SPP initialization requested: L2CAP Basic, ERTM disabled");
+  Serial.printf("SPP TX: batch_max_packets=%u batch_max_bytes=%u retry_ms=%lu\n",
+                static_cast<unsigned>(SPPConfig::WRITE_BATCH_PACKETS),
+                static_cast<unsigned>(SPPConfig::WRITE_BATCH_BYTES),
+                static_cast<unsigned long>(SPPConfig::WRITE_RETRY_DELAY_MS));
   const uint32_t started = millis();
   while (millis() - started < 10000) {
     const auto state = channel_.snapshot();
@@ -151,7 +155,40 @@ void SppTransport::knownFailure() {
   retryStartedMs_ = millis();
   retryPending_ = true;
   if (currentPacket_.isControl()) ++counters_.controlFailures;
-  else { hasPacket_ = false; ++counters_.packetsDropped; }
+  // Only called for an immediate rejection or an explicitly zero-byte result.
+  // Keep DATA too: dropping it here turns transient stack pressure into gaps.
+}
+
+void SppTransport::clearWriteBatch() {
+  hasPacket_ = false;
+  writeBatchLength_ = writeBatchPackets_ = writeBatchOffset_ = 0;
+  writeBatchLatencyRecorded_ = false;
+}
+
+void SppTransport::prepareWriteBatch() {
+  // Called after validating the first packet, never while a write is pending.
+  // START/END stay separate so control completion refers to that exact packet.
+  writeBatchLength_ = currentPacket_.packet.length;
+  writeBatchPackets_ = 1;
+  writeBatchCaptureUs_[0] = currentPacket_.captureUs;
+  std::memcpy(writeBatch_, currentPacket_.packet.bytes, writeBatchLength_);
+  if (!currentPacket_.isControl()) {
+    TransportPacket next;
+    while (writeBatchPackets_ < SPPConfig::WRITE_BATCH_PACKETS &&
+           channel_.peek(next)) {
+      if (next.isControl() || next.epoch != currentPacket_.epoch ||
+          next.stream != currentPacket_.stream ||
+          next.packet.length > sizeof(writeBatch_) - writeBatchLength_) break;
+      if (!channel_.take(next)) break;  // This task is the sole consumer.
+      std::memcpy(writeBatch_ + writeBatchLength_, next.packet.bytes,
+                  next.packet.length);
+      writeBatchLength_ += next.packet.length;
+      writeBatchCaptureUs_[writeBatchPackets_] = next.captureUs;
+      ++writeBatchPackets_;
+    }
+  }
+  if (writeBatchPackets_ > counters_.writeBatchHighWater)
+    counters_.writeBatchHighWater = writeBatchPackets_;
 }
 
 void SppTransport::processEvent(const Event &event) {
@@ -188,6 +225,7 @@ void SppTransport::processEvent(const Event &event) {
       ++txEpoch_;
       connected_ = true;
       congested_ = controlFault_ = hasPacket_ = writeInFlight_ = retryPending_ = false;
+      clearWriteBatch();
       completedControl_ = activeStream_ = 0;
       if (recoveryCloseSeen_) eventFault_ = recoveryCloseSeen_ = false;
       scanDirty_ = true;
@@ -198,11 +236,15 @@ void SppTransport::processEvent(const Event &event) {
       counters_.lastCloseStatus = event.status;
       counters_.lastClosePortStatus = event.detail;
       counters_.lastCloseAsync = event.flag;
-      if (hasPacket_) { ++counters_.packetsDropped; ++counters_.epochDrops; }
+      if (hasPacket_) {
+        counters_.packetsDropped += writeBatchPackets_;
+        counters_.epochDrops += writeBatchPackets_;
+      }
       // Anonymous SDK rejection cannot be assigned safely across an abandoned
       // write/session. Ignore such rejections thereafter rather than mis-ACK.
       if (writeInFlight_) anonymousUncertain_ = true;
       connected_ = congested_ = hasPacket_ = writeInFlight_ = retryPending_ = false;
+      clearWriteBatch();
       connectionHandle_ = activeStream_ = completedControl_ = 0;
       ++txEpoch_; ++counters_.disconnects;
       if (eventFault_) recoveryCloseSeen_ = true;
@@ -225,22 +267,33 @@ void SppTransport::processEvent(const Event &event) {
       counters_.lastWriteEventMs = event.timeMs;
       counters_.lastWriteStatus = event.status;
       if (!rejected) congested_ = event.flag;
-      if (event.status == ESP_SPP_SUCCESS && event.length == currentPacket_.packet.length) {
-        writeInFlight_ = hasPacket_ = retryPending_ = false;
-        ++counters_.packetsSent;
+      if (event.status == ESP_SPP_SUCCESS && event.length > 0 &&
+          static_cast<size_t>(event.length) <= writeBatchLength_ - writeBatchOffset_) {
+        writeInFlight_ = retryPending_ = false;
         counters_.bytesQueued += event.length;
-        if (currentPacket_.isControl()) completedControl_ = currentPacket_.control;
+        writeBatchOffset_ += event.length;
+        if (writeBatchOffset_ == writeBatchLength_) {
+          counters_.packetsSent += writeBatchPackets_;
+          if (currentPacket_.isControl()) completedControl_ = currentPacket_.control;
+          clearWriteBatch();
+        } else {
+          // IDF's PORT_WriteDataCO reports the exact accepted prefix on success.
+          // Resume only the suffix, respecting the callback's congestion flag.
+          ++counters_.partialWrites;
+        }
       } else if (rejected || event.length == 0 ||
                  (event.status != ESP_SPP_SUCCESS && event.length == -1 && event.flag)) {
         // IDF 4.4 can report congestion before PORT_WriteDataCO (len=-1),
         // or PORT_SUCCESS with zero accepted bytes. Both are known-zero cases.
         knownFailure();
       } else {
-        writeInFlight_ = hasPacket_ = false;
-        ++counters_.writeFailures; ++counters_.packetsDropped;
+        writeInFlight_ = false;
+        ++counters_.writeFailures;
+        counters_.packetsDropped += writeBatchPackets_;
         if (currentPacket_.isControl()) ++counters_.controlFailures;
         controlFault_ = true;
-        trace(TRACE_CONTROL, event.handle, event.status, event.length, currentPacket_.packet.length, true);
+        trace(TRACE_CONTROL, event.handle, event.status, event.length, writeBatchLength_, true);
+        clearWriteBatch();
       }
       break;
     }
@@ -268,12 +321,12 @@ void SppTransport::step() {
     counters_.senderState = SppSenderState::WRITING;
     if (!timeoutReported_ && now - writeStartedMs_ >= SPPConfig::WRITE_TIMEOUT_MS) {
       timeoutReported_ = true; ++counters_.writeTimeouts;
-      trace(TRACE_TIMEOUT, connectionHandle_, 0, currentPacket_.packet.length, 0, true);
+      trace(TRACE_TIMEOUT, connectionHandle_, 0, writeBatchLength_ - writeBatchOffset_, 0, true);
     }
     return; // Wait for the real completion; timeout never starts a second write.
   }
   if (congested_) { counters_.senderState = SppSenderState::WAITING_CONGESTION; return; }
-  if (retryPending_ && now - retryStartedMs_ < 20) {
+  if (retryPending_ && now - retryStartedMs_ < SPPConfig::WRITE_RETRY_DELAY_MS) {
     counters_.senderState = SppSenderState::CONTROL_RETRY; return;
   }
   retryPending_ = false;
@@ -281,35 +334,53 @@ void SppTransport::step() {
   counters_.senderState = SppSenderState::WAITING_PACKET;
   if (!hasPacket_) return;
   if (currentPacket_.epoch != txEpoch_) {
-    hasPacket_ = false; ++counters_.packetsDropped; ++counters_.epochDrops; return;
+    const size_t dropped = writeBatchPackets_ ? writeBatchPackets_ : 1;
+    counters_.packetsDropped += dropped;
+    counters_.epochDrops += dropped;
+    clearWriteBatch();
+    return;
   }
   if (currentPacket_.packet.bytes[2] == 2) activeStream_ = currentPacket_.stream;
   else if (currentPacket_.stream != activeStream_) {
-    hasPacket_ = false; ++counters_.packetsDropped; ++counters_.epochDrops; return;
+    const size_t dropped = writeBatchPackets_ ? writeBatchPackets_ : 1;
+    counters_.packetsDropped += dropped;
+    counters_.epochDrops += dropped;
+    clearWriteBatch();
+    return;
   }
+  if (writeBatchLength_ == 0) prepareWriteBatch();
   writeInFlight_ = true;
   writeStartedMs_ = now;
   timeoutReported_ = false;
   counters_.senderState = SppSenderState::WRITING;
   ResetProgress::spp(ResetProgress::Stage::SPP_WRITE);
-  const esp_err_t result = esp_spp_write(connectionHandle_, currentPacket_.packet.length, currentPacket_.packet.bytes);
+  const size_t remaining = writeBatchLength_ - writeBatchOffset_;
+  const esp_err_t result = esp_spp_write(connectionHandle_, remaining,
+                                        writeBatch_ + writeBatchOffset_);
   ResetProgress::spp(ResetProgress::Stage::SPP_WRITE_RETURNED);
-  trace(TRACE_SUBMIT, connectionHandle_, result, currentPacket_.packet.length, 0, result != ESP_OK);
+  trace(TRACE_SUBMIT, connectionHandle_, result, remaining, 0, result != ESP_OK);
   if (result == ESP_OK) {
     ++counters_.writeSubmissions;
-    if (currentPacket_.captureUs > 0 && !currentPacket_.isControl()) {
-      const uint32_t age = static_cast<uint32_t>(esp_timer_get_time() - currentPacket_.captureUs);
-      const size_t bucket = age / 4000 < 63 ? age / 4000 : 63;
-      ++latencyHistogram_[bucket];
-      ++counters_.latencySamples;
-      if (age > counters_.latencyMaxUs) counters_.latencyMaxUs = age;
-      uint32_t accumulated = 0;
-      const uint32_t threshold = (counters_.latencySamples * 95ULL + 99) / 100;
-      for (size_t i = 0; i < 64; ++i) {
-        accumulated += latencyHistogram_[i];
-        if (accumulated >= threshold) {
-          counters_.latencyP95Us = i == 63 ? counters_.latencyMaxUs : (i+1) * 4000;
-          break;
+    // Record each DATA packet once, even if a batch is retried or its suffix
+    // is submitted again after a successful partial write.
+    if (!currentPacket_.isControl() && !writeBatchLatencyRecorded_) {
+      writeBatchLatencyRecorded_ = true;
+      const int64_t submittedUs = esp_timer_get_time();
+      for (size_t packet = 0; packet < writeBatchPackets_; ++packet) {
+        if (writeBatchCaptureUs_[packet] <= 0) continue;
+        const uint32_t age = static_cast<uint32_t>(submittedUs - writeBatchCaptureUs_[packet]);
+        const size_t bucket = age / 4000 < 63 ? age / 4000 : 63;
+        ++latencyHistogram_[bucket];
+        ++counters_.latencySamples;
+        if (age > counters_.latencyMaxUs) counters_.latencyMaxUs = age;
+        uint32_t accumulated = 0;
+        const uint32_t threshold = (counters_.latencySamples * 95ULL + 99) / 100;
+        for (size_t i = 0; i < 64; ++i) {
+          accumulated += latencyHistogram_[i];
+          if (accumulated >= threshold) {
+            counters_.latencyP95Us = i == 63 ? counters_.latencyMaxUs : (i+1) * 4000;
+            break;
+          }
         }
       }
     }

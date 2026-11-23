@@ -419,20 +419,24 @@ class Capture:
         if (sample_rate, channels) != (self.sample_rate, self.channels):
             print("Ignoring packet with changed audio format", file=sys.stderr)
             return
-        if self.frames_per_packet is None:
-            self.frames_per_packet = frames
-            print(f"Audio stream: {sample_rate} Hz, {channels} channel, "
-                  f"32-bit WAV, {frames} frames/packet")
-        elif frames != self.frames_per_packet:
-            print("Ignoring packet with changed frame count", file=sys.stderr)
+        if not 0 < frames <= MAX_FRAMES_PER_PACKET:
+            print("Ignoring packet with invalid frame count", file=sys.stderr)
             return
+        if self.frames_per_packet is None:
+            # SPP emits 76-frame packets, then flushes any shorter tail before
+            # END. Missing packets use the normal size even if the first data
+            # we receive is that tail; the tail itself must retain its samples.
+            self.frames_per_packet = MAX_FRAMES_PER_PACKET
+            print(f"Audio stream: {sample_rate} Hz, {channels} channel, "
+                  f"32-bit WAV, {self.frames_per_packet} frames/packet "
+                  "(short tail allowed)")
 
         if self.expected_sequence is None:
             self.expected_sequence = sequence
         if sequence < self.expected_sequence:
             return
         if sequence > self.expected_sequence:
-            if not self._fill_gap(sequence, frames, channels):
+            if not self._fill_gap(sequence, self.frames_per_packet, channels):
                 return
         self._write_audio(pcm32)
         self.expected_sequence = sequence + 1

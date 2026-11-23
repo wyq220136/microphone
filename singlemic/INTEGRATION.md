@@ -12,9 +12,17 @@ Arduino 的 setup/loop、按键、配对、Classic SPP 包头/CRC 和电脑接�
 ```powershell
 .\tools\build.ps1
 .\tools\build.ps1 -Action 'flash monitor' -Port COM9
+# 只查看实际传入 idf.py 的参数，不编译、不打开串口：
+.\tools\build.ps1 -Action 'flash monitor' -Port COM9 -DryRun
 ```
 
 `COM9` 必须替换为实际 USB-UART 端口，烧录前关闭占用该端口的旧 monitor。
+`flash` 会先检查并构建固件；CMake/Ninja 失败时不会进入烧录或 monitor。
+脚本会打印 `ESP-IDF actions: flash -> monitor`，失败时保留非零退出码并显示提示。
+遇到 `FAILED: build.ninja` 时，先查看错误提示指向的 `build/log/idf_py_stderr_output_*`，
+那里包含真正原因；很长的 FAILED 文件列表本身不是原因。
+若托管依赖缺少 `.component_hash` 或 `CHECKSUMS.json`，先备份损坏的依赖目录，
+再让组件管理器按 `dependencies.lock` 重新下载；不要伪造校验文件或关闭校验。
 首次完整烧录包含 bootloader、分区表、应用和 `model` 模型分区；模型变化后仍需
 完整 `flash`。仅修改应用时可使用 `-Action 'app-flash monitor'`。
 默认工程不提供 OTA 分区；本次分区表占用 8 MB Flash 中的前约 6 MB。
@@ -31,6 +39,16 @@ Arduino 的公开依赖仍可能被构建，未引用的代码由链接器删除
 `build_opt.h` 同时为单独的 Arduino 草图构建指定 `-Os`，完整 GTCRN 固件仍使用
 上面的 ESP-IDF 构建脚本。`-Os` 用于固定构建条件，不保证任意链路环境下零丢包；
 修改优化级别后应重新检查 GTCRN 实时预检和连续 SPP 录音。
+
+SPP 提交逻辑与 `master` 对齐：将已积压的最多 4 个 DATA 包合并为一次最多
+976 字节的 SDK 写入；只有一个包时立即发送，不等待凑满。START/END 单独提交，
+不跨连接或录音会话合并。包头、CRC 和每包 76 点的线协议保持原样，短尾包也可加入批次。
+明确零字节失败保留原批次并退让至少 5 ms 后重试，成功的部分写入只续发剩余字节。
+采集到提交的延迟仍按 DATA 包统计，重试或部分续发不重复计数。
+启动日志应出现 `SPP TX: batch_max_packets=4 batch_max_bytes=976 retry_ms=5`；
+每秒统计新增 `batch_high=当前历史最高值/4` 和 `partial=成功部分写入次数`。
+`sent` 按协议包计数，`write_submit/write_evt` 按 SDK 写入计数，两者不再要求相等。
+重新烧录后检查连续录音中的 `queue_full/dropped` 不增长；构建通过不能代替无丢包验收。
 
 电脑接收器默认蓝牙 MAC 已设为 `8C:8C:29:1A:03:62`，可在项目根目录直接运行：
 

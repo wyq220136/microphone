@@ -1,8 +1,10 @@
+[CmdletBinding()]
 param(
     [string]$Action = 'build',
     [string]$Port = '',
     [string]$IdfPath = 'D:\esp\v6.1\esp-idf',
-    [string]$ToolsPath = 'D:\Espressif'
+    [string]$ToolsPath = 'D:\Espressif',
+    [switch]$DryRun
 )
 $ErrorActionPreference = 'Stop'
 $projectPath = Split-Path $PSScriptRoot -Parent
@@ -27,7 +29,22 @@ $env:PATH = ($toolBins -join ';') + ';' + $env:PATH
 $idfPython = Join-Path $env:IDF_PYTHON_ENV_PATH 'Scripts\python.exe'
 $idfArgs = @((Join-Path $IdfPath 'tools\idf.py'), '-C', $projectPath)
 if ($Port) { $idfArgs += @('-p', $Port) }
-$idfArgs += $Action.Split(' ', [System.StringSplitOptions]::RemoveEmptyEntries)
+$actionTokens = @($Action -split '\s+' | Where-Object { $_ })
+if ($actionTokens.Count -eq 0) { throw 'Action must contain at least one ESP-IDF action.' }
+$idfArgs += $actionTokens
+Write-Host ('ESP-IDF actions: ' + ($actionTokens -join ' -> '))
+if ($Port) { Write-Host ('Serial port: ' + $Port) }
+if ($DryRun) {
+    # Print the exact argument array without compiling, flashing or opening COM.
+    $idfArgs | ConvertTo-Json
+    return
+}
 $ErrorActionPreference = 'Continue' # Windows PowerShell reports native stderr as ErrorRecords.
 & $idfPython @idfArgs
-exit $LASTEXITCODE
+$idfExitCode = $LASTEXITCODE
+if ($idfExitCode -ne 0) {
+    Write-Host ("ESP-IDF failed with exit code $idfExitCode; requested actions did not complete. " +
+        'If the build/configuration failed, flashing and monitoring were not started. ' +
+        'See the first error above and build/log/idf_py_stderr_output_* .') -ForegroundColor Red
+}
+exit $idfExitCode
