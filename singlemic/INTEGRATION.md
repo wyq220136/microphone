@@ -25,6 +25,21 @@ Arduino 的 setup/loop、按键、配对、Classic SPP 包头/CRC 和电脑接�
 Arduino 仅编译 core APIs；未启动 Wi-Fi、NimBLE 或 BluetoothSerial。
 Arduino 的公开依赖仍可能被构建，未引用的代码由链接器删除。
 
+编译默认选择 `CONFIG_COMPILER_OPTIMIZATION_SIZE=y`，并在顶层 CMake 强制应用
+编译参数为 `-Os`；已有 `sdkconfig` 中的 `-Og`/`-O2` 选择也不能覆盖这一约束。
+构建配置日志应出现 `singlemic: forcing application compiler optimization to -Os`。
+`build_opt.h` 同时为单独的 Arduino 草图构建指定 `-Os`，完整 GTCRN 固件仍使用
+上面的 ESP-IDF 构建脚本。`-Os` 用于固定构建条件，不保证任意链路环境下零丢包；
+修改优化级别后应重新检查 GTCRN 实时预检和连续 SPP 录音。
+
+电脑接收器默认蓝牙 MAC 已设为 `8C:8C:29:1A:03:62`，可在项目根目录直接运行：
+
+```powershell
+python .\py_rec\spp_audio_receiver.py
+```
+
+更换设备时用 `--address` 指定其 MAC，或用 `--port` 显式指定蓝牙串口。
+
 构建读取 `models/gtcrn_stream.json`，校验模型 SHA256、大小、采样率、输入输出形状
 和缓存端口，再生成 C++ 契约。上电再次校验 Flash 分区中的实际模型 SHA256；
 模型缺失、过旧或无法构建时只启用原音路径，不将其报告为降噪成功。

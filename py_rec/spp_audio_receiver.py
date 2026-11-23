@@ -49,6 +49,7 @@ HEADER = struct.Struct("<2sBBHHIH")
 CRC = struct.Struct("<H")
 CRC_BYTES = CRC.size
 DEFAULT_BLUETOOTH_ADDRESS = "88:F1:55:B6:9D:DE"
+# DEFAULT_BLUETOOTH_ADDRESS = "8C:8C:29:1A:03:62"
 
 
 def crc16_ccitt(data: bytes | bytearray | memoryview) -> int:

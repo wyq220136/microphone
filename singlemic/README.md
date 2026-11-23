@@ -187,7 +187,7 @@ PCM24逐样本无损保留；静态码表不保证对所有声音都能压缩，
    上电默认不可发现，未触发长按不会响应新的设备搜索；Windows可能保留历史缓存。
    已经配对过则跳过这一步，直接运行Python，无需按Key1。
 2. 安装依赖：python -m pip install pyserial。
-3. 脚本按默认MAC 88:F1:55:B6:9D:DE自动寻找Windows传出蓝牙COM口。
+3. 脚本按默认MAC 8C:8C:29:1A:03:62自动寻找Windows传出蓝牙COM口。
    这个COM是无线连接，无需ESP32通过USB连接电脑。
 
 ```powershell
