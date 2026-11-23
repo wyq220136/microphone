@@ -22,7 +22,7 @@ bool I2SSampler::begin() {
   config.sample_rate = I2SConfig::CAPTURE_SAMPLE_RATE;
   config.bits_per_sample = I2S_BITS_PER_SAMPLE_32BIT;
   // 接收新麦克风的右声道时隙，32位槽中保留PCM24有效数据。
-  config.channel_format = I2S_CHANNEL_FMT_ONLY_LEFT;
+  config.channel_format = I2S_CHANNEL_FMT_ONLY_RIGHT;
   config.communication_format = I2S_COMM_FORMAT_I2S;
   config.intr_alloc_flags = ESP_INTR_FLAG_LEVEL1;
   config.dma_buf_count = I2SConfig::DMA_BUF_COUNT;

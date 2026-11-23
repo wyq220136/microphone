@@ -26,7 +26,7 @@
 
 namespace I2SConfig {
 // 板载另一组麦克风：SCK/BCLK=GPIO5，WS=GPIO18，DATA=GPIO19。
-constexpr int BCLK_PIN = 5;
+constexpr int BCLK_PIN = 17;
 constexpr int WS_PIN = 18;
 constexpr int DATA_PIN = 19;
 constexpr i2s_port_t PORT = I2S_NUM_1;
@@ -38,7 +38,7 @@ constexpr uint32_t READ_TIMEOUT_MS = 25;
 }
 
 namespace IOConfig {
-constexpr int USER_KEY_1 = 12;
+constexpr int USER_KEY_1 = 14;
 constexpr int USER_KEY_2 = 13;
 constexpr uint32_t KEY_DEBOUNCE_MS = 35;
 // Key1: hold once for 3 seconds to open a 2-minute discovery window.
@@ -130,6 +130,12 @@ namespace SPPConfig {
 constexpr size_t PACKET_QUEUE_DEPTH = 64;
 constexpr uint32_t CONTROL_QUEUE_TIMEOUT_MS = 100;
 constexpr uint32_t WRITE_TIMEOUT_MS = 2000;
+// Coalesce queued DATA packets without changing the shared wire protocol.
+// Four full packets occupy 976 bytes, below ESP_SPP_MAX_MTU (990 bytes).
+constexpr size_t WRITE_BATCH_PACKETS = 4;
+constexpr size_t WRITE_BATCH_BYTES =
+    WRITE_BATCH_PACKETS * PacketConfig::MAX_PACKET_BYTES;
+constexpr uint32_t WRITE_RETRY_DELAY_MS = 5;
 constexpr uint32_t SENDER_TASK_STACK = 4096;  // Bytes, not StackType_t words.
 constexpr UBaseType_t SENDER_TASK_PRIORITY = 2;
 constexpr BaseType_t SENDER_TASK_CORE = 0;

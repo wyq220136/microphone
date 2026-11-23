@@ -103,6 +103,7 @@ class TransportChannel {
   }
 
   // Owner-task operations only.
+  bool peek(TransportPacket &packet) const { return xQueuePeek(packets_, &packet, 0) == pdTRUE; }
   bool take(TransportPacket &packet) { return xQueueReceive(packets_, &packet, 0) == pdTRUE; }
   size_t depth() const { return uxQueueMessagesWaiting(packets_); }
   void publish(const Snapshot &value) { xQueueOverwrite(snapshots_, &value); }

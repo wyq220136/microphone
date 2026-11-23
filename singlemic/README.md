@@ -55,6 +55,50 @@ Arduino构建系统会编译草图目录内所有 `.cpp`。BLE和SPP实现文件
 SPP必须选择经典ESP32板型，例如Arduino IDE中的 `ESP32 Dev Module`。不要选择
 ESP32-S3目标，因为ESP32-S3没有本方案所需的经典蓝牙SPP控制器支持。
 
+## Arduino-ESP32 3.3.12 构建与丢包验证
+
+当前按 3.3.12 构建验证。Arduino IDE 中关闭 Sketch/项目菜单的
+`Optimize for Debugging`（为调试优化），使用发布优化 `-Os`，CPU 240 MHz，
+Core Debug Level=None。不要把 IDE 版本与 Boards Manager 中的 ESP32 核心版本混淆。
+当前工程使用 `ESP32-WROOM-DA Module`（`esp32da`）构建；板型应与实际模块匹配。
+
+在项目根目录执行以下脚本，可以检查已安装的核心版本并强制使用 `-Os`，
+不受 IDE 的调试优化开关影响。脚本只编译，不烧录；IDE 打开时可自动找到其 CLI，
+也可传入 `-ArduinoCli` 指定完整路径。默认构建目录位于系统临时目录，
+默认板型沿用本工程的 `esp32da`，可用 `-Fqbn` 指定经典 ESP32 Dev Module。
+
+```powershell
+.\singlemic\build-release.ps1
+# 未自动找到 CLI 时：
+.\singlemic\build-release.ps1 -ArduinoCli 'D:\term_files\arduino\Arduino IDE\resources\app\lib\backend\resources\arduino-cli.exe'
+```
+
+SPP 将已积压的最多 4 个 DATA 包合并为一次最多 976 字节的 SDK 写入，
+队列只有 1 包时立即发送，不额外等待凑批；START/END 分别单独发送。
+原 76 帧包头、CRC、16 kHz PCM24 及 Python 解码规则保持兼容。
+明确零字节失败保留原批次，退让至少 5 ms 后重试；成功的部分写入只续发未接受的后缀。
+此处理依据 IDF 的 `PORT_WriteDataCO` 返回已接受字节数的行为，参见
+[IDF 5.5.5 RFCOMM 实现](https://github.com/espressif/esp-idf/blob/v5.5.5/components/bt/host/bluedroid/stack/rfcomm/port_api.c)。
+
+重新烧录后，启动日志应出现：
+
+```text
+SPP TX: batch_max_packets=4 batch_max_bytes=976 retry_ms=5
+```
+
+接收仍使用 `python .\py_rec\spp_audio_receiver.py --address 8C:8C:29:1A:03:62`；
+旧板须填写其自身 MAC。保持完整录音期间观察速率，当前原始 PCM 约 210.5 个 DATA 包/秒，
+协议字节约 51.4 kB/s（不包含蓝牙空口开销），空闲/开始/结束附近的统计窗口可以更低。
+连续录音及重复启停时要求 Python 最终 `lost packets=0`、`crc_errors=0`、
+`dropped_bytes=0`，ESP32 的 `queue_full/dropped/event_full` 不增长，且队列不持续堆积。
+`partial`、`write_fail` 可以因重试增长，是否真正缺包以最终序号完整性为准。
+这些构建和流控修改不能保证任意无线环境下零丢包；持续吞吐低于音频生成速度时，
+有限 FIFO 最终仍会溢出，应保留同期两端日志继续定位。
+
+主机回归测试：在有 g++ 和 Python 的环境中运行
+`python tests/test_spp_transport.py`，覆盖批量发送、控制顺序、零字节重试、
+成功部分写入、拥塞、超时不重复发送、断连重连及原 Python 解析器兼容性。
+
 与 `ics_test/ble_ics_receiver.py` 的兼容关系：当前singlemic包末尾增加了2字节CRC，
 因此旧BLE接收器不能直接解析新包。SPP模式使用已同步CRC规则的
 `spp_audio_receiver.py`；BLE模式启用前也需要让对应BLE接收器按相同规则校验并去除CRC。
@@ -83,9 +127,10 @@ SPP直接使用ESP-IDF回调接口，不使用BluetoothSerial。SPP与BLE均采�
 同一个发送任务处理连接变化、配对/广播、拥塞和发送完成。最多只有一个未完成写入，
 收到WRITE_EVT且非拥塞后才继续。64项音频FIFO保留两个位置给控制包，
 START/END未完成时不能开始下一段；录音切换不清空待发队列。
-立即提交失败或明确零字节失败时，DATA丢弃、控制包按20ms退让重试。
+立即提交失败或明确零字节失败时，保留当前 DATA 批次或控制包，按配置退让后重试。
 SPP的拥塞前 `len=-1` 和成功但 `len=0` 均按明确零字节处理，不再误判成
-永久控制故障。含糊的部分写入进入fault，缺失完成事件保持等待；
+永久控制故障。成功且有明确字节数的部分写入只续发后缀；失败且交付不明的结果
+进入fault，缺失完成事件保持等待；
 BLE明确失败最多按配置次数重试，通知超时则因交付情况不明进入fault。
 这些故障都只暂停当前音频会话，不会主动断链或
 重发可能已交付的数据。fault在电脑实际断开重连后清除。
@@ -242,7 +287,9 @@ I2S 分段读取和首次 Huffman 建表在有进展的边界检查时间，距�
 固件每秒输出连接/录音状态、队列水位、堆和栈余量，以及：
 
 - write_submit：IDF接受的提交数；write_evt：匹配在途写入的完成事件数。
-- sent：完成状态成功且长度一致的包数，不等于电脑已经写入WAV。
+- sent：完整批次完成后计入的协议包数；write_submit/write_evt 按 SDK 写入次数计数，
+  一次写入可包含多个 DATA 包，不等于电脑已经写入WAV。
+- batch_high：单次写入包含协议包数的历史最高值/配置上限；partial：成功部分写入次数。
 - wait_ms：当前写入等待时长；last_write_ms/last_cong_ms：最近事件的开机时间。
 - write_status：最后匹配的WRITE_EVT状态；write_timeout：完成事件延迟次数。
 - stale：非当前连接、旧会话或无在途写入的完成事件。
