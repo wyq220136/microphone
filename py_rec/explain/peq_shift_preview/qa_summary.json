@@ -1,0 +1,11 @@
+{
+  "verified_wavs": 35,
+  "sample_rate_hz": 16000,
+  "format": "mono PCM24",
+  "max_group_lufs_spread": 0.020000000000003126,
+  "max_true_peak_dbtp": -1.2,
+  "no_new_clipping": true,
+  "source_and_firmware_hashes_unchanged": true,
+  "old_300Hz_control_reproduced": true,
+  "browser": "35 audio controls and playback-position switching passed; mobile layout has no horizontal overflow; no runtime exceptions"
+}

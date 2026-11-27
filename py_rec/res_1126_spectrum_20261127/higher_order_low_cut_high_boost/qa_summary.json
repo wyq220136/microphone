@@ -1,0 +1,8 @@
+{
+  "verified_audio_files": 28,
+  "max_true_peak_dbtp": -1.2,
+  "max_group_lufs_spread": 0.010000000000001563,
+  "stability": "Every SOS pole inside unit circle; each complete chain impulse response finite and tail below 1e-20 after two seconds",
+  "plots": "All 9 figures and every panel inspected; PDF font audits passed, minimum 7.5 pt",
+  "source_integrity": "Original 14 recordings, prior 84 preview WAVs and existing source code SHA256 unchanged"
+}

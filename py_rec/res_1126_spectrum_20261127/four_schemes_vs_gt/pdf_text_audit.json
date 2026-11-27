@@ -1,0 +1,102 @@
+[
+  {
+    "pdf": "01_summary_spectra.pdf",
+    "auditable": true,
+    "minimum_required_pt": 5.0,
+    "minimum_found_pt": 7.5,
+    "text_run_count": 51,
+    "below_minimum_count": 0,
+    "below_minimum": [],
+    "warnings": []
+  },
+  {
+    "pdf": "02_band_difference_vs_gt.pdf",
+    "auditable": true,
+    "minimum_required_pt": 5.0,
+    "minimum_found_pt": 7.5,
+    "text_run_count": 22,
+    "below_minimum_count": 0,
+    "below_minimum": [],
+    "warnings": []
+  },
+  {
+    "pdf": "03_parameter_comparison.pdf",
+    "auditable": true,
+    "minimum_required_pt": 5.0,
+    "minimum_found_pt": 7.5,
+    "text_run_count": 59,
+    "below_minimum_count": 0,
+    "below_minimum": [],
+    "warnings": []
+  },
+  {
+    "pdf": "pair_01_spectra.pdf",
+    "auditable": true,
+    "minimum_required_pt": 5.0,
+    "minimum_found_pt": 7.5,
+    "text_run_count": 51,
+    "below_minimum_count": 0,
+    "below_minimum": [],
+    "warnings": []
+  },
+  {
+    "pdf": "pair_02_spectra.pdf",
+    "auditable": true,
+    "minimum_required_pt": 5.0,
+    "minimum_found_pt": 7.5,
+    "text_run_count": 51,
+    "below_minimum_count": 0,
+    "below_minimum": [],
+    "warnings": []
+  },
+  {
+    "pdf": "pair_03_spectra.pdf",
+    "auditable": true,
+    "minimum_required_pt": 5.0,
+    "minimum_found_pt": 7.5,
+    "text_run_count": 51,
+    "below_minimum_count": 0,
+    "below_minimum": [],
+    "warnings": []
+  },
+  {
+    "pdf": "pair_04_spectra.pdf",
+    "auditable": true,
+    "minimum_required_pt": 5.0,
+    "minimum_found_pt": 7.5,
+    "text_run_count": 51,
+    "below_minimum_count": 0,
+    "below_minimum": [],
+    "warnings": []
+  },
+  {
+    "pdf": "pair_05_spectra.pdf",
+    "auditable": true,
+    "minimum_required_pt": 5.0,
+    "minimum_found_pt": 7.5,
+    "text_run_count": 51,
+    "below_minimum_count": 0,
+    "below_minimum": [],
+    "warnings": []
+  },
+  {
+    "pdf": "pair_06_spectra.pdf",
+    "auditable": true,
+    "minimum_required_pt": 5.0,
+    "minimum_found_pt": 7.5,
+    "text_run_count": 51,
+    "below_minimum_count": 0,
+    "below_minimum": [],
+    "warnings": []
+  },
+  {
+    "pdf": "pair_07_spectra.pdf",
+    "auditable": true,
+    "minimum_required_pt": 5.0,
+    "minimum_found_pt": 7.5,
+    "text_run_count": 51,
+    "below_minimum_count": 0,
+    "below_minimum": [],
+    "warnings": []
+  }
+]

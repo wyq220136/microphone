@@ -1,0 +1,1 @@
+沿着这条路线，Automatic Lyrics Transcription of Polyphonic Music 发表于 IEEE TASLP 2022；她参与搭建的 NUS Auto Lyrix Align 系统则在 2020 年的 MIREX 国际基准测评中，拿下歌词转写与歌词-音频对齐两项第一，这套对齐服务至今仍在线开放

@@ -1,0 +1,92 @@
+[
+  {
+    "pdf": "01_spectral_summary.pdf",
+    "auditable": true,
+    "minimum_required_pt": 5.0,
+    "minimum_found_pt": 7.0,
+    "text_run_count": 29,
+    "below_minimum_count": 0,
+    "below_minimum": [],
+    "warnings": []
+  },
+  {
+    "pdf": "02_low_cut_effect.pdf",
+    "auditable": true,
+    "minimum_required_pt": 5.0,
+    "minimum_found_pt": 7.0,
+    "text_run_count": 29,
+    "below_minimum_count": 0,
+    "below_minimum": [],
+    "warnings": []
+  },
+  {
+    "pdf": "pair_01_spectra.pdf",
+    "auditable": true,
+    "minimum_required_pt": 5.0,
+    "minimum_found_pt": 7.0,
+    "text_run_count": 31,
+    "below_minimum_count": 0,
+    "below_minimum": [],
+    "warnings": []
+  },
+  {
+    "pdf": "pair_02_spectra.pdf",
+    "auditable": true,
+    "minimum_required_pt": 5.0,
+    "minimum_found_pt": 7.0,
+    "text_run_count": 31,
+    "below_minimum_count": 0,
+    "below_minimum": [],
+    "warnings": []
+  },
+  {
+    "pdf": "pair_03_spectra.pdf",
+    "auditable": true,
+    "minimum_required_pt": 5.0,
+    "minimum_found_pt": 7.0,
+    "text_run_count": 31,
+    "below_minimum_count": 0,
+    "below_minimum": [],
+    "warnings": []
+  },
+  {
+    "pdf": "pair_04_spectra.pdf",
+    "auditable": true,
+    "minimum_required_pt": 5.0,
+    "minimum_found_pt": 7.0,
+    "text_run_count": 31,
+    "below_minimum_count": 0,
+    "below_minimum": [],
+    "warnings": []
+  },
+  {
+    "pdf": "pair_05_spectra.pdf",
+    "auditable": true,
+    "minimum_required_pt": 5.0,
+    "minimum_found_pt": 7.0,
+    "text_run_count": 31,
+    "below_minimum_count": 0,
+    "below_minimum": [],
+    "warnings": []
+  },
+  {
+    "pdf": "pair_06_spectra.pdf",
+    "auditable": true,
+    "minimum_required_pt": 5.0,
+    "minimum_found_pt": 7.0,
+    "text_run_count": 31,
+    "below_minimum_count": 0,
+    "below_minimum": [],
+    "warnings": []
+  },
+  {
+    "pdf": "pair_07_spectra.pdf",
+    "auditable": true,
+    "minimum_required_pt": 5.0,
+    "minimum_found_pt": 7.0,
+    "text_run_count": 31,
+    "below_minimum_count": 0,
+    "below_minimum": [],
+    "warnings": []
+  }
+]

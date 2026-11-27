@@ -58,6 +58,30 @@ constexpr uint8_t BITS_PER_SAMPLE = 24;
 constexpr uint8_t BYTES_PER_SAMPLE = 3;
 constexpr int RAW_SHIFT = 8;
 constexpr int DC_BLOCK_SHIFT = 8;
+// 腔体录音补偿：70 Hz 二阶 + 50 Hz 四阶高通，两级高频高架及可选 PEQ。
+// 关闭后恢复原 DSP；预衰减 -12 dB，为最高 +9 dB 的高频提升预留余量。
+constexpr bool ENABLE_CAVITY_EQ = true;
+constexpr float CAVITY_EQ_PRE_GAIN = 0.2511886432f;
+// PEQ 接在高架之后；参数与离线 350 Hz 试听版一致，修改后重新编译。
+// 带宽为半增益（当前 -3 dB）两频点间距，不是矩形截止范围。
+// ENABLE_CAVITY_PEQ=false 仅旁路 PEQ；总开关关闭时也会旁路 PEQ。
+constexpr bool ENABLE_CAVITY_PEQ = true;
+constexpr float CAVITY_PEQ_CENTER_HZ = 350.0f;
+constexpr float CAVITY_PEQ_BANDWIDTH_HZ = 300.0f;
+constexpr float CAVITY_PEQ_GAIN_DB = -6.0f;
+static_assert(CAVITY_PEQ_CENTER_HZ > 0.0f &&
+                  CAVITY_PEQ_CENTER_HZ < I2SConfig::CAPTURE_SAMPLE_RATE / 2.0f,
+              "PEQ center must be between zero and capture Nyquist");
+static_assert(CAVITY_PEQ_BANDWIDTH_HZ > 0.0f &&
+                  CAVITY_PEQ_BANDWIDTH_HZ < I2SConfig::CAPTURE_SAMPLE_RATE / 2.0f,
+              "PEQ bandwidth must be between zero and capture Nyquist");
+static_assert(CAVITY_PEQ_GAIN_DB >= -24.0f && CAVITY_PEQ_GAIN_DB <= 0.0f,
+              "Cavity PEQ supports cuts between -24 and 0 dB");
+static_assert(!ENABLE_CAVITY_EQ ||
+                  (I2SConfig::CAPTURE_SAMPLE_RATE == 16000 && RAW_SHIFT == 8),
+              "Cavity EQ coefficients require 16 kHz capture and PCM24 input");
+static_assert(CAVITY_EQ_PRE_GAIN > 0.0f && CAVITY_EQ_PRE_GAIN <= 1.0f,
+              "Cavity EQ pre-gain must be in (0, 1]");
 constexpr size_t ANTI_ALIAS_TAPS = 5;
 static_assert(ANTI_ALIAS_TAPS == 5,
               "Decimation FIR requires exactly five taps");

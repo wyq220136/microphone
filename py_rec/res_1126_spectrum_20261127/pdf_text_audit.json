@@ -1,0 +1,156 @@
+[
+  {
+    "file": "01_spectral_summary.pdf",
+    "exit_code": 0,
+    "audit": {
+      "pdf": "01_spectral_summary.pdf",
+      "auditable": true,
+      "minimum_required_pt": 5.0,
+      "minimum_found_pt": 7.0,
+      "text_run_count": 53,
+      "below_minimum_count": 0,
+      "below_minimum": [],
+      "warnings": []
+    }
+  },
+  {
+    "file": "02_recording_quality.pdf",
+    "exit_code": 0,
+    "audit": {
+      "pdf": "02_recording_quality.pdf",
+      "auditable": true,
+      "minimum_required_pt": 5.0,
+      "minimum_found_pt": 7.0,
+      "text_run_count": 70,
+      "below_minimum_count": 0,
+      "below_minimum": [],
+      "warnings": []
+    }
+  },
+  {
+    "file": "03_candidate_filter_response.pdf",
+    "exit_code": 0,
+    "audit": {
+      "pdf": "03_candidate_filter_response.pdf",
+      "auditable": true,
+      "minimum_required_pt": 5.0,
+      "minimum_found_pt": 7.0,
+      "text_run_count": 16,
+      "below_minimum_count": 0,
+      "below_minimum": [],
+      "warnings": []
+    }
+  },
+  {
+    "file": "04_sub100hz_and_current_dsp.pdf",
+    "exit_code": 0,
+    "audit": {
+      "pdf": "04_sub100hz_and_current_dsp.pdf",
+      "auditable": true,
+      "minimum_required_pt": 5.0,
+      "minimum_found_pt": 7.0,
+      "text_run_count": 38,
+      "below_minimum_count": 0,
+      "below_minimum": [],
+      "warnings": []
+    }
+  },
+  {
+    "file": "pair_01_details.pdf",
+    "exit_code": 0,
+    "audit": {
+      "pdf": "pair_01_details.pdf",
+      "auditable": true,
+      "minimum_required_pt": 5.0,
+      "minimum_found_pt": 6.0,
+      "text_run_count": 108,
+      "below_minimum_count": 0,
+      "below_minimum": [],
+      "warnings": []
+    }
+  },
+  {
+    "file": "pair_02_details.pdf",
+    "exit_code": 0,
+    "audit": {
+      "pdf": "pair_02_details.pdf",
+      "auditable": true,
+      "minimum_required_pt": 5.0,
+      "minimum_found_pt": 6.0,
+      "text_run_count": 108,
+      "below_minimum_count": 0,
+      "below_minimum": [],
+      "warnings": []
+    }
+  },
+  {
+    "file": "pair_03_details.pdf",
+    "exit_code": 0,
+    "audit": {
+      "pdf": "pair_03_details.pdf",
+      "auditable": true,
+      "minimum_required_pt": 5.0,
+      "minimum_found_pt": 6.0,
+      "text_run_count": 106,
+      "below_minimum_count": 0,
+      "below_minimum": [],
+      "warnings": []
+    }
+  },
+  {
+    "file": "pair_04_details.pdf",
+    "exit_code": 0,
+    "audit": {
+      "pdf": "pair_04_details.pdf",
+      "auditable": true,
+      "minimum_required_pt": 5.0,
+      "minimum_found_pt": 6.0,
+      "text_run_count": 106,
+      "below_minimum_count": 0,
+      "below_minimum": [],
+      "warnings": []
+    }
+  },
+  {
+    "file": "pair_05_details.pdf",
+    "exit_code": 0,
+    "audit": {
+      "pdf": "pair_05_details.pdf",
+      "auditable": true,
+      "minimum_required_pt": 5.0,
+      "minimum_found_pt": 6.0,
+      "text_run_count": 100,
+      "below_minimum_count": 0,
+      "below_minimum": [],
+      "warnings": []
+    }
+  },
+  {
+    "file": "pair_06_details.pdf",
+    "exit_code": 0,
+    "audit": {
+      "pdf": "pair_06_details.pdf",
+      "auditable": true,
+      "minimum_required_pt": 5.0,
+      "minimum_found_pt": 6.0,
+      "text_run_count": 104,
+      "below_minimum_count": 0,
+      "below_minimum": [],
+      "warnings": []
+    }
+  },
+  {
+    "file": "pair_07_details.pdf",
+    "exit_code": 0,
+    "audit": {
+      "pdf": "pair_07_details.pdf",
+      "auditable": true,
+      "minimum_required_pt": 5.0,
+      "minimum_found_pt": 6.0,
+      "text_run_count": 100,
+      "below_minimum_count": 0,
+      "below_minimum": [],
+      "warnings": []
+    }
+  }
+]

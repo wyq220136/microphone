@@ -1,0 +1,18 @@
+{
+  "audio_files_verified": 56,
+  "minimum_pdf_text_pt": 7.5,
+  "max_group_lufs_spread": 0.03999999999999915,
+  "max_true_peak_dbtp": -1.2,
+  "new_pcm24_rail_samples": 0,
+  "unit_tests_passed": 7,
+  "browser": "Local file load, both branches, custom parameters, WAV blobs, JSON download and mobile layout passed; no runtime exceptions",
+  "browser_vs_python_reference_error_db": {
+    "raw_before": -125.24,
+    "raw_after": -123.21,
+    "chain_before": -101.22,
+    "chain_after": -98.76
+  },
+  "source_integrity": "Protected source recordings and all singlemic top-level files matched starting SHA256 values",
+  "visual_review": "All 9 figures, all 34 panels, full desktop page and mobile layout inspected; no clipping/collisions",
+  "accepted_preflight_warnings": "300 dpi PNG is for screen review; editable PDF/SVG are provided. TIFF and journal submission were not requested."
+}

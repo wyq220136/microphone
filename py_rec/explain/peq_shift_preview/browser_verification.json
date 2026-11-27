@@ -1,0 +1,15 @@
+{
+  "playback": {
+    "audio_count": 35,
+    "sections": 7,
+    "first_paused": true,
+    "position_before": 6,
+    "position_after": 6.117865,
+    "duration": 42.4175
+  },
+  "mobile": {
+    "viewport": 390,
+    "bodyWidth": 390
+  },
+  "runtime_errors": []
+}

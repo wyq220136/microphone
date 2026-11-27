@@ -1,0 +1,55 @@
+{
+  "date": "2026-11-27",
+  "timezone": "Asia/Shanghai",
+  "groups": 7,
+  "audio_files": 28,
+  "inputs": [
+    {
+      "pair": 1,
+      "source": "high_boost_low_cut_preview/pair_01/high3dB_hpf70Hz_matched.wav",
+      "sha256": "12802655881641f7a6cffe1f6d3c341293e3e7f393181183adbc865b215a5efb"
+    },
+    {
+      "pair": 2,
+      "source": "high_boost_low_cut_preview/pair_02/high3dB_hpf70Hz_matched.wav",
+      "sha256": "0de1eaf34f0a36819054b199ad3e58579d65c042c045ee6fcaacab317d10d3d8"
+    },
+    {
+      "pair": 3,
+      "source": "high_boost_low_cut_preview/pair_03/high3dB_hpf70Hz_matched.wav",
+      "sha256": "dbb003d5c784a2949e241d8f4a2239af52140c6ce35046b9a887e9c375a019a6"
+    },
+    {
+      "pair": 4,
+      "source": "high_boost_low_cut_preview/pair_04/high3dB_hpf70Hz_matched.wav",
+      "sha256": "7997114ad080e9bdb1c5b9a85cdb1846d52f97a1f9b2ea4a5d4e9396ec87514c"
+    },
+    {
+      "pair": 5,
+      "source": "high_boost_low_cut_preview/pair_05/high3dB_hpf70Hz_matched.wav",
+      "sha256": "e958f071706a53e8952039771f1a23dd13fe1dfe83ef6ae3ae5c4a59632f249a"
+    },
+    {
+      "pair": 6,
+      "source": "high_boost_low_cut_preview/pair_06/high3dB_hpf70Hz_matched.wav",
+      "sha256": "7a073d0e12a8ae1e66e90c0c6d9a6acd9126af28b899cdc4186082e40eaa3be7"
+    },
+    {
+      "pair": 7,
+      "source": "high_boost_low_cut_preview/pair_07/high3dB_hpf70Hz_matched.wav",
+      "sha256": "80b8ef00655d30f031ad32c348378fdf1572133688313b944cb92c41af2b7747"
+    }
+  ],
+  "variants": [
+    "current",
+    "strong_low",
+    "strong_high",
+    "strong_both"
+  ],
+  "format": "16000 Hz mono PCM24 WAV",
+  "loudness": "One shared LUFS target per numbered group at/below -18; only constant gain; no limiter or dynamic compressor",
+  "sources_and_prior_84_previews_unchanged": true,
+  "source_code_files_unchanged": 25,
+  "spectral_method": "Welch 2048 Hann, hop 512; normalize 500-2000 Hz energy; display-only 1/12 octave smoothing",
+  "aggregate": "Median and IQR across all seven files; separate outside recording, not a transfer function"
+}

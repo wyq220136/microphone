@@ -1,0 +1,34 @@
+{
+  "date": "2026-11-27",
+  "timezone": "Asia/Shanghai",
+  "pairing": "Same speaker reads the same numbered text; inside/outside recorded separately, confirmed by user; frequency-domain comparison is primary",
+  "input_count": 14,
+  "excluded_recordings": 0,
+  "analysis_sample_rate_hz": 16000,
+  "raw_normalization": "signed PCM32 / 2**31; PCM24 is left-aligned, no additional gain normalization",
+  "gt_processing": "FFmpeg AAC decode; stereo arithmetic-mean mono; anti-alias resample to 16000 Hz",
+  "spectra": {
+    "method": "Hann-window modified periodograms, mean across frames (Welch)",
+    "nperseg": 2048,
+    "hop_samples": 512,
+    "noverlap": 1536,
+    "df_hz": 7.8125,
+    "detrend": "constant per frame",
+    "density": "FS**2/Hz",
+    "full": "all complete frames",
+    "louder60": "top 60% of frames by 100-7000 Hz energy; not a speech VAD",
+    "quiet10": "bottom 10% of non-negligible frames; noise proxy only, not a noise measurement",
+    "unusable_for_sensitivity": "100-7000 Hz integrated frame energy <= 1e-15",
+    "short_tail": "a final remainder shorter than one 512-sample hop is outside the complete-frame PSD; waveform/level checks use every sample"
+  },
+  "comparison": "10log10[(raw band energy / raw 500-2000 energy)/(GT band energy / GT 500-2000 energy)]",
+  "aggregation": "per-recording spectral shapes; across-recording median and 25th-75th percentile, equal file weight; no hypothesis testing",
+  "alignment": "diagnostic only; native rate offset search, >=80% of shorter recording overlap; best stretch search 0.8..1.2 at step 0.005; never applied to spectral estimates",
+  "preview": "no processed audio exported; candidate evaluated only offline for pole stability and headroom",
+  "software": {
+    "python": "3.11.5",
+    "numpy": "1.26.4",
+    "scipy": "1.12.0",
+    "matplotlib": "3.7.2"
+  }
+}

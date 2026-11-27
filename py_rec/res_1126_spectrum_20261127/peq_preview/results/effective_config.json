@@ -1,0 +1,50 @@
+{
+  "sample_rate_hz": 16000,
+  "input_dir": "../../../res_1126/raw",
+  "gt_dir": "../../../res_1126/gt",
+  "output_dir": "results",
+  "peq": {
+    "center_hz": 300,
+    "bandwidth_hz": 300,
+    "gain_db": -4
+  },
+  "comparison_gains_db": [
+    -3,
+    -4,
+    -6
+  ],
+  "baseline": {
+    "highpasses": [
+      {
+        "frequency_hz": 70,
+        "order": 2
+      },
+      {
+        "frequency_hz": 50,
+        "order": 4
+      }
+    ],
+    "high_shelves": [
+      {
+        "frequency_hz": 1500,
+        "gain_db": 3
+      },
+      {
+        "frequency_hz": 3000,
+        "gain_db": 6
+      }
+    ]
+  },
+  "target_lufs": -18,
+  "true_peak_ceiling_dbtp": -1.2,
+  "workers": 4,
+  "effective_peq": {
+    "center_hz": 300,
+    "gain_db": -4,
+    "q": 0.9965342284774632,
+    "bandwidth_hz": 299.99999999999994,
+    "half_gain_low_hz": 185.25480764734522,
+    "half_gain_high_hz": 485.25480764734516,
+    "bandwidth_definition": "between gain_db/2 crossings; nominal when gain_db=0"
+  }
+}

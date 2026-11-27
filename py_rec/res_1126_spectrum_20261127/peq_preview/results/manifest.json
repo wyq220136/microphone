@@ -1,0 +1,112 @@
+{
+  "recording_count": 7,
+  "audio_exports": 56,
+  "max_group_lufs_spread": 0.03999999999999915,
+  "max_true_peak_dbtp": -1.2,
+  "peq": {
+    "center_hz": 300,
+    "gain_db": -4,
+    "q": 0.9965342284774632,
+    "bandwidth_hz": 299.99999999999994,
+    "half_gain_low_hz": 185.25480764734522,
+    "half_gain_high_hz": 485.25480764734516,
+    "bandwidth_definition": "between gain_db/2 crossings; nominal when gain_db=0"
+  },
+  "causal_sosfilt": true,
+  "all_poles_inside_unit_circle": true,
+  "loudness": "one shared target per raw pair, constant gain only, no AGC/limiter/compression",
+  "source_integrity": "raw, GT and all singlemic top-level files unchanged",
+  "protected_hashes": {
+    "D:\\HomeGuard\\microphone\\singlemic\\.gitignore": "6feaded4e28ea86e001a6751b4e3d960e8b7c31b9616ff9936b79297086e809b",
+    "D:\\HomeGuard\\microphone\\singlemic\\active_transport.h": "e2601b23d82f931f4392ba7fc771a65782080c80581fbfb9ebd0b84236bff19f",
+    "D:\\HomeGuard\\microphone\\singlemic\\app_controller.cpp": "d06138d7d47a1eb084f461be31b138b70e3d53724690895f05ee76820de037d3",
+    "D:\\HomeGuard\\microphone\\singlemic\\app_controller.h": "879c9677f05155654fc40762340466a5c36fdb3381addef2efc791385cffc0ec",
+    "D:\\HomeGuard\\microphone\\singlemic\\audio_processor.cpp": "7e00f967ed984b56a43d3086b0671eb3b87b5464439f62aa3f78bcc564a8b8a9",
+    "D:\\HomeGuard\\microphone\\singlemic\\audio_processor.h": "4d819a94aa2adbe7cb81e442071c8230b06dbc0321b55cfa644187b405b4b608",
+    "D:\\HomeGuard\\microphone\\singlemic\\ble_transport.cpp": "672769f08930e51ce6a45850705cce283f12a7665a53550795f118fa9aa71e1c",
+    "D:\\HomeGuard\\microphone\\singlemic\\ble_transport.h": "fc6b1509a4f671d93a5c7e2a9645a72a645876aba319446a38ec533849e25c77",
+    "D:\\HomeGuard\\microphone\\singlemic\\build-release.ps1": "b3f724b5ad9306b489dd2791e95f79509405d139b1b88d0bbdc2635d8d8c55c9",
+    "D:\\HomeGuard\\microphone\\singlemic\\button.cpp": "4ecb992c78b03a1cbd6fdfc6f8e39026c561b75fc9e38d9a3ddea9377f4202e0",
+    "D:\\HomeGuard\\microphone\\singlemic\\button.h": "34c4158dc57aec772bdb81336d0b4f03c80ce41d290f4de6c15b4b38622fe279",
+    "D:\\HomeGuard\\microphone\\singlemic\\cfg.h": "2d95addaf58dfb523773bf291067e09ece51fdf24dc39133436d360ea3f4c50a",
+    "D:\\HomeGuard\\microphone\\singlemic\\fixed_pcm_source.h": "bc614a6097c73a5e2dc8542f7157e4c95222f07d773332416165a42a38fda63c",
+    "D:\\HomeGuard\\microphone\\singlemic\\I2SSampler.cpp": "83908d5d1b01fa725d948d0d0fd2ed31e2b6ce9efdd2dbcea5dd3d8997a54c4e",
+    "D:\\HomeGuard\\microphone\\singlemic\\I2SSampler.h": "56ca67f3653ad95e2fa0eb33d03307a52afe46e981d0eb1f3ad1467bd25fc324",
+    "D:\\HomeGuard\\microphone\\singlemic\\packet_protocol.cpp": "9ca20377b0298af3969687d9694e112a79124984844a324953d95bf2e293da79",
+    "D:\\HomeGuard\\microphone\\singlemic\\packet_protocol.h": "d309783874bd62ce3599c05ce4864004ec81ac40cc3d410eb15b19f0c7711961",
+    "D:\\HomeGuard\\microphone\\singlemic\\README.md": "de6b9fde7f6be1d3b0206b2bcc54d3ccf789eda539a29c6b3110d0896df30aae",
+    "D:\\HomeGuard\\microphone\\singlemic\\reset_progress.cpp": "5a8048ba589971f01b99fd0443c32534264bbcf706053ab5ffe20c9e65b5d6c9",
+    "D:\\HomeGuard\\microphone\\singlemic\\reset_progress.h": "7e575de13361b6dd05debf2f9bf9609257a9b4a725326d33afa6d9da1b030de7",
+    "D:\\HomeGuard\\microphone\\singlemic\\sdkconfig": "4ba10b84bfa6264656d0c8018a6dc5c501463176fb3496dc88c658c8e2ff3a2c",
+    "D:\\HomeGuard\\microphone\\singlemic\\singlemic.ino": "c3acd27120d837b16ac2d20463a3be18a87c819d5b406f5dc13f96ff9576389c",
+    "D:\\HomeGuard\\microphone\\singlemic\\spp_transport.cpp": "ca8af491d887352e718522fbdaec7c5e5c20cabfb862dcd7d4a10a4c935e75d9",
+    "D:\\HomeGuard\\microphone\\singlemic\\spp_transport.h": "79050d8c92567996597b32a197253cd0dad5590055de0c1361de18f61a1a26c2",
+    "D:\\HomeGuard\\microphone\\singlemic\\task_cooperation.h": "e131f7a4d6f1b4d4addc8d200ef70111aa996b5df60eb1bf8ea46e1913835b71",
+    "D:\\HomeGuard\\microphone\\singlemic\\transport_atomic.h": "85176f69f3d409d06f0676f2956b4b4e8d5a44c2abca9ea52485b7f50c3da74b",
+    "D:\\HomeGuard\\microphone\\singlemic\\transport_channel.h": "126e6d16372e0a320d126facc044ae0f545a2338f4ef222c3cde57f538da5938",
+    "D:\\HomeGuard\\microphone\\singlemic\\transport_diagnostics.h": "9117895cde353acac9310cd430c4994b0e1d3ad0c33cadbcf258d4c40c3ff074",
+    "D:\\HomeGuard\\microphone\\res_1126\\raw\\spp_capture.wav": "720aed63d1f9881c0f28022b6af7b4ce1b4367e35512ba49c9e7c303fa9e9c57",
+    "D:\\HomeGuard\\microphone\\res_1126\\raw\\spp_capture_002.wav": "80ee895fd7de4a2ae586a2958c6c7c57c2c4dbe32e58a37673263180bcda04b8",
+    "D:\\HomeGuard\\microphone\\res_1126\\raw\\spp_capture_003.wav": "56992fa091349f02efb4e6903422798af66cad8b93f7f4c48c66828fd95faced",
+    "D:\\HomeGuard\\microphone\\res_1126\\raw\\spp_capture_004.wav": "cad98ef7569c8cdbbe5beaa6db42df8e8a07ae8cbf0379d80e8e22327921ff5d",
+    "D:\\HomeGuard\\microphone\\res_1126\\raw\\spp_capture_005.wav": "7eacc4816a0efe22597eebde4f6a4cf00e65a08ec50a01d71a19c4bff5cfaa3a",
+    "D:\\HomeGuard\\microphone\\res_1126\\raw\\spp_capture_006.wav": "853dfd06de70b022cea67321c876681b5081a71f8843ccbadb7d4a24c7c143de",
+    "D:\\HomeGuard\\microphone\\res_1126\\raw\\spp_capture_007.wav": "562224786568566f8290dae9f09534f51c558f81bcbf28629f697b1820cb4a9b",
+    "D:\\HomeGuard\\microphone\\res_1126\\gt\\1.m4a": "a9afcd2ccaca422d3db600d1964908e0dcb2adcea64314ce6671f3b7e6be44c5",
+    "D:\\HomeGuard\\microphone\\res_1126\\gt\\2.m4a": "7bfa794b376433b1e92505d9814f44b79f082f01ce09e1566f93a98ecb83fd42",
+    "D:\\HomeGuard\\microphone\\res_1126\\gt\\3.m4a": "2380d3f4f31c8146ababbc75c8518a394b13ab28e2bce236d904f59498c4c7ed",
+    "D:\\HomeGuard\\microphone\\res_1126\\gt\\4.m4a": "b8181b690edf11bd08875b824913d668595f50d5e4f400c3a662c83b4a91bb84",
+    "D:\\HomeGuard\\microphone\\res_1126\\gt\\5.m4a": "9f45047285a69d60c60364dd4c3d2e9bd9e51bf4a59e4f743cdcbe0fadd9bf04",
+    "D:\\HomeGuard\\microphone\\res_1126\\gt\\6.m4a": "c2b6047a6e384f21c93f2ae41ed76f26ea77c130c42c45b9eb35944335a8fe7d",
+    "D:\\HomeGuard\\microphone\\res_1126\\gt\\7.m4a": "19c42050b747ddf9a6dfaed2a340366b4ad7b64a624585e92b4e7916175b9d6f"
+  },
+  "formula_source": "https://www.w3.org/TR/audio-eq-cookbook/",
+  "branch_2": "existing low-cut + high-frequency BOOST, not a low-pass",
+  "spectrum": "Welch Hann 2048, hop512; 1/12 octave display smoothing; raw variants share original raw 500-2000 Hz reference; GT normalized independently",
+  "statistics": "all seven recordings, equal-weight median and 25th-75th percentiles; no significance tests",
+  "boundary": "different speech takes, not measured cavity transfer function; source clipping and zero-fill not restored",
+  "relocated_processed_audio": [
+    {
+      "pair": 1,
+      "previous_file": "pair_01/chain_peq_minus6dB_matched.wav",
+      "file": "../../../explain/processed/1_processed.wav",
+      "sha256": "f16164d62cee572d8cb857704fd449b10153c3de3c567ac7ada5175e907f01e6"
+    },
+    {
+      "pair": 2,
+      "previous_file": "pair_02/chain_peq_minus6dB_matched.wav",
+      "file": "../../../explain/processed/2_processed.wav",
+      "sha256": "e705d3f03eb6916162ed0c294c2d0d0bdb1547988d2b52026f7491dd6cbb81f0"
+    },
+    {
+      "pair": 3,
+      "previous_file": "pair_03/chain_peq_minus6dB_matched.wav",
+      "file": "../../../explain/processed/3_processed.wav",
+      "sha256": "c4bc43643cc4a86982477dff091f1233a50e7508c4ca23e5893ca29157ee4672"
+    },
+    {
+      "pair": 4,
+      "previous_file": "pair_04/chain_peq_minus6dB_matched.wav",
+      "file": "../../../explain/processed/4_processed.wav",
+      "sha256": "4f7e09dcf4ae02fafcd761dfec9f3791f1f6804f975bf5bb2b4b4c74d90062ff"
+    },
+    {
+      "pair": 5,
+      "previous_file": "pair_05/chain_peq_minus6dB_matched.wav",
+      "file": "../../../explain/processed/5_processed.wav",
+      "sha256": "c535e4d3c25ec1f1575858134d500c9f8d1e8593ffd97771c6edc6e860e17af4"
+    },
+    {
+      "pair": 6,
+      "previous_file": "pair_06/chain_peq_minus6dB_matched.wav",
+      "file": "../../../explain/processed/6_processed.wav",
+      "sha256": "0890963b89e1af0ca8354d0f8985e19638f829d279189475c8ef77ba81a82ac5"
+    },
+    {
+      "pair": 7,
+      "previous_file": "pair_07/chain_peq_minus6dB_matched.wav",
+      "file": "../../../explain/processed/7_processed.wav",
+      "sha256": "94db10a4bd44fafaf8cf7bd6ddf753871dc0e6befe9809163904bf116f5d1cbe"
+    }
+  ]
+}

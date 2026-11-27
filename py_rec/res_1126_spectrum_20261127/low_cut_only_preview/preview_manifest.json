@@ -1,0 +1,75 @@
+{
+  "date": "2026-11-27",
+  "timezone": "Asia/Shanghai",
+  "input": "Original raw WAV recordings; no prior high-enhancement audio used",
+  "processing": "Causal order-2 Butterworth HPF at 50 or 70 Hz; constant gain only for within-pair LUFS matching",
+  "versions_hz": [
+    0,
+    50,
+    70
+  ],
+  "high_shelf_gain_db": 0,
+  "high_shelf_applied": false,
+  "peq_applied": false,
+  "compressor_applied": false,
+  "limiter_applied": false,
+  "denoiser_applied": false,
+  "outputs": 21,
+  "format": "16000 Hz mono PCM24 WAV",
+  "verification": "Each actual WAV re-read and measured; <=-1 dBTP; within-group loudness spread <=0.12 LU; unchanged sample count",
+  "original_control": "Original raw samples with constant gain for loudness matching",
+  "original_sources_unchanged": 14,
+  "previous_audio_files_unchanged": 63,
+  "source_code_files_unchanged": 25,
+  "groups": [
+    {
+      "pair": 1,
+      "source": "res_1126/raw/spp_capture.wav",
+      "source_sha256": "720aed63d1f9881c0f28022b6af7b4ce1b4367e35512ba49c9e7c303fa9e9c57",
+      "target_lufs": -18.29,
+      "actual_lufs_spread": 0.0
+    },
+    {
+      "pair": 2,
+      "source": "res_1126/raw/spp_capture_002.wav",
+      "source_sha256": "80ee895fd7de4a2ae586a2958c6c7c57c2c4dbe32e58a37673263180bcda04b8",
+      "target_lufs": -18.0,
+      "actual_lufs_spread": 0.0
+    },
+    {
+      "pair": 3,
+      "source": "res_1126/raw/spp_capture_003.wav",
+      "source_sha256": "56992fa091349f02efb4e6903422798af66cad8b93f7f4c48c66828fd95faced",
+      "target_lufs": -18.0,
+      "actual_lufs_spread": 0.01
+    },
+    {
+      "pair": 4,
+      "source": "res_1126/raw/spp_capture_004.wav",
+      "source_sha256": "cad98ef7569c8cdbbe5beaa6db42df8e8a07ae8cbf0379d80e8e22327921ff5d",
+      "target_lufs": -18.0,
+      "actual_lufs_spread": 0.0
+    },
+    {
+      "pair": 5,
+      "source": "res_1126/raw/spp_capture_005.wav",
+      "source_sha256": "7eacc4816a0efe22597eebde4f6a4cf00e65a08ec50a01d71a19c4bff5cfaa3a",
+      "target_lufs": -18.0,
+      "actual_lufs_spread": 0.01
+    },
+    {
+      "pair": 6,
+      "source": "res_1126/raw/spp_capture_006.wav",
+      "source_sha256": "853dfd06de70b022cea67321c876681b5081a71f8843ccbadb7d4a24c7c143de",
+      "target_lufs": -18.0,
+      "actual_lufs_spread": 0.0
+    },
+    {
+      "pair": 7,
+      "source": "res_1126/raw/spp_capture_007.wav",
+      "source_sha256": "562224786568566f8290dae9f09534f51c558f81bcbf28629f697b1820cb4a9b",
+      "target_lufs": -18.0,
+      "actual_lufs_spread": 0.01
+    }
+  ]
+}

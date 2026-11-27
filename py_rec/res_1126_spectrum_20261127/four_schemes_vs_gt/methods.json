@@ -1,0 +1,49 @@
+{
+  "date": "2026-11-27",
+  "timezone": "Asia/Shanghai",
+  "main_high_shelf": {
+    "midpoint_hz": 1500,
+    "gain_db": 3,
+    "slope_S": 1
+  },
+  "main_low_cut": {
+    "type": "Butterworth highpass",
+    "order": 2,
+    "cutoff_hz": 70
+  },
+  "parameter_sensitivity": {
+    "high_shelf_gains_db": [
+      3,
+      6
+    ],
+    "low_cut_hz": [
+      50,
+      70
+    ]
+  },
+  "recording_pairs": 7,
+  "raw_recordings": 7,
+  "gt_recordings": 7,
+  "unique_scheme_recording_inputs": 70,
+  "input_policy": "Previously exported WAVs are read directly; raw comes from original raw WAV; GT comes from original M4A",
+  "duplicate_controls": "Redundant loudness-matched controls from listening sets are not separate filter schemes; original raw is the common raw scheme",
+  "gt_decode": "FFmpeg stereo mean, anti-aliased resampling to 16000 Hz",
+  "pcm_scaling": "SciPy PCM32 / 2**31, including left-aligned PCM24 exports",
+  "welch": {
+    "fs": 16000,
+    "nperseg": 2048,
+    "noverlap": 1536,
+    "window": "hann",
+    "detrend": "constant",
+    "average": "mean",
+    "frequency_grid_hz": 7.8125
+  },
+  "normalization": "Divide each spectrum by its own integrated 500-2000 Hz energy; comparison is spectral shape, not sound pressure",
+  "displayed_smoothing": "1/12 octave total width, arithmetic mean of linear PSD within +/-1/24 octave around each native FFT bin; same rule for every curve",
+  "original_spectra": "Unsmoothed and smoothed values both available in spectra_all_parameters.csv",
+  "aggregate": "Equal-weight per-recording median; IQR = 25th-75th percentiles across seven recordings; no inferential test",
+  "pairing": "Same speaker and text per number, separate takes; no time alignment or transfer function inference",
+  "existing_audio_unchanged": true,
+  "existing_source_files_unchanged": 25,
+  "new_audio_exported": false
+}

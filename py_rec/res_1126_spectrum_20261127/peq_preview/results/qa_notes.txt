@@ -1,0 +1,13 @@
+Visual QA: all panels inspected at final size.
+01_filter_response: two panels distinguish PEQ cut depth from combined chain response.
+02_spectral_summary: four panels; all seven recordings; median and IQR for every curve.
+pair_01_spectra: four panels; per-file raw PSD, no population uncertainty; all labels/legends readable and clear of curves.
+pair_02_spectra: four panels; per-file raw PSD, no population uncertainty; all labels/legends readable and clear of curves.
+pair_03_spectra: four panels; per-file raw PSD, no population uncertainty; all labels/legends readable and clear of curves.
+pair_04_spectra: four panels; per-file raw PSD, no population uncertainty; all labels/legends readable and clear of curves.
+pair_05_spectra: four panels; per-file raw PSD, no population uncertainty; all labels/legends readable and clear of curves.
+pair_06_spectra: four panels; per-file raw PSD, no population uncertainty; all labels/legends readable and clear of curves.
+pair_07_spectra: four panels; per-file raw PSD, no population uncertainty; all labels/legends readable and clear of curves.
+Same relative normalization is preserved within raw branches. GT is an independently spoken reference.
+No claim of recovered peak location, dereverberation or demonstrated subjective improvement.
+Static preflight: no failures; 300 dpi PNG/no TIFF warnings accepted for screen listening report with PDF/SVG.

@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="zh-CN">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PEQ 离线调参试听</title>
+<style>
+:root{color-scheme:light;font-family:system-ui,"Microsoft YaHei",sans-serif;color:#24313d;background:#f4f7f9}body{max-width:1000px;margin:32px auto;padding:0 20px;line-height:1.7}h1{font-size:28px;line-height:1.3;margin-bottom:10px}h2{font-size:18px}p{margin:10px 0}.intro{color:#52616c}.card{background:white;border:1px solid #dce4e9;border-radius:12px;padding:22px;margin:20px 0}.controls{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:22px}label{display:block;font-weight:600}input[type=range]{width:100%;accent-color:#087b98}input[type=number]{width:100px;padding:6px;border:1px solid #b8c8d1;border-radius:5px;font:inherit}select{max-width:100%;padding:8px;font:inherit;border:1px solid #b8c8d1;border-radius:5px}button{padding:9px 16px;background:#087b98;color:white;border:0;border-radius:6px;font:inherit;cursor:pointer;margin:5px 8px 5px 0}button.secondary{background:#e8eff3;color:#28414f}button:disabled{opacity:.45;cursor:default}small{color:#5b6b76}.status{padding:12px;background:#eaf3f7;border-radius:7px;white-space:pre-wrap}.players{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px}audio{width:100%;display:block;margin:8px 0}.downloads{display:flex;gap:18px;flex-wrap:wrap}a{color:#087b98}code{background:#eef2f4;padding:2px 5px;border-radius:4px}.detail{font-size:14px;color:#52616c}summary{cursor:pointer}#fileName{overflow-wrap:anywhere}
+</style>
+<h1>PEQ 离线调参试听</h1>
+<p class="intro">选一段原始 raw 录音，比较加入 PEQ 前后。所有音频处理都在本地浏览器完成。</p>
+<p><a href="results/listen.html">打开已生成的 7 组 LUFS 等响试听</a> · <a href="results/figures/01_filter_response.png">默认滤波响应图</a></p>
+<section class="card">
+  <h2>1 · 选择原始录音与处理分支</h2>
+  <input id="file" type="file" accept=".wav,audio/wav">
+  <p id="fileName" class="detail">请选择 res_1126/raw 中的一份 WAV；不要选择已经加过滤波的试听文件。</p>
+  <label for="branch">处理分支</label>
+  <select id="branch"><option value="raw">原音：只追加 PEQ</option><option value="chain">现有滤波链：低切＋高频增强，再追加 PEQ</option></select>
+  <p class="detail">现有链：70 Hz 二阶＋50 Hz 四阶高通；1.5 kHz +3 dB、3 kHz +6 dB 高架。第二项沿用此前的高频增强。</p>
+</section>
+<section class="card">
+  <h2>2 · 调整 PEQ</h2>
+  <div class="controls">
+    <div><label for="center">中心频率（Hz）</label><input id="center" type="range" min="100" max="1200" step="1" value="300"><input id="centerN" type="number" min="100" max="1200" step="1" value="300"></div>
+    <div><label for="width">覆盖带宽（Hz）</label><input id="width" type="range" min="30" max="1600" step="1" value="300"><input id="widthN" type="number" min="30" max="1600" step="1" value="300"></div>
+    <div><label for="cut">中心削减量（dB）</label><input id="cut" type="range" min="0" max="12" step="0.5" value="4"><input id="cutN" type="number" min="0" max="12" step="0.5" value="4"></div>
+  </div>
+  <p id="bandInfo" class="status"></p>
+  <p class="detail">带宽指“达到中心削减量一半”的两侧频点之差。例如削减 4 dB 时，带宽边界为 −2 dB；边界以外仍有逐渐减弱的影响。</p>
+  <button class="secondary" id="reset">恢复 300 Hz / 300 Hz / −4 dB</button>
+  <button class="secondary" id="configDownload">下载参数 JSON</button>
+  <button id="render" disabled>生成前后对比</button>
+  <p id="status" class="status" role="status">尚未载入录音。</p>
+</section>
+<section class="card">
+  <h2>3 · 等响比较与下载</h2>
+  <p class="detail">本页自定义预览采用整段 RMS 匹配，并为两份音频共同预留采样峰值余量。它与固定试听文件的 LUFS 匹配方法不同；不做压缩、AGC 或动态限幅。</p>
+  <div class="players">
+    <div><strong id="beforeLabel">加入 PEQ 前</strong><audio id="before" controls preload="metadata"></audio><a id="beforeDownload" hidden>下载对照 WAV</a></div>
+    <div><strong id="afterLabel">加入 PEQ 后</strong><audio id="after" controls preload="metadata"></audio><a id="afterDownload" hidden>下载 PEQ WAV</a></div>
+  </div>
+</section>
+<details class="card"><summary>处理说明</summary><p>使用 Web Audio 的因果 biquad。以 16 kHz 解码、处理并导出单声道 PCM24。每次生成从零状态开始，不改变录音长度。</p><p>PEQ 用于调整低中频能量；它不移动人声谐波，也不恢复削波、丢包补零或声学抵消造成的损失。请同时听闷厚感、自然度和声音是否变薄。</p><p>固定 WAV 与频谱可用 Python 脚本按下载的 JSON 重新生成，详见 <a href="README.txt">使用说明</a>。公式依据 <a href="https://www.w3.org/TR/audio-eq-cookbook/">Audio EQ Cookbook</a>。</p></details>
+<script>
+'use strict';
+const $=id=>document.getElementById(id);
+let loaded=null,rendering=false,revision=0,loadToken=0,urls=[];
+function params(){return {center_hz:+$('center').value,bandwidth_hz:+$('width').value,gain_db:-$('cut').value};}
+function geometry(p,fs=16000){
+  const w=2*Math.PI*p.center_hz/fs, alpha=Math.tan(Math.PI*p.bandwidth_hz/fs);
+  const q=Math.sin(w)/(2*alpha),u=(Math.sqrt(4+1/(q*q))+1/q)/2,t=Math.tan(w/2);
+  return {q,low:fs/Math.PI*Math.atan(t/u),high:fs/Math.PI*Math.atan(t*u)};
+}
+function update(){
+  const p=params(),g=geometry(p);
+  $('bandInfo').textContent=`中心 ${p.center_hz} Hz · 削减 ${-p.gain_db} dB · Q=${g.q.toFixed(3)}\n半增益频点 ${g.low.toFixed(1)}–${g.high.toFixed(1)} Hz，带宽 ${(g.high-g.low).toFixed(1)} Hz`;
+  revision++;
+  if(loaded)$('status').textContent='参数已设置，点击“生成前后对比”更新试听。';
+}
+for(const id of ['center','width','cut']){
+  $(id).addEventListener('input',()=>{$(id+'N').value=$(id).value;update();});
+  $(id+'N').addEventListener('change',()=>{
+    const v=+$(id+'N').value;
+    if(!Number.isFinite(v)){ $(id+'N').value=$(id).value;return; }
+    $(id).value=Math.max(+$(id).min,Math.min(+$(id).max,v));
+    $(id+'N').value=$(id).value;update();
+  });
+}
+$('branch').addEventListener('change',update);
+$('reset').onclick=()=>{for(const [k,v]of Object.entries({center:300,width:300,cut:4})){$(k).value=v;$(k+'N').value=v;}update();};
+$('file').onchange=async()=>{
+  const file=$('file').files[0];if(!file)return;
+  revision++;const current=++loadToken;
+  loaded=null;$('render').disabled=true;$('status').textContent='正在解码录音…';
+  try{
+    const decoder=new OfflineAudioContext(1,1,16000);
+    const decoded=await decoder.decodeAudioData(await file.arrayBuffer());
+    if(current!==loadToken)return;
+    const mono=new Float32Array(decoded.length);
+    for(let c=0;c<decoded.numberOfChannels;c++){
+      const channel=decoded.getChannelData(c);
+      for(let i=0;i<mono.length;i++)mono[i]+=channel[i]/decoded.numberOfChannels;
+    }
+    loaded={mono,fs:decoded.sampleRate,name:file.name};
+    $('fileName').textContent=`${file.name} · ${(mono.length/decoded.sampleRate).toFixed(2)} 秒 · ${decoded.sampleRate} Hz`;
+    $('render').disabled=false;$('status').textContent='录音已载入。调整参数后生成试听。';
+  }catch(e){$('status').textContent='无法解码此录音：'+e.message;}
+};
+function addBiquad(ctx,tail,type,freq,q,gain=0){
+  const node=ctx.createBiquadFilter();node.type=type;node.frequency.value=freq;
+  // Web Audio expresses highpass/lowpass Q in dB; peaking Q is linear.
+  node.Q.value=(type==='highpass'||type==='lowpass')?20*Math.log10(q):q;
+  node.gain.value=gain;tail.connect(node);return node;
+}
+async function filterAudio(data,branch,p,withPeq){
+  const ctx=new OfflineAudioContext(1,data.mono.length,data.fs);
+  const buffer=ctx.createBuffer(1,data.mono.length,data.fs);buffer.copyToChannel(data.mono,0);
+  const source=ctx.createBufferSource();source.buffer=buffer;let tail=source;
+  if(branch==='chain'){
+    tail=addBiquad(ctx,tail,'highpass',70,Math.SQRT1_2);
+    tail=addBiquad(ctx,tail,'highpass',50,0.541196100146197);
+    tail=addBiquad(ctx,tail,'highpass',50,1.306562964876377);
+    tail=addBiquad(ctx,tail,'highshelf',1500,1,3);
+    tail=addBiquad(ctx,tail,'highshelf',3000,1,6);
+  }
+  if(withPeq)tail=addBiquad(ctx,tail,'peaking',p.center_hz,geometry(p,data.fs).q,p.gain_db);
+  tail.connect(ctx.destination);source.start();
+  const result=await ctx.startRendering();
+  return new Float32Array(result.getChannelData(0));
+}
+function stats(x){let sum=0,peak=0;for(let i=0;i<x.length;i++){sum+=x[i]*x[i];peak=Math.max(peak,Math.abs(x[i]));}return {rms:Math.sqrt(sum/x.length),peak};}
+function matchPair(a,b){
+  const sa=stats(a),sb=stats(b);
+  if(sa.rms===0||sb.rms===0)throw Error('录音为静音，无法作等响比较。');
+  const ceiling=10**(-1.2/20);
+  const target=Math.min(10**(-24/20),ceiling*sa.rms/sa.peak,ceiling*sb.rms/sb.peak);
+  return {before:Float32Array.from(a,v=>v*target/sa.rms),after:Float32Array.from(b,v=>v*target/sb.rms),target};
+}
+function wavBlob(samples,fs){
+  const buffer=new ArrayBuffer(44+samples.length*3),view=new DataView(buffer);
+  const text=(offset,value)=>{for(let i=0;i<value.length;i++)view.setUint8(offset+i,value.charCodeAt(i));};
+  text(0,'RIFF');view.setUint32(4,36+samples.length*3,true);text(8,'WAVE');text(12,'fmt ');view.setUint32(16,16,true);
+  view.setUint16(20,1,true);view.setUint16(22,1,true);view.setUint32(24,fs,true);view.setUint32(28,fs*3,true);view.setUint16(32,3,true);view.setUint16(34,24,true);text(36,'data');view.setUint32(40,samples.length*3,true);
+  for(let i=0;i<samples.length;i++){
+    const q=Math.round(samples[i]*8388608);
+    if(q< -8388608||q>8388607)throw Error('输出溢出，请降低增益。');
+    view.setUint8(44+3*i,q&255);view.setUint8(45+3*i,(q>>8)&255);view.setUint8(46+3*i,(q>>16)&255);
+  }
+  return new Blob([buffer],{type:'audio/wav'});
+}
+$('render').onclick=async()=>{
+  if(!loaded||rendering)return;
+  rendering=true;$('render').disabled=true;const current=revision,p=params(),branch=$('branch').value,data=loaded;
+  $('status').textContent='正在本地生成两份试听音频…';
+  try{
+    const [a,b]=await Promise.all([filterAudio(data,branch,p,false),filterAudio(data,branch,p,true)]);
+    if(current!==revision){$('status').textContent='参数已变化，请重新生成。';return;}
+    const matched=matchPair(a,b);
+    for(const id of ['before','after'])$(id).pause();
+    for(const url of urls)URL.revokeObjectURL(url);urls=[];
+    for(const id of ['before','after']){
+      const url=URL.createObjectURL(wavBlob(matched[id],data.fs));urls.push(url);$(id).src=url;
+      const download=$(id+'Download');download.href=url;download.download=`${data.name.replace(/\.wav$/i,'')}_${branch}_${id}_peq${p.center_hz}Hz_${p.gain_db}dB.wav`;download.hidden=false;
+    }
+    const label=branch==='raw'?'原音':'低切＋高频增强';
+    $('beforeLabel').textContent=label+'（对照）';$('afterLabel').textContent=label+`＋PEQ ${p.gain_db} dB`;
+    $('status').textContent=`试听已更新：${p.center_hz} Hz / ${p.bandwidth_hz} Hz / ${p.gain_db} dB。两份共同 RMS ${(20*Math.log10(matched.target)).toFixed(2)} dBFS。`;
+  }catch(e){$('status').textContent='生成失败：'+e.message;}
+  finally{rendering=false;$('render').disabled=!loaded;}
+};
+$('configDownload').onclick=()=>{
+  const config={sample_rate_hz:16000,input_dir:'../../../res_1126/raw',gt_dir:'../../../res_1126/gt',output_dir:'results_custom',peq:params(),comparison_gains_db:[-3,-4,-6],baseline:{highpasses:[{frequency_hz:70,order:2},{frequency_hz:50,order:4}],high_shelves:[{frequency_hz:1500,gain_db:3},{frequency_hz:3000,gain_db:6}]},target_lufs:-18,true_peak_ceiling_dbtp:-1.2,workers:4};
+  const url=URL.createObjectURL(new Blob([JSON.stringify(config,null,2)],{type:'application/json'}));
+  const a=document.createElement('a');a.href=url;a.download='config_custom.json';a.style.display='none';document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),60000);
+};
+document.addEventListener('play',e=>{if(e.target.tagName==='AUDIO')for(const id of ['before','after'])if($(id)!==e.target)$(id).pause();},true);
+update();
+</script>
+</html>

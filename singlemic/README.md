@@ -4,8 +4,23 @@
 `ESP32S3-ICS` 仅用于兼容既有电脑端配置，不代表目标芯片型号。
 
 固件从 ICS-43434 以 16 kHz、32 位 I2S 槽采集。当前`DECIMATION_FACTOR=1`，
-逐点转换并去直流，输出 16 kHz、单声道、PCM24，不经过降采样FIR。
+逐点转换、去直流并进行腔体 EQ，输出 16 kHz、单声道、PCM24，不经过降采样FIR。
 倍率改回`2`时保留原五抽头低通和2:1降采样路径，输出采样率为I2S采样率的一半。
+
+腔体 EQ 默认启用，对应 `strong_both` 试听方案：70 Hz 二阶 Butterworth 高通、
+50 Hz 四阶 Butterworth 高通，以及 1.5 kHz +3 dB / 3 kHz +6 dB 两级高架（S=1）。
+高架之后增加 350 Hz PEQ，带宽 300 Hz、中心削减 -6 dB，与离线 350 Hz 试听版一致。
+带宽指半增益（-3 dB）两频点间距，当前约 230.6–530.6 Hz，Q 约 1.162。
+共六个二阶节逐点运行，状态跨数据包保留，仅在新录音开始时重置，不需要整段缓存。
+PEQ 系数仅在启动时计算一次，额外状态占 8 字节；逐采样路径无动态内存分配。
+`cfg.h` 中 `AudioConfig::ENABLE_CAVITY_EQ=false` 可恢复原 DSP；
+`ENABLE_CAVITY_PEQ=false` 仅关闭新增 PEQ、保留现有高通和高架。
+`CAVITY_PEQ_CENTER_HZ`、`CAVITY_PEQ_BANDWIDTH_HZ`、`CAVITY_PEQ_GAIN_DB`
+分别调整中心频率、带宽和增益，修改后重新编译；增益范围为 -24 至 0 dB。
+`CAVITY_EQ_PRE_GAIN=0.2511886432f` 为固定 -12 dB 预衰减，给最高 +9 dB 提升留出余量，
+因此整体音量会降低。仅在最后转换到 PCM24 时限幅，不做整段 LUFS 匹配或动态增益。
+系数针对 16 kHz I2S 采集，EQ 位于可选降采样之前；改变采集率须重新设计系数或关闭 EQ。
+
 传输层可在编译时选择：
 
 - `CLASSIC_SPP`：默认，使用经典蓝牙SPP发送到Windows蓝牙串口。
@@ -108,7 +123,9 @@ SPP TX: batch_max_packets=4 batch_max_bytes=976 retry_ms=5
 ```text
 ICS-43434
   -> I2S 16 kHz / 32-bit slot
-  -> DC blocker (factor=1: one-to-one; factor=2: anti-alias FIR + 2:1 decimation)
+  -> DC blocker
+  -> optional cavity EQ (-12 dB pre-gain + HP + high shelves + PEQ)
+  -> factor=1: one-to-one; factor=2: anti-alias FIR + 2:1 decimation
   -> 16 kHz / mono / PCM24
   -> START + DATA... + END packet FIFO
   -> SPP byte stream or BLE Notification

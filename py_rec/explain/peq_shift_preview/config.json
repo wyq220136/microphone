@@ -1,0 +1,10 @@
+{
+  "sample_rate_hz": 16000,
+  "centers_hz": [300, 350, 400, 450],
+  "bandwidth_hz": 300,
+  "gain_db": -6,
+  "include_no_peq_control": true,
+  "target_lufs": -18,
+  "true_peak_ceiling_dbtp": -1.2,
+  "workers": 4
+}

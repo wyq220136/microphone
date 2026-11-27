@@ -1,0 +1,99 @@
+{
+  "loaded": {
+    "fs": 16000,
+    "length": 678680,
+    "name": "spp_capture.wav"
+  },
+  "default_geometry": {
+    "q": 0.9965342284774632,
+    "low": 185.25480764734522,
+    "high": 485.25480764734516
+  },
+  "branches": {
+    "raw": {
+      "status": "试听已更新：300 Hz / 300 Hz / -4 dB。两份共同 RMS -24.00 dBFS。",
+      "before": {
+        "ready": 4,
+        "download": "spp_capture_raw_before_peq300Hz_-4dB.wav"
+      },
+      "after": {
+        "ready": 4,
+        "download": "spp_capture_raw_after_peq300Hz_-4dB.wav"
+      }
+    },
+    "chain": {
+      "status": "试听已更新：300 Hz / 300 Hz / -4 dB。两份共同 RMS -24.00 dBFS。",
+      "before": {
+        "ready": 4,
+        "download": "spp_capture_chain_before_peq300Hz_-4dB.wav"
+      },
+      "after": {
+        "ready": 4,
+        "download": "spp_capture_chain_after_peq300Hz_-4dB.wav"
+      }
+    }
+  },
+  "custom": {
+    "params": {
+      "center_hz": 280,
+      "bandwidth_hz": 260,
+      "gain_db": -6
+    },
+    "geometry": {
+      "q": 1.0738205062689408,
+      "low": 178.59654038218554,
+      "high": 438.59654038218537
+    },
+    "status": "试听已更新：280 Hz / 260 Hz / -6 dB。两份共同 RMS -24.00 dBFS。"
+  },
+  "download_config": {
+    "sample_rate_hz": 16000,
+    "input_dir": "../../../res_1126/raw",
+    "gt_dir": "../../../res_1126/gt",
+    "output_dir": "results_custom",
+    "peq": {
+      "center_hz": 280,
+      "bandwidth_hz": 260,
+      "gain_db": -6
+    },
+    "comparison_gains_db": [
+      -3,
+      -4,
+      -6
+    ],
+    "baseline": {
+      "highpasses": [
+        {
+          "frequency_hz": 70,
+          "order": 2
+        },
+        {
+          "frequency_hz": 50,
+          "order": 4
+        }
+      ],
+      "high_shelves": [
+        {
+          "frequency_hz": 1500,
+          "gain_db": 3
+        },
+        {
+          "frequency_hz": 3000,
+          "gain_db": 6
+        }
+      ]
+    },
+    "target_lufs": -18,
+    "true_peak_ceiling_dbtp": -1.2,
+    "workers": 4
+  },
+  "mobile": {
+    "viewport": 390,
+    "bodyWidth": 390
+  },
+  "listen": {
+    "audios": 56,
+    "sections": 7
+  },
+  "runtime_errors": []
+}

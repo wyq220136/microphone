@@ -1,0 +1,115 @@
+{
+  "date": "2026-11-27",
+  "timezone": "Asia/Shanghai",
+  "input": "Previous high-shelf +3 and +6 dB PCM24 listening exports",
+  "input_sources": [
+    {
+      "pair": 1,
+      "high_boost_db": 3,
+      "source": "high_frequency_boost_preview/pair_01/highshelf_plus3dB_matched.wav",
+      "sha256": "bb9b7ada417db40a1e6ecf8e8cd48b6c2e7b5f52e0a8a68f212b474a6fbe4fd8"
+    },
+    {
+      "pair": 1,
+      "high_boost_db": 6,
+      "source": "high_frequency_boost_preview/pair_01/highshelf_plus6dB_matched.wav",
+      "sha256": "668c4d41ad683bbf8e3479d3f1eae9056406b8e608efc4e68aedfbbd3669ea69"
+    },
+    {
+      "pair": 2,
+      "high_boost_db": 3,
+      "source": "high_frequency_boost_preview/pair_02/highshelf_plus3dB_matched.wav",
+      "sha256": "70d2ef718d72459c793a436b71b7bb99492eca5e23498154196f99682b4df90f"
+    },
+    {
+      "pair": 2,
+      "high_boost_db": 6,
+      "source": "high_frequency_boost_preview/pair_02/highshelf_plus6dB_matched.wav",
+      "sha256": "834d52567392aab9bad3745f8f2df398ad4f0c1ea30c804f309193ee46c6bab4"
+    },
+    {
+      "pair": 3,
+      "high_boost_db": 3,
+      "source": "high_frequency_boost_preview/pair_03/highshelf_plus3dB_matched.wav",
+      "sha256": "79f5bd6814a1605303f4488f43344d70afe3397f7771c9c8f5afcdc9117bf951"
+    },
+    {
+      "pair": 3,
+      "high_boost_db": 6,
+      "source": "high_frequency_boost_preview/pair_03/highshelf_plus6dB_matched.wav",
+      "sha256": "ed5b872e984c17a247a4ae7a5bceb595f91afd6710baf5990f3f07d0619d2f51"
+    },
+    {
+      "pair": 4,
+      "high_boost_db": 3,
+      "source": "high_frequency_boost_preview/pair_04/highshelf_plus3dB_matched.wav",
+      "sha256": "cd7a12bba15631bda77828aa9907bd7c743326c62596bd5d1dc46e8e1f9e8387"
+    },
+    {
+      "pair": 4,
+      "high_boost_db": 6,
+      "source": "high_frequency_boost_preview/pair_04/highshelf_plus6dB_matched.wav",
+      "sha256": "769d17986291d69ac50258cc7bcda51fc167a1832bad4eb51efc6f46a5aeab48"
+    },
+    {
+      "pair": 5,
+      "high_boost_db": 3,
+      "source": "high_frequency_boost_preview/pair_05/highshelf_plus3dB_matched.wav",
+      "sha256": "c77533223bb27eed4ffeaee5cdc970260c3b75347500c02a1fdb404d7f3aa720"
+    },
+    {
+      "pair": 5,
+      "high_boost_db": 6,
+      "source": "high_frequency_boost_preview/pair_05/highshelf_plus6dB_matched.wav",
+      "sha256": "1d91aa104b716d2359efdc0b150e981de0363cd173fce71c3b7fc41a52cd805c"
+    },
+    {
+      "pair": 6,
+      "high_boost_db": 3,
+      "source": "high_frequency_boost_preview/pair_06/highshelf_plus3dB_matched.wav",
+      "sha256": "13f553b2e27825ef30603234afb03a015bb770be92d805711323c6844d60f5be"
+    },
+    {
+      "pair": 6,
+      "high_boost_db": 6,
+      "source": "high_frequency_boost_preview/pair_06/highshelf_plus6dB_matched.wav",
+      "sha256": "46ca878b9ac501d3554d01ffe30996fbc5805a6faefa0e95cd1f35778a5cb444"
+    },
+    {
+      "pair": 7,
+      "high_boost_db": 3,
+      "source": "high_frequency_boost_preview/pair_07/highshelf_plus3dB_matched.wav",
+      "sha256": "ff8773b06de17f0f9cca2cc2713312b2f05be9c8447c8e12b2b2a4def19f64ed"
+    },
+    {
+      "pair": 7,
+      "high_boost_db": 6,
+      "source": "high_frequency_boost_preview/pair_07/highshelf_plus6dB_matched.wav",
+      "sha256": "339a86db9a7c8d2c37f3f5f3a6496501f46e1e206710962c92679fedf3070744"
+    }
+  ],
+  "processing": "Add causal order-2 Butterworth HPF at 50 or 70 Hz, then constant gain for LUFS matching",
+  "high_shelf_midpoint_hz": 1500,
+  "high_shelf_gains_db": [
+    3,
+    6
+  ],
+  "hpf_cutoff_hz": [
+    0,
+    50,
+    70
+  ],
+  "output_count": 42,
+  "output_format": "16000 Hz mono PCM24 WAV",
+  "matching": "One integrated LUFS target per numbered six-file group, at or below -18 LUFS, true peak <= -1 dBTP",
+  "no_dynamic_compressor": true,
+  "no_limiter": true,
+  "no_noise_suppression": true,
+  "no_added_250hz_peq": true,
+  "prior_audio_unchanged": true,
+  "original_recordings_unchanged": true,
+  "existing_source_files_unchanged": 25,
+  "spectrum": "Welch Hann 2048 points, 512 hop, all complete frames, per-frame mean removed",
+  "statistics": "Median and 25th-75th percentile across all seven recordings; no hypothesis test",
+  "band_shape_definition": "Band energy normalized by own 500-2000 Hz energy, relative to high-boost-only control"
+}

@@ -1,0 +1,72 @@
+{
+  "date": "2026-11-27",
+  "timezone": "Asia/Shanghai",
+  "processing": "Only high-shelf EQ, followed by constant gain for pairwise LUFS matching",
+  "high_shelf_midpoint_hz": 1500,
+  "shelf_slope_S": 1,
+  "versions_db": [
+    0,
+    3,
+    6
+  ],
+  "causal": true,
+  "matching": "Each numbered triple has a shared integrated LUFS target at or below -18; true peak <= -1 dBTP",
+  "no_dynamic_compression": true,
+  "no_new_low_cut_or_peq": true,
+  "no_denoiser": true,
+  "original_means": "Same input samples with only constant gain for the listening comparison",
+  "content_not_repaired": "Existing full-scale saturation and missing zero-filled passages are preserved",
+  "source_code_files_unchanged": 25,
+  "checks": [
+    {
+      "pair": 1,
+      "source": "res_1126/raw/spp_capture.wav",
+      "source_sha256": "720aed63d1f9881c0f28022b6af7b4ce1b4367e35512ba49c9e7c303fa9e9c57",
+      "source_unchanged": true,
+      "pair_lufs_spread": 0.0
+    },
+    {
+      "pair": 2,
+      "source": "res_1126/raw/spp_capture_002.wav",
+      "source_sha256": "80ee895fd7de4a2ae586a2958c6c7c57c2c4dbe32e58a37673263180bcda04b8",
+      "source_unchanged": true,
+      "pair_lufs_spread": 0.01
+    },
+    {
+      "pair": 3,
+      "source": "res_1126/raw/spp_capture_003.wav",
+      "source_sha256": "56992fa091349f02efb4e6903422798af66cad8b93f7f4c48c66828fd95faced",
+      "source_unchanged": true,
+      "pair_lufs_spread": 0.01
+    },
+    {
+      "pair": 4,
+      "source": "res_1126/raw/spp_capture_004.wav",
+      "source_sha256": "cad98ef7569c8cdbbe5beaa6db42df8e8a07ae8cbf0379d80e8e22327921ff5d",
+      "source_unchanged": true,
+      "pair_lufs_spread": 0.0
+    },
+    {
+      "pair": 5,
+      "source": "res_1126/raw/spp_capture_005.wav",
+      "source_sha256": "7eacc4816a0efe22597eebde4f6a4cf00e65a08ec50a01d71a19c4bff5cfaa3a",
+      "source_unchanged": true,
+      "pair_lufs_spread": 0.0
+    },
+    {
+      "pair": 6,
+      "source": "res_1126/raw/spp_capture_006.wav",
+      "source_sha256": "853dfd06de70b022cea67321c876681b5081a71f8843ccbadb7d4a24c7c143de",
+      "source_unchanged": true,
+      "pair_lufs_spread": 0.0
+    },
+    {
+      "pair": 7,
+      "source": "res_1126/raw/spp_capture_007.wav",
+      "source_sha256": "562224786568566f8290dae9f09534f51c558f81bcbf28629f697b1820cb4a9b",
+      "source_unchanged": true,
+      "pair_lufs_spread": 0.0
+    }
+  ],
+  "formulas": "https://www.w3.org/TR/audio-eq-cookbook/"
+}

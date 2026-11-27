@@ -1,0 +1,16 @@
+﻿event,time_s,version,highband_definition,highband_rms_dbfs,sample_peak_dbfs_within_10ms
+start,0.2485,raw,"4th-order 2 kHz highpass, 1 ms RMS, maximum within +/-5 ms",-22.367550405563662,-12.810991461896768
+start,0.2485,no_peq,"4th-order 2 kHz highpass, 1 ms RMS, maximum within +/-5 ms",-16.655107155649862,-7.351790281981662
+start,0.2485,peq350,"4th-order 2 kHz highpass, 1 ms RMS, maximum within +/-5 ms",-14.422403223856303,-5.422412368771524
+speech_1,5.8885,raw,"4th-order 2 kHz highpass, 1 ms RMS, maximum within +/-5 ms",-30.231725252351094,-27.252627145156048
+speech_1,5.8885,no_peq,"4th-order 2 kHz highpass, 1 ms RMS, maximum within +/-5 ms",-22.850736168165177,-19.68026863117947
+speech_1,5.8885,peq350,"4th-order 2 kHz highpass, 1 ms RMS, maximum within +/-5 ms",-20.6041259961186,-17.442251122735037
+speech_2,13.5445,raw,"4th-order 2 kHz highpass, 1 ms RMS, maximum within +/-5 ms",-29.80151096716611,-25.329350911541976
+speech_2,13.5445,no_peq,"4th-order 2 kHz highpass, 1 ms RMS, maximum within +/-5 ms",-22.228857778881178,-19.390212188156998
+speech_2,13.5445,peq350,"4th-order 2 kHz highpass, 1 ms RMS, maximum within +/-5 ms",-19.950107646436585,-17.22121082095208
+end,18.5605,raw,"4th-order 2 kHz highpass, 1 ms RMS, maximum within +/-5 ms",-25.02631187723496,-16.379902567074545
+end,18.5605,no_peq,"4th-order 2 kHz highpass, 1 ms RMS, maximum within +/-5 ms",-17.539782073561657,-11.29889491370686
+end,18.5605,peq350,"4th-order 2 kHz highpass, 1 ms RMS, maximum within +/-5 ms",-15.267334653793167,-9.046660998513357
+gap,0.893,raw,"4th-order 2 kHz highpass, 1 ms RMS, maximum within +/-5 ms",-60.04118644769566,-44.36778628266556
+gap,0.893,no_peq,"4th-order 2 kHz highpass, 1 ms RMS, maximum within +/-5 ms",-52.831531720435606,-38.65610380166312
+gap,0.893,peq350,"4th-order 2 kHz highpass, 1 ms RMS, maximum within +/-5 ms",-50.56178144351799,-36.69584497109188

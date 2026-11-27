@@ -1,0 +1,8 @@
+{
+  "verified_wav_count": 21,
+  "high_shelf_applied": false,
+  "max_true_peak_dbtp": -1.2,
+  "max_within_group_lufs_spread": 0.010000000000001563,
+  "max_abs_2k_8k_vs_500_2k_shape_change_db": 0.0007811686825342531,
+  "existing_source_code_and_originals_and_prior_63_previews": "SHA256 unchanged, checked by generation script"
+}
